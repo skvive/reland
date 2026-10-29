@@ -1,1 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="리랜드 앱 아이콘"><rect width="192" height="192" rx="46" fill="#163e35"/><path d="M51 46h61c37 0 52 15 52 45 0 22-12 36-30 40l29 27h-47l-30-36H81v36H51zm30 34v15h29c12 0 16-4 16-8s-4-7-16-7z" fill="#dcf575"/><circle cx="154" cy="47" r="11" fill="#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="RE:LAND">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a5c50"/>
+      <stop offset="100%" stop-color="#0f3d36"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="44" fill="url(#bg)"/>
+  <path d="M48 44h58c34 0 48 14 48 42 0 20-11 33-28 37l27 26h-44l-28-34H76v34H48V44zm28 32v14h27c11 0 15-3 15-7s-4-7-15-7H76z" fill="#d8f572"/>
+  <circle cx="148" cy="46" r="10" fill="#fff"/>
+</svg>
