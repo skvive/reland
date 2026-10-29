@@ -28,6 +28,7 @@ from fastapi import BackgroundTasks, Cookie, FastAPI, HTTPException, Request, Re
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from neon_auth_jwt import validate_neon_token
 
 ROOT = Path(__file__).resolve().parent
 # Support a local .env settings file without introducing a mandatory extra package.
@@ -52,6 +53,8 @@ ENV = os.getenv('ENVIRONMENT', 'development').lower()
 DEMO_MODE = os.getenv('RELAND_DEMO_MODE', '1') == '1' and ENV != 'production'
 COOKIE_SECURE = ENV == 'production' or os.getenv('COOKIE_SECURE', '0') == '1'
 ADMIN_KEY = os.getenv('RELAND_ADMIN_KEY', '')
+NEON_AUTH_BASE_URL = os.getenv('NEON_AUTH_BASE_URL', '').strip()
+NEON_AUTH_PROXY_PREFIX = '/api/neon-auth'
 NEWS_TTL = 60 * 60 * 3
 NEWS_LOCK = False
 JWKS_CACHE = {'at': 0, 'keys': []}
@@ -211,6 +214,9 @@ init_db()
 class LoginToken(BaseModel):
     credential: str = Field(min_length=100,max_length=8000)
 
+class NeonSyncBody(BaseModel):
+    token: str = Field(default='', max_length=8192)
+
 class UserUpdate(BaseModel):
     nickname: str = Field(min_length=2,max_length=32)
     bio: str = Field(default='',max_length=180)
@@ -289,6 +295,60 @@ def create_session(response: Response, user_id: int):
     response.set_cookie('reland_session',token,max_age=14*86400,httponly=True,
                         secure=COOKIE_SECURE,samesite='lax',path='/')
 
+def _bearer_token(request: Request) -> str:
+    auth=request.headers.get('authorization','')
+    if auth.lower().startswith('bearer '):
+        return auth[7:].strip()
+    return ''
+
+def upsert_user_from_neon(claims: dict):
+    sub=str(claims.get('sub') or claims.get('id') or '').strip()
+    if not sub:raise HTTPException(401,'유효하지 않은 Neon Auth 토큰입니다.')
+    nickname=(claims.get('name') or claims.get('email') or '회원')
+    if isinstance(nickname,str):nickname=nickname.split('@')[0][:40]
+    email=str(claims.get('email') or '')
+    avatar=str(claims.get('image') or claims.get('picture') or '')
+    with db() as c:
+        c.execute('''INSERT INTO users(google_sub,nickname,email,avatar,created_at) VALUES(?,?,?,?,?)
+          ON CONFLICT(google_sub) DO UPDATE SET email=excluded.email,avatar=excluded.avatar''',
+            ('neon:'+sub,str(nickname),email,avatar,utcnow()))
+        row=c.execute('SELECT * FROM users WHERE google_sub=?',('neon:'+sub,)).fetchone()
+    return dict(row)
+
+def _rewrite_neon_set_cookie(value: str) -> str:
+    v=re.sub(r';\s*Domain=[^;]+','',value,flags=re.I)
+    v=re.sub(r';\s*Path=[^;]+','; Path='+NEON_AUTH_PROXY_PREFIX,v,flags=re.I)
+    if 'Path=' not in v:
+        v+=f'; Path={NEON_AUTH_PROXY_PREFIX}'
+    if COOKIE_SECURE and 'Secure' not in v:
+        v+='; Secure'
+    if 'SameSite=' not in v:
+        v+='; SameSite=Lax'
+    return v
+
+@app.api_route('/api/neon-auth/{path:path}',methods=['GET','POST','PUT','PATCH','DELETE','OPTIONS'])
+async def neon_auth_proxy(request: Request,path:str):
+    if not NEON_AUTH_BASE_URL:raise HTTPException(503,'Neon Auth가 설정되지 않았습니다.')
+    if request.method=='OPTIONS':
+        return Response(status_code=204)
+    upstream=f"{NEON_AUTH_BASE_URL.rstrip('/')}/{path}"
+    if request.url.query:
+        upstream+='?'+request.url.query
+    hop={'host','content-length','connection','transfer-encoding'}
+    headers={k:v for k,v in request.headers.items() if k.lower() not in hop}
+    body=await request.body()
+    async with httpx.AsyncClient(follow_redirects=False,timeout=45) as client:
+        upstream_resp=await client.request(request.method,upstream,headers=headers,content=body)
+    out=[]
+    for key,value in upstream_resp.headers.multi_items():
+        lower=key.lower()
+        if lower in ('transfer-encoding','connection','content-encoding'):continue
+        if lower=='set-cookie':
+            out.append((key,_rewrite_neon_set_cookie(value)))
+        else:
+            out.append((key,value))
+    return Response(content=upstream_resp.content,status_code=upstream_resp.status_code,headers=out)
+
 def validate_blog(url):
     if not url:return ''
     try:
@@ -340,8 +400,12 @@ def _health_payload():
 def health():
     return _health_payload()
 @app.get('/api/config')
-def config():return {'google_client_id':GOOGLE_CLIENT_ID,'demo_enabled':DEMO_MODE,'source_count':1566,
-                      'source_asof':'2026-05-18','notice':'전국 공공데이터 원본 1,566행은 CSV 가져오기 전까지 지도에 표시되지 않습니다.'}
+def config():
+    return {'google_client_id':GOOGLE_CLIENT_ID,'demo_enabled':DEMO_MODE,'source_count':1566,
+            'source_asof':'2026-05-18',
+            'neon_auth_enabled':bool(NEON_AUTH_BASE_URL),
+            'neon_auth_url':NEON_AUTH_PROXY_PREFIX if NEON_AUTH_BASE_URL else '',
+            'notice':'전국 공공데이터 원본 1,566행은 CSV 가져오기 전까지 지도에 표시되지 않습니다.'}
 @app.get('/api/auth/me')
 def me(request:Request):return {'user':output_user(get_user(request))}
 
@@ -382,6 +446,17 @@ def google_login(data:LoginToken,response:Response):
             ('google:'+info['sub'],info.get('given_name') or info.get('name') or '회원',
              info.get('email',''),info.get('picture',''),utcnow()))
         user=c.execute('SELECT * FROM users WHERE google_sub=?',('google:'+info['sub'],)).fetchone()
+    create_session(response,user['id'])
+    return {'user':output_user(user)}
+
+@app.post('/api/auth/neon/sync')
+def neon_sync(request:Request,response:Response,body:NeonSyncBody|None=None):
+    if not NEON_AUTH_BASE_URL:raise HTTPException(503,'Neon Auth가 설정되지 않았습니다.')
+    token=_bearer_token(request) or (body.token if body else '')
+    if not token:raise HTTPException(401,'Neon Auth JWT가 필요합니다.')
+    claims=validate_neon_token(token,NEON_AUTH_BASE_URL)
+    if not claims:raise HTTPException(401,'Neon Auth 토큰을 확인할 수 없습니다.')
+    user=upsert_user_from_neon(claims)
     create_session(response,user['id'])
     return {'user':output_user(user)}
 
