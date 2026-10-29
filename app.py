@@ -339,15 +339,16 @@ async def neon_auth_proxy(request: Request,path:str):
     body=await request.body()
     async with httpx.AsyncClient(follow_redirects=False,timeout=45) as client:
         upstream_resp=await client.request(request.method,upstream,headers=headers,content=body)
-    out=[]
+    response=Response(content=upstream_resp.content,status_code=upstream_resp.status_code)
+    skip={'transfer-encoding','connection','content-encoding','content-length'}
     for key,value in upstream_resp.headers.multi_items():
         lower=key.lower()
-        if lower in ('transfer-encoding','connection','content-encoding'):continue
+        if lower in skip:continue
         if lower=='set-cookie':
-            out.append((key,_rewrite_neon_set_cookie(value)))
-        else:
-            out.append((key,value))
-    return Response(content=upstream_resp.content,status_code=upstream_resp.status_code,headers=out)
+            response.headers.append('set-cookie',_rewrite_neon_set_cookie(value))
+        elif lower not in response.headers:
+            response.headers[key]=value
+    return response
 
 def validate_blog(url):
     if not url:return ''
