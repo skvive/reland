@@ -18,7 +18,7 @@
   "env": {
     "ENVIRONMENT": "production",
     "RELAND_DEMO_MODE": "1",
-    "RELAND_PUBLIC_URL": "https://rerand.lexid.site",
+    "RELAND_PUBLIC_URL": "https://reland.lexid.site",
     "COOKIE_SECURE": "1"
   }
 }
