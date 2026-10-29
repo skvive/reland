@@ -1,0 +1,65 @@
+{
+  "zone": {
+    "name": "도시 및 주거환경정비법",
+    "article": "제35조제2항",
+    "heading": "조합설립인가 등",
+    "url": "https://law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1023452023",
+    "excerpt": "재개발사업의 추진위원회(제31조제7항에 따라 추진위원회를 구성하지 아니하는 경우에는 토지등소유자를 말한다)가 조합을 설립하려면 토지등소유자의 4분의 3 이상 및 토지면적의 2분의 1 이상의 토지소유자의 동의를 받아"
+  },
+  "vote": {
+    "name": "도시 및 주거환경정비법",
+    "article": "제45조제1항",
+    "heading": "총회의 의결",
+    "url": "https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1028206431",
+    "excerpt": "다음 각 호의 사항은 총회의 의결을 거쳐야 한다."
+  },
+  "apply": {
+    "name": "도시 및 주거환경정비법",
+    "article": "제72조제2항",
+    "heading": "분양공고 및 분양신청",
+    "url": "https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1020045547",
+    "excerpt": "분양신청기간은 통지한 날부터 30일 이상 60일 이내로 하여야 한다."
+  },
+  "plan": {
+    "name": "도시 및 주거환경정비법",
+    "article": "제74조제1항",
+    "heading": "관리처분계획의 인가 등",
+    "url": "https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1032613459",
+    "excerpt": "사업시행자는 제72조에 따른 분양신청기간이 종료된 때에는 분양신청의 현황을 기초로 다음 각 호의 사항이 포함된 관리처분계획을 수립하여 시장ㆍ군수등의 인가를 받아야 하며"
+  },
+  "disclose": {
+    "name": "도시 및 주거환경정비법",
+    "article": "제124조제1항",
+    "heading": "관련 자료의 공개 등",
+    "url": "https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1032070415",
+    "excerpt": "정비사업의 시행에 관한 다음 각 호의 서류 및 관련 자료가 작성되거나 변경된 후 15일 이내에 이를 조합원, 토지등소유자 또는 세입자가 알 수 있도록 인터넷과 그 밖의 방법을 병행하여 공개하여야 한다."
+  },
+  "transfer": {
+    "name": "도시 및 주거환경정비법",
+    "article": "제86조제2항",
+    "heading": "이전고시 등",
+    "url": "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1029442681",
+    "excerpt": "이 경우 대지 또는 건축물을 분양받을 자는 고시가 있은 날의 다음 날에 그 대지 또는 건축물의 소유권을 취득한다."
+  },
+  "lawyer": {
+    "name": "변호사법",
+    "article": "제23조제1항",
+    "heading": "광고",
+    "url": "https://www.law.go.kr/LSW/lsInfoP.do?ancYnChk=0&chrClsCd=010202&efYd=20261002&lsiSeq=290789&urlMode=lsInfoP",
+    "excerpt": "변호사ㆍ법무법인ㆍ법무법인(유한) 또는 법무조합(이하 이 조에서 “변호사등”이라 한다)은 자기 또는 그 구성원의 학력, 경력, 주요 취급 업무, 업무 실적, 그 밖에 그 업무의 홍보에 필요한 사항을 신문ㆍ잡지ㆍ방송ㆍ컴퓨터통신 등의 매체를 이용하여 광고할 수 있다."
+  },
+  "notary": {
+    "name": "법무사법",
+    "article": "제2조제1항",
+    "heading": "업무",
+    "url": "https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1026297435",
+    "excerpt": "법무사의 업무는 다른 사람이 위임한 다음 각 호의 사무로 한다."
+  },
+  "admin": {
+    "name": "행정사법",
+    "article": "제2조제1항",
+    "heading": "업무",
+    "url": "https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1016817059",
+    "excerpt": "행정사는 다른 사람의 위임을 받아 다음 각 호의 업무를 수행한다. 다만, 다른 법률에 따라 제한된 업무는 할 수 없다."
+  }
+}

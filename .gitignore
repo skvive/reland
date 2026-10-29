@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.env
+.env.local
+data/*.sqlite
+data/*.sqlite-*
+.venv/
+venv/
+.pytest_cache/
+.vercel/

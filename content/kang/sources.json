@@ -1,0 +1,103 @@
+{
+  "law": {
+    "D35": [
+      "도시 및 주거환경정비법 제35조(조합설립인가 등)",
+      "https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1028008393",
+      "조합설립의 기본 요건과 동의의 구조를 규정합니다."
+    ],
+    "D39": [
+      "도시 및 주거환경정비법 제39조(조합원의 자격 등)",
+      "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1032614491",
+      "조합원 자격과 특정 지역·단계의 양도 제한을 규정합니다."
+    ],
+    "D45": [
+      "도시 및 주거환경정비법 제45조(총회의 의결)",
+      "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1029442429",
+      "주요 총회의결사항과 정족수를 확인하는 기준입니다."
+    ],
+    "D72": [
+      "도시 및 주거환경정비법 제72조(분양공고 및 분양신청)",
+      "https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1020045547",
+      "분양신청 통지·기간 및 추산분담금 공고 관련 규정입니다."
+    ],
+    "D74": [
+      "도시 및 주거환경정비법 제74조(관리처분계획의 인가 등)",
+      "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1032613459",
+      "관리처분계획의 구성과 인가의 구조를 규정합니다."
+    ],
+    "D124": [
+      "도시 및 주거환경정비법 제124조(관련 자료의 공개 등)",
+      "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1032611667",
+      "정비사업 자료 공개 의무의 핵심 조항입니다."
+    ],
+    "AP21": [
+      "행정절차법 제21조(처분의 사전 통지)",
+      "https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1033563821",
+      "권익제한 처분의 사전 통지 및 예외를 확인합니다."
+    ],
+    "AP23": [
+      "행정절차법 제23조(처분의 이유 제시)",
+      "https://law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1016111783",
+      "처분의 근거와 이유를 제시해야 하는 원칙을 규정합니다."
+    ],
+    "AH27": [
+      "행정심판법 제27조(심판청구의 기간)",
+      "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1018377597",
+      "통상 안 날부터 90일·처분일부터 180일의 기간과 예외를 정합니다."
+    ],
+    "AS20": [
+      "행정소송법 제20조(제소기간)",
+      "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1033135725",
+      "취소소송 제소기간 및 예외를 규정합니다."
+    ],
+    "MC249": [
+      "민사소송법 제249조(소장의 기재사항)",
+      "https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1028533355",
+      "소장에 적어야 할 당사자·청구취지·청구원인을 규정합니다."
+    ],
+    "CS237": [
+      "형사소송법 제237조(고소, 고발의 방식)",
+      "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1029127057",
+      "서면 또는 구술로 고소·고발하는 방식을 규정합니다."
+    ],
+    "CR347": [
+      "형법 제347조(사기)",
+      "https://www.law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1022927943",
+      "기망에 의한 재물 교부·재산상 이익 취득의 구성요건을 확인합니다."
+    ],
+    "BA34": [
+      "변호사법 제34조(변호사가 아닌 자와의 동업 금지 등)",
+      "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1008649267",
+      "법률사건 소개·알선 대가 등 금지에 관한 규정입니다."
+    ],
+    "BA109": [
+      "변호사법 제109조(벌칙)",
+      "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1008648919",
+      "비변호사의 유상 법률사무 취급에 관한 형사책임을 규정합니다."
+    ]
+  },
+  "precedents": {
+    "C1": [
+      "대법원 2009.9.17. 선고 2007다2428 전원합의체",
+      "https://law.go.kr/precInfoP.do?evtNo=2007%EB%8B%A42428",
+      "인가·고시 전후 관리처분계획안 총회결의에 대한 다툼의 소송형태가 달라질 수 있음을 다룹니다."
+    ],
+    "C2": [
+      "대법원 2016.10.13. 선고 2012두24481",
+      "https://law.go.kr/precInfoP.do?precSeq=184248",
+      "변경된 관리처분계획 인가 이후 종전 총회결의에 대한 확인의 이익이 문제 된 사건입니다."
+    ],
+    "C3": [
+      "대법원 2009.10.15. 선고 2009다10638·10645",
+      "https://www.law.go.kr/LSW/precInfoP.do?precSeq=142831",
+      "조합설립 인가 후 결의 하자를 다툴 때 대상·소송유형을 구분해야 함을 보여줍니다."
+    ],
+    "C4": [
+      "대법원 2009.10.29. 선고 2008다97737",
+      "https://www.law.go.kr/LSW/precInfoP.do?precSeq=142806",
+      "관리처분 인가 전후 총회결의 소송형태 문제를 다룬 판례입니다."
+    ]
+  },
+  "verified_on": "2026-10-29",
+  "rule": "기사별 연결은 해당 주제와 관련이 있는 경우에 한함. 법적 결론의 대체가 아님."
+}

@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ],
+  "env": {
+    "ENVIRONMENT": "production",
+    "RELAND_DEMO_MODE": "1",
+    "RELAND_PUBLIC_URL": "https://rerand.lexid.site",
+    "COOKIE_SECURE": "1"
+  }
+}

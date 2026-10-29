@@ -1,0 +1,12 @@
+RE:LAND v2.0 TEST REPORT | 2026-10-29
+AUTOMATED: pytest -q tests -> 43 passed
+ADMIN ISOLATED INTEGRATION: tests/admin_integration_check.py -> PASS
+SCENARIO: apply expert -> admin-approved -> public profile -> sponsored badge -> add YouTube video -> own analytics -> unauthorized admin requests rejected
+BROWSER: Chromium 6 injected HTML/CSS/JS + bridged API response renders, 0 page JS errors, no horizontal overflow at 1440px or 390px.
+BROWSER LIMITATION: Direct HTTP navigation to 127.0.0.1 was blocked (ERR_BLOCKED_BY_ADMINISTRATOR). Browser visualization injected markup and controlled API data. Did NOT perform live OAuth/Blogger/Youtube/real site E2E.
+CONTENT: columns_120.json (120 unique titles and bodies); blogger_drafts 120 HTML; 9 law excerpt references; 12 cropped AI concept images derived from 2 generated AI source images.
+SERVER: python -m py_compile app.py legal_studio.py scripts/*.py -> OK
+FRONTEND: node --check static/app.js -> OK
+BLOGGER: scripts/publish_blogger.py --start 1 --count 3 -> DRY_RUN ONLY, no external request
+SECURITY: forged Google credentials, auth-required endpoints, malicious URL schemes, unauthorized admin, rejected/hidden profiles tested.
+REVIEW: Before public service: qualified Korean legal review of each of 120 drafts, professional registration confirmation, legal advertising platform review, author rights clearances, privacy notice, real Google Cloud OAuth setup, production cookie/TLS/cross-process rate limiting, OSM tile policy.

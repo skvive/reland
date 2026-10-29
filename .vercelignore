@@ -1,0 +1,9 @@
+tests/
+docs/
+blogger_drafts/
+scripts/
+data/*.sqlite
+__pycache__/
+*.pyc
+.env
+.env.local

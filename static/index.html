@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10272c"><meta name="description" content="RE:LAND 리랜드 — 전국 도시정비사업 지도, 뉴스, 법률·정책 정보와 주민 커뮤니티를 연결합니다.">
+<title>리랜드 RE:LAND — 우리 동네의 변화가 시작되는 곳</title>
+<link rel="manifest" href="/static/manifest.webmanifest">
+<link rel="icon" href="/static/assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script defer src="https://accounts.google.com/gsi/client" async></script>
+<script defer src="/static/app.js"></script>
+</head>
+<body>
+<div id="app">
+<header class="header"><div class="shell header-inner"><a class="brand" href="/" data-nav="home" aria-label="리랜드 홈"><span class="brand-symbol">R<span>·</span></span><span class="brand-word">RE<span>:</span>LAND<small>우리 동네의 내일을 잇다</small></span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/" data-nav="home" class="active">홈</a><a href="/map" data-nav="map">재개발 지도</a><a href="/community" data-nav="community">동네 커뮤니티</a><a href="/news" data-nav="news">뉴스룸</a><a href="/guide" data-nav="guide">법률·정책</a><a href="/columns" data-nav="columns">법률 저널</a><a href="/kang/">재개발 강실장</a><a href="/directory" data-nav="directory">전문가 찾기</a><a href="/shorts" data-nav="shorts">Shorts</a><a href="/experts" data-nav="experts">상담 접수</a></nav><div class="header-actions"><button class="icon-button search-toggle" data-action="search" aria-label="검색">⌕</button><button class="login-button" data-action="login"><span class="g-symbol">G</span><span>구글로 시작하기</span></button><button class="menu-button" data-action="mobile-menu" aria-label="메뉴 열기">☰</button></div></div></header>
+<main id="main" tabindex="-1"><div class="loading-screen"><div class="loading-dot"></div>리랜드를 준비하고 있어요</div></main>
+<footer class="footer"><div class="shell footer-inner"><div><a class="footer-brand" href="/" data-nav="home">RE:LAND</a><p>우리 동네의 변화, 더 가까운 정보와 더 따뜻한 연결.</p><p class="footer-small">민간 정보·커뮤니티 서비스 · 정부기관 또는 법정 조합의 공식 서비스가 아닙니다.</p></div><div class="footer-links"><a href="/guide" data-nav="guide">이용 안내</a><a href="/sources" data-nav="sources">데이터 출처</a><a href="/privacy" data-nav="privacy">개인정보 안내</a><a href="/columns" data-nav="columns">법률 저널</a><a href="/kang/">재개발 강실장</a><a href="/directory" data-nav="directory">전문가 찾기</a><a href="/shorts" data-nav="shorts">Shorts</a><a href="/experts" data-nav="experts">상담 접수</a></div></div><div class="shell footer-bottom">© 2026 RE:LAND. 공공 원본의 기준일과 현장 상태를 반드시 재확인하세요. <span>Made for better neighborhoods.</span></div></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div><div id="modal" class="modal-backdrop hidden" role="presentation"></div>
+</div>
+</body></html>

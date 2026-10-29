@@ -1,0 +1,14 @@
+{
+  "name":"리랜드 RE:LAND — 전국 재개발 정보 커뮤니티",
+  "short_name":"RE:LAND",
+  "description":"지도 기반 정비사업 정보와 주민 커뮤니티",
+  "id":"/",
+  "start_url":"/",
+  "display":"standalone",
+  "scope":"/",
+  "background_color":"#102d28",
+  "theme_color":"#143f35",
+  "icons":[
+    {"src":"/static/assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

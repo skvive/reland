@@ -1,0 +1,1 @@
+BROWSER CHECK OK: desktop + mobile, query, lesson modal, FAQ, menu, overflow; screenshots saved.
