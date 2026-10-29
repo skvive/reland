@@ -20,6 +20,7 @@ def _adapt_sql(sql: str) -> str:
     s = sql
     s = re.sub(r"\bINSERT OR IGNORE\b", "INSERT", s, flags=re.I)
     s = s.replace("?", "%s")
+    s = re.sub(r":([A-Za-z_][A-Za-z0-9_]*)", r"%(\1)s", s)
     s = re.sub(r"DATE\s*\(\s*'now'\s*\)", "CURRENT_DATE", s, flags=re.I)
     s = re.sub(r"CURRENT_TIMESTAMP", "NOW()", s, flags=re.I)
     if re.search(r"^INSERT\b", s.strip(), re.I) and "ON CONFLICT" not in s.upper():

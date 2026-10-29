@@ -418,9 +418,20 @@ def districts(q:str='',region:str='',kind:str='',stage:str='',limit:int=2000):
     sql='SELECT * FROM districts WHERE 1=1'; args=[]
     if q:
         sql+=' AND (name LIKE ? OR city LIKE ? OR province LIKE ?)';args.extend(['%'+q[:80]+'%']*3)
-    if region and region!='전국':sql+=' AND (province LIKE ? OR city LIKE ?)';args.extend(['%'+region+'%']*2)
-    if kind and kind!='전체':sql+=' AND kind=?';args.append(kind)
-    if stage and stage!='전체':sql+=' AND stage=?';args.append(stage)
+    if region and region!='전국':
+        sql+=' AND (province LIKE ? OR city LIKE ?)';args.extend(['%'+region+'%']*2)
+        sql+=' AND demo=0'
+    if kind and kind!='전체':
+        kind_patterns={
+            '재개발사업':'%재개발%',
+            '재건축사업':'%재건축%',
+            '주거환경개선사업':'%주거환경%',
+            '지역 안내':'%지역%안내%',
+        }
+        pat=kind_patterns.get(kind,kind)
+        sql+=' AND kind LIKE ?';args.append(pat)
+    if stage and stage!='전체':
+        sql+=' AND stage LIKE ?';args.append('%'+stage.replace('·','%')+'%')
     sql+=' ORDER BY demo ASC, id DESC LIMIT ?'; args.append(limit)
     with db() as c:
         items=[dict(r) for r in c.execute(sql,args).fetchall()]

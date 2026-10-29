@@ -4,6 +4,7 @@ __pycache__/
 .env.local
 data/*.sqlite
 data/*.sqlite-*
+data/molit_*.csv
 .venv/
 venv/
 .pytest_cache/
