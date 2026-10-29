@@ -336,6 +336,8 @@ async def neon_auth_proxy(request: Request,path:str):
         upstream+='?'+request.url.query
     hop={'host','content-length','connection','transfer-encoding'}
     headers={k:v for k,v in request.headers.items() if k.lower() not in hop}
+    upstream_host=urllib.parse.urlparse(NEON_AUTH_BASE_URL).netloc
+    headers['Host']=upstream_host
     body=await request.body()
     async with httpx.AsyncClient(follow_redirects=False,timeout=45) as client:
         upstream_resp=await client.request(request.method,upstream,headers=headers,content=body)
