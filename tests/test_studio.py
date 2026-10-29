@@ -103,7 +103,11 @@ def test_youtube_and_admin_protected(client):
 def test_html_drafts_120_and_images_real_files():
  root=Path(__file__).resolve().parents[1]
  assert len(list((root/'blogger_drafts').glob('column-*.html')))==120
- assert len(list((root/'static/assets').glob('legal-topic-*.webp')))==12
+ column_imgs=list((root/'static/assets'/'columns').glob('column-*.webp'))
+ assert len(column_imgs)==120
+ for a in ARTICLES:
+  assert (root/'static/assets'/'columns'/f"column-{a['id']:03d}.webp").exists()
+  assert a['image'].startswith('/static/assets/columns/column-')
  for a in ARTICLES:
   html_doc=(root/'blogger_drafts'/(a['slug']+'.html')).read_text(encoding='utf-8')
   assert a['law_url'] in html_doc and '원문 전체' in html_doc

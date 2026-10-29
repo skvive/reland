@@ -35,9 +35,9 @@ def preview_html():
  return page
 
 errors=[]
-thumbs=['data:image/webp;base64,'+base64.b64encode((ROOT/'kang_blog'/'assets'/f'topic-{i:02d}.webp').read_bytes()).decode() for i in range(1,13)]
+thumbs=['data:image/webp;base64,'+base64.b64encode((ROOT/'kang_blog'/'assets'/'lessons'/f'lesson-{i:03d}.webp').read_bytes()).decode() for i in range(1,13)]
 def hydrate_thumbnails(page):
- page.evaluate(r"""sources => {document.querySelectorAll('.card-visual img').forEach((node,idx) => {const matched=node.src.match(/topic-(\d+)\.webp/); if (matched) node.src=sources[Number(matched[1])-1]})}""",thumbs)
+ page.evaluate(r"""sources => {document.querySelectorAll('.card-visual img').forEach((node) => {const matched=node.src.match(/lesson-(\d+)\.webp/); if (matched) node.src=sources[Number(matched[1])-1]})}""",thumbs)
 
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--disable-dev-shm-usage'])
