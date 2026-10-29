@@ -8,3 +8,6 @@ data/*.sqlite-*
 venv/
 .pytest_cache/
 .vercel/
+deploy/local-admin-key.txt
+.vercel
+.env*

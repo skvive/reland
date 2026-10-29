@@ -190,6 +190,10 @@ def open_db(db_path: str | None = None):
     else:
         from pathlib import Path
 
+        if os.getenv("ENVIRONMENT", "").lower() == "production" and not os.getenv("VERCEL"):
+            pass
+        if os.getenv("VERCEL") and not USE_POSTGRES:
+            raise RuntimeError("DATABASE_URL must be set on Vercel (Neon Postgres).")
         path = Path(db_path or os.getenv("RELAND_DB", "data/reland.sqlite"))
         path.parent.mkdir(parents=True, exist_ok=True)
         con = sqlite3.connect(str(path), timeout=15)
