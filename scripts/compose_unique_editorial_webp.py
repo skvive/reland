@@ -201,7 +201,7 @@ def main() -> None:
         frame.save(out, "WEBP", quality=82, method=6)
         row["image"] = f"/static/assets/columns/column-{cid:03d}.webp"
         row["image_alt"] = (
-            f"{row['category']} · {row['angle']} — AI 기반 교육용 콘셉트 이미지 (실제 사업장·확정 도면 아님)"
+            f"{row['category']} · {row['angle']} — PIL 합성 콘셉트 (실제 사업장·확정 도면 아님)"
         )
     COLUMNS_JSON.write_text(json.dumps(columns, ensure_ascii=False, indent=2), encoding="utf-8")
 
