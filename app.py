@@ -327,8 +327,18 @@ async def security_headers(request: Request, call_next):
 
 @app.get('/')
 def home(): return FileResponse(ROOT/'static'/'index.html')
+
+def _health_payload():
+    return {'status':'ok','service':'RE:LAND','mode':'demo' if DEMO_MODE else 'production'}
+
 @app.get('/api/health')
-def health():return {'status':'ok','service':'RE:LAND','mode':'demo' if DEMO_MODE else 'production'}
+@app.get('/api/health/', include_in_schema=False)
+@app.get('/health', include_in_schema=False)
+@app.head('/api/health', include_in_schema=False)
+@app.head('/api/health/', include_in_schema=False)
+@app.head('/health', include_in_schema=False)
+def health():
+    return _health_payload()
 @app.get('/api/config')
 def config():return {'google_client_id':GOOGLE_CLIENT_ID,'demo_enabled':DEMO_MODE,'source_count':1566,
                       'source_asof':'2026-05-18','notice':'전국 공공데이터 원본 1,566행은 CSV 가져오기 전까지 지도에 표시되지 않습니다.'}
