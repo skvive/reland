@@ -334,7 +334,7 @@ async def neon_auth_proxy(request: Request,path:str):
     upstream=f"{NEON_AUTH_BASE_URL.rstrip('/')}/{path}"
     if request.url.query:
         upstream+='?'+request.url.query
-    hop={'host','content-length','connection','transfer-encoding'}
+    hop={'host','content-length','connection','transfer-encoding','x-forwarded-host','x-forwarded-proto','x-forwarded-for','x-vercel-id','x-real-ip'}
     headers={k:v for k,v in request.headers.items() if k.lower() not in hop}
     upstream_host=urllib.parse.urlparse(NEON_AUTH_BASE_URL).netloc
     headers['Host']=upstream_host
