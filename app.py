@@ -49,6 +49,7 @@ def load_env_file():
 load_env_file()
 DB_PATH = Path(os.getenv('RELAND_DB', str(ROOT / 'data' / 'reland.sqlite')))
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '').strip()
+GOOGLE_MAPS_BROWSER_KEY = os.getenv('GOOGLE_MAPS_BROWSER_KEY', '').strip() or os.getenv('GOOGLE_MAPS_API_KEY', '').strip()
 ENV = os.getenv('ENVIRONMENT', 'development').lower()
 DEMO_MODE = os.getenv('RELAND_DEMO_MODE', '1') == '1' and ENV != 'production'
 COOKIE_SECURE = ENV == 'production' or os.getenv('COOKIE_SECURE', '0') == '1'
@@ -404,7 +405,7 @@ def health():
     return _health_payload()
 @app.get('/api/config')
 def config():
-    return {'google_client_id':GOOGLE_CLIENT_ID,'demo_enabled':DEMO_MODE,'source_count':1566,
+    return {'google_client_id':GOOGLE_CLIENT_ID,'google_maps_browser_key':GOOGLE_MAPS_BROWSER_KEY,'demo_enabled':DEMO_MODE,'source_count':1566,
             'source_asof':'2026-05-18',
             'neon_auth_enabled':bool(NEON_AUTH_BASE_URL),
             'neon_auth_url':NEON_AUTH_PROXY_PREFIX if NEON_AUTH_BASE_URL else '',
