@@ -206,6 +206,9 @@ def init_db():
         if not c.execute("SELECT 1 FROM settings WHERE key='news_last_attempt'").fetchone():
             c.execute("INSERT INTO settings(key,value) VALUES('news_last_attempt','0')")
 
+        from content_publisher import apply_published_content
+        apply_published_content(c, utcnow, table_has_column)
+
     # Studio tables are also initialized on isolated test DBs and fresh deployments.
     from legal_studio import init_studio_db
     init_studio_db(db)
