@@ -387,7 +387,7 @@ async def security_headers(request: Request, call_next):
       "default-src 'self'; script-src 'self' https://accounts.google.com https://unpkg.com; "
       "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; "
       "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://lh3.googleusercontent.com https://*.googleusercontent.com; "
-      "font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://accounts.google.com; "
+      "font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://accounts.google.com https://*.neon.tech; "
       "frame-src https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'"
     )
     return response
@@ -412,6 +412,7 @@ def config():
             'source_asof':'2026-05-18',
             'neon_auth_enabled':bool(NEON_AUTH_BASE_URL),
             'neon_auth_url':NEON_AUTH_PROXY_PREFIX if NEON_AUTH_BASE_URL else '',
+            'neon_auth_public_url':NEON_AUTH_BASE_URL if NEON_AUTH_BASE_URL.startswith('https://') else '',
             'notice':'전국 공공데이터 원본 1,566행은 CSV 가져오기 전까지 지도에 표시되지 않습니다.'}
 @app.get('/api/auth/me')
 def me(request:Request):return {'user':output_user(get_user(request))}
