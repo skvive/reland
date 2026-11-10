@@ -384,11 +384,11 @@ async def security_headers(request: Request, call_next):
     response.headers['X-Frame-Options']='DENY'
     response.headers['Permissions-Policy']='camera=(), microphone=(), geolocation=()'
     response.headers['Content-Security-Policy']=(
-      "default-src 'self'; script-src 'self' https://accounts.google.com https://unpkg.com; "
+      "default-src 'self'; script-src 'self' https://accounts.google.com https://unpkg.com https://maps.googleapis.com https://maps.gstatic.com; "
       "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; "
-      "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://lh3.googleusercontent.com https://*.googleusercontent.com; "
-      "font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://accounts.google.com https://*.neon.tech; "
-      "frame-src https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+      "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://lh3.googleusercontent.com https://*.googleusercontent.com https://*.bp.blogspot.com https://i.ytimg.com https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com; "
+      "font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://accounts.google.com https://*.neon.tech https://maps.googleapis.com https://*.googleapis.com; "
+      "frame-src https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'"
     )
     return response
 
@@ -853,6 +853,30 @@ def news(background_tasks:BackgroundTasks,topic:str='',limit:int=35):
             'status':'live_cache' if rows else 'awaiting_feed',
             'notice':'뉴스 제목과 원문 링크만 제공하며, 기사 본문을 복제하지 않습니다.'}
 
+def parse_blogger_posts(root):
+    """Public Blogger RSS metadata only; no HTML rendering or private API access."""
+    import html
+    records=[]
+    for item in root.findall('.//item')[:5]:
+        title=(item.findtext('title') or '').strip()
+        link=(item.findtext('link') or '').strip()
+        description=item.findtext('description') or ''
+        if not title or not link.startswith('https://'):
+            continue
+        clean=html.unescape(re.sub(r'<[^>]*>', ' ', description))
+        clean=' '.join(clean.split())[:170]
+        found=re.search(r'<img\b[^>]*?\bsrc=["\'](https://[^"\']+)["\']',description,re.I)
+        image_url=''
+        if found:
+            candidate=html.unescape(found.group(1))
+            parsed=urllib.parse.urlsplit(candidate)
+            host=(parsed.hostname or '').lower()
+            if parsed.scheme=='https' and (host.endswith('.googleusercontent.com') or host.endswith('.bp.blogspot.com')):
+                image_url=candidate
+        records.append({'title':title[:300],'url':link,'published':(item.findtext('pubDate') or '')[:100],
+                        'source':'Google Blogger','topic':'블로그','summary':clean,'image':image_url})
+    return records
+
 @app.get('/api/blog/preview')
 def blog_preview(url:str):
     parsed=validate_blog(url)
@@ -862,7 +886,7 @@ def blog_preview(url:str):
         r.raise_for_status()
         if len(r.content)>1_000_000:raise HTTPException(413,'Blogger 공개 피드가 지나치게 큽니다.')
         root=ET.fromstring(r.text)
-        return {'items':parse_rss(ET.tostring(root,encoding='unicode'),'블로그'),'source':parsed,'verified_owner':False}
+        return {'items':parse_blogger_posts(root),'source':parsed,'verified_owner':False}
     except Exception:raise HTTPException(502,'블로그 공개 피드를 가져오지 못했습니다. 주소와 공개 설정을 확인하세요.')
 
 @app.get('/api/admin/reports')

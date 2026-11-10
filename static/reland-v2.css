@@ -1,0 +1,182 @@
+/* RE:LAND UX v2.1 | modern editorial visual system, 2026-11-10 */
+:root{--r-ink:#132a26;--r-dark:#0e322b;--r-muted:#687c72;--r-pale:#f5f7f2;--r-line:#e5ece6;--r-gold:#e5c994;--r-shell:1270px}
+html{scroll-padding-top:84px}body{background:#fff;color:var(--r-ink)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.header{height:72px;background:#fff;border-bottom:1px solid #e7ede7;box-shadow:0 4px 18px #092a2210}
+.header-inner{gap:18px}
+.brand-wordmark{display:inline-flex;flex-direction:column;gap:1px;min-width:139px;align-items:flex-start}
+.brand-wordmark>strong{display:block;border:2px solid var(--r-dark);padding:0 7px;line-height:35px;letter-spacing:-.09em;font-size:24px;color:var(--r-dark);font-family:Arial,'Noto Sans KR',sans-serif;font-weight:900;white-space:nowrap}
+.brand-wordmark>strong span{color:#368767}
+.brand-wordmark>small{font-size:9px;letter-spacing:.15em;color:#7c8e84;margin-left:3px;font-weight:700}
+.main-nav{gap:clamp(12px,1.6vw,24px);min-width:0}
+.main-nav>a,.main-nav .nav-submenu>a{font-size:12px;white-space:nowrap;padding:25px 0;color:#3a5348;font-weight:750;letter-spacing:-.04em;border-bottom:2px solid transparent}
+.main-nav .nav-submenu>a{display:flex;gap:6px;align-items:center}
+.nav-submenu{position:relative;display:flex;align-self:stretch;align-items:center}
+.nav-submenu-panel{display:none;position:absolute;top:100%;left:-18px;width:192px;padding:9px;background:#fff;border:1px solid var(--r-line);box-shadow:0 14px 38px #18392a2b;border-radius:0 0 12px 12px;z-index:15;flex-direction:column;gap:2px}
+.nav-submenu:hover .nav-submenu-panel,.nav-submenu:focus-within .nav-submenu-panel{display:flex}
+.main-nav .nav-submenu-panel a{border-bottom:0;padding:11px 13px;border-radius:7px;line-height:1.4;font-size:12px;color:#213d30}
+.main-nav .nav-submenu-panel a:hover,.main-nav .nav-submenu-panel a:focus-visible{color:#0e5b43;background:#eff6f0;border-bottom:0}
+.header-actions{gap:6px}.login-button{background:var(--r-dark);border-radius:7px;padding:9px 12px;font-size:11px}.g-symbol{font-size:11px;width:22px;height:22px}
+.shell{width:min(var(--r-shell),calc(100% - 60px))}
+.r-section{padding:72px 0}
+.r-section-heading{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:25px}
+.r-overline{display:inline-block;color:#367b61;font-size:10px;letter-spacing:.18em;font-weight:900;margin-bottom:10px;font-family:'DM Sans','Noto Sans KR',sans-serif}
+.r-section-heading h2{font-weight:900;font-size:clamp(25px,2.6vw,37px);letter-spacing:-.06em;line-height:1.3;margin:0 0 7px}
+.r-section-heading p{margin:0;font-size:13px;color:var(--r-muted);line-height:1.8}
+.r-section-more{display:inline-flex;gap:8px;align-items:center;flex-shrink:0;color:#215c49;font-size:12px;font-weight:850;letter-spacing:-.02em;padding-bottom:4px}
+.r-section-button{border:0;background:#12392d;color:#fff;padding:13px 21px;font-size:12px;font-weight:850;border-radius:7px;white-space:nowrap}
+.r-section-button:hover{background:#205d45}
+.r-hero{min-height:495px;position:relative;background:linear-gradient(90deg,rgba(1,27,26,.15),rgba(1,27,26,0)),url('/static/assets/reland-home-city-v2.webp') center 49%/cover no-repeat #0d332b;color:#fff;isolation:isolate}
+.r-hero-content{min-height:495px;padding:62px 0 64px;display:flex;align-items:flex-start;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.r-hero-label{font-size:11px;letter-spacing:.16em;color:#d8e8df;font-weight:850;margin-bottom:22px}
+.r-hero h1{font-size:clamp(38px,4.4vw,68px);line-height:1.22;margin:0 0 23px;color:#fff;font-weight:900;letter-spacing:-.065em;text-shadow:0 3px 16px #0002}
+.r-hero h1 em{font-style:normal;color:#f7ddb1}
+.r-hero-content>p{font-size:15px;color:#d9e8e1;line-height:2.03;margin:0 0 25px;max-width:510px}
+.r-hero-search{width:min(590px,100%);display:flex;align-items:center;gap:7px;background:#fff;padding:7px;border-radius:8px;box-shadow:0 15px 38px #001b1a55;color:#174634;min-height:56px}
+.r-hero-search>span{font-size:25px;margin:0 7px 0 11px;color:#527464}
+.r-hero-search input{border:0;background:#fff;color:#1e3c30;min-width:0;flex:1;font-size:13px;outline:0}
+.r-hero-search input::placeholder{color:#94a19a}
+.r-hero-search button{border:0;border-radius:6px;white-space:nowrap;padding:12px 19px;color:#fff;background:#124335;font-weight:800;font-size:12px}
+.r-hero-search button:hover{background:#205f48}
+.r-hero-regions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:17px}
+.r-hero-regions span{font-size:11px;color:#b8ccbe;margin-right:6px}
+.r-hero-regions button{font-size:11px;color:#fff;border:1px solid #ffffff59;background:#173a3280;border-radius:5px;padding:5px 13px}
+.r-hero-regions button:hover{background:#ffffff38}
+.r-hero-credit{position:absolute;bottom:12px;right:24px;z-index:1;font-size:8px;color:#ffffffad;letter-spacing:.05em}
+.r-data-strip{background:#fff;border-bottom:1px solid #e8ebe6}
+.r-data-items{display:grid;grid-template-columns:repeat(4,1fr);align-items:center;min-height:91px}
+.r-data-items>div{display:flex;align-items:center;gap:14px;min-height:52px;border-right:1px solid #e4e8e1;padding:5px 26px}
+.r-data-items>div:first-child{padding-left:0}.r-data-items>div:last-child{border-right:0}
+.r-data-items strong{font-size:25px;line-height:1;color:#133d2f;letter-spacing:-.06em;white-space:nowrap;font-family:'DM Sans','Noto Sans KR',sans-serif}
+.r-data-items strong small{font-size:13px}
+.r-data-items span{color:#788980;font-size:11px;font-weight:600;line-height:1.5}
+.r-editorial{background:#fff}
+.r-editorial-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:23px}
+.r-editorial-card{position:relative;display:block;min-height:315px;overflow:hidden;border-radius:13px;background:#0c302a;color:#fff;isolation:isolate;box-shadow:0 16px 40px #15372b14}
+.r-editorial-card::after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,#041e1de6 0%,#031b1d20 80%)}
+.r-editorial-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
+.r-editorial-card:hover img{transform:scale(1.04)}
+.r-editorial-primary img{object-position:60% 47%}
+.r-editorial-secondary img{object-position:50% 45%}
+.r-editorial-info{position:absolute;inset:auto 30px 27px;color:white}
+.r-editorial-info>span{font-size:10px;letter-spacing:.14em;font-weight:800;color:#e9cb9c}
+.r-editorial-info h3{font-size:26px;font-weight:900;letter-spacing:-.06em;margin:9px 0 8px;color:white}
+.r-editorial-info p{font-size:12px;line-height:1.7;color:#e6efea;margin:0 0 13px}
+.r-editorial-info b{font-size:12px;color:#fee9c0}
+.r-disclaimer{color:#87958b;font-size:10px;margin:15px 0 0}
+.r-map-section{background:#f5f7f4}
+.r-map-layout{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(275px,.72fr);gap:21px}
+.r-map-panel{overflow:hidden;border:1px solid #e3ebe4;border-radius:13px;background:#e5efe7;min-width:0;box-shadow:0 7px 27px #12382c11}
+.r-google-map{min-height:400px;height:400px;position:relative;background:#e6efeb;overflow:hidden}
+.r-google-map .google-map,.r-google-map .leaflet-map{display:block;width:100%;height:400px;min-height:400px;border-radius:0}
+.r-google-map .mini-map{min-height:400px}
+.r-google-map .map-top-label{z-index:400;position:absolute;top:14px;left:14px;font-size:11px;max-width:calc(100% - 28px)}
+.r-google-map .map-caption{display:none}
+.r-map-loading{display:grid;place-items:center;height:400px;font-size:13px;color:#57776a}
+.r-map-caption{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#fff;padding:13px 18px;font-size:11px;line-height:1.6;color:#647e70}
+.r-map-caption a{flex-shrink:0;padding:8px 12px;background:#133c30;color:#fff;font-size:11px;font-weight:800;border-radius:5px}
+.r-map-aside{display:flex;flex-direction:column;gap:10px;min-width:0}
+.r-map-aside h3{font-size:18px;letter-spacing:-.06em;margin:0 0 4px;display:flex;align-items:center;justify-content:space-between}
+.r-map-aside h3 span{color:#93a79a;font-size:10px;letter-spacing:.12em;font-family:'DM Sans',sans-serif}
+.r-map-aside .place-row{min-height:65px;padding:11px 15px;border:1px solid #e4ebe5;border-radius:10px;flex:1;background:#fff}
+.r-map-aside .place-number{width:31px;height:31px;border-radius:7px;font-size:12px}
+.r-map-aside .place-info strong{font-size:13px}
+.r-map-notice{font-size:11px;color:#688174;line-height:1.7;padding:15px;border-radius:9px;background:#e6efe6}
+.r-neighbors{background:#fff}
+.r-community-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px}
+.r-community-grid .community-card{border-radius:12px;overflow:hidden;box-shadow:none;border:1px solid #e7ebe7;transition:transform .15s}
+.r-community-grid .community-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px #183e2b13}
+.r-community-grid .community-cover{height:155px}
+.r-community-grid .community-content{padding:21px}
+.r-community-grid .community-content h3{font-size:17px}
+.r-community-grid .community-content p{font-size:12px;color:#718476}
+.r-mobile-more{display:none}
+.r-video-section{background:#f2f5f1}
+.r-video-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+.r-video-card{display:flex;flex-direction:column;overflow:hidden;min-width:0;background:#fff;border-radius:11px;border:1px solid #e5eae5;box-shadow:0 6px 23px #143b2b0b;transition:transform .18s,box-shadow .18s}
+.r-video-card:hover{transform:translateY(-3px);box-shadow:0 15px 26px #1d3d2b17}
+.r-video-photo{aspect-ratio:16/9;background:#1d3d31;position:relative;overflow:hidden}
+.r-video-photo>img{width:100%;height:100%;object-fit:cover;display:block}
+.r-video-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#001e1b45,transparent 64%);pointer-events:none}
+.r-video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#fffef0e9;color:#104631;font-size:16px;box-shadow:0 3px 15px #0003}
+.r-video-source{position:absolute;z-index:2;left:11px;bottom:10px;color:#fff;font-size:9px;letter-spacing:.05em;font-weight:850}
+.r-video-info{padding:17px 18px 18px;min-height:127px}
+.r-video-info>span{color:#4b8167;font-size:10px;font-weight:800}
+.r-video-info h3{margin:7px 0 10px;font-size:17px;letter-spacing:-.04em;font-weight:900;line-height:1.35}
+.r-video-info p{font-size:11px;line-height:1.5;margin:0;color:#7e8e84}
+.r-content-note{font-size:10px;color:#879489;margin-top:15px}
+.r-blog-section{background:#fff}
+.r-blog-content{display:grid;grid-template-columns:1.4fr 1fr;gap:29px}
+.r-blog-titleline{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e5ebe5;padding:0 0 14px;margin-bottom:15px}
+.r-blog-titleline h3{font-size:18px;letter-spacing:-.05em;font-weight:900;margin:0}
+.r-blog-titleline h3 small{font-size:11px;color:#849487}
+.r-blog-titleline>span{font-size:10px;color:#8a9a8e;letter-spacing:.12em}
+.r-blog-album{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.r-blog-photo{border-radius:10px;position:relative;overflow:hidden;min-height:182px;background:#143b30;display:block}
+.r-blog-photo img{position:absolute;width:100%;height:100%;object-fit:cover}
+.r-blog-photo:after{content:"";inset:0;position:absolute;background:linear-gradient(transparent 30%,#0b2420d9 100%)}
+.r-blog-photo>div{z-index:1;position:absolute;bottom:15px;left:17px;right:17px;color:#fff}
+.r-blog-photo span{font-size:10px;color:#e3ceaa}
+.r-blog-photo strong{font-size:15px;line-height:1.4;display:block;margin-top:6px}
+.r-blog-list{display:flex;flex-direction:column}
+.r-blog-list>a{display:flex;gap:12px;align-items:center;padding:15px 0;border-bottom:1px solid #e9ede7}
+.r-blog-list-mark{width:29px;height:29px;flex:0 0 29px;border-radius:50%;background:#edf4ec;color:#367b5a;display:grid;place-items:center}
+.r-blog-list>a div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.r-blog-list>a strong{font-size:13px;letter-spacing:-.04em}
+.r-blog-list>a small{color:#8c988d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:390px}
+.r-blog-empty{grid-column:1/-1;display:grid;grid-template-columns:1.1fr 1fr;gap:20px}
+.r-blog-empty-intro{border-radius:13px;background:linear-gradient(110deg,#143c30,#2b5b46);color:#fff;padding:36px;min-height:240px}
+.r-blog-empty-intro h3{font-size:25px;letter-spacing:-.055em;margin:13px 0;line-height:1.4}
+.r-blog-empty-intro p{font-size:12px;line-height:1.9;color:#dceae0;max-width:400px}
+.r-blog-empty-intro .btn{background:#e9d0a3;color:#14382c;font-size:12px;margin-top:10px}
+.r-editorial-fallback{border:1px solid #e8eee7;border-radius:13px;background:#fafbf9;padding:26px;display:flex;flex-direction:column;justify-content:center;gap:11px}
+.r-editorial-fallback>a{padding:13px 0;display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e8ece8;font-size:12px;font-weight:750}
+.r-editorial-fallback>a:last-child{border:0}
+.r-editorial-fallback>a span{color:#4d8567}
+.r-chip{font-size:10px;color:#f4d9ad;font-weight:850;letter-spacing:.04em}.r-chip.subtle{color:#658271}
+.r-text-placeholder{font-size:12px;color:#89978a}
+.r-news-section{background:#f8faf7}
+.r-news-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px}
+.r-news-feature{padding:38px 32px;min-height:295px;color:#fff;border-radius:13px;background:linear-gradient(0deg,#062d29ed,#072b2790),url('/static/assets/reland-home-city-v2.webp') center 45%/cover}
+.r-news-feature>span{font-size:10px;letter-spacing:.13em;color:#efd6a9;font-weight:800}
+.r-news-feature h3{font-size:24px;letter-spacing:-.055em;margin:14px 0 13px;line-height:1.4}
+.r-news-feature p{font-size:12px;color:#d8e8dc;line-height:1.9}.r-news-feature b{font-size:12px;color:#ffe1ad}
+.r-news-items{min-height:295px;display:flex;flex-direction:column}
+.r-news-items>a{padding:19px 5px;display:flex;align-items:center;gap:18px;border-bottom:1px solid #e3e9e1}
+.r-news-items>a>span{color:#9aae9c;font-family:'DM Sans',sans-serif;font-weight:800;font-size:18px}
+.r-news-items>a>div{min-width:0;flex:1}
+.r-news-items>a strong{font-size:13px;color:#203d30;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.r-news-items>a small{font-size:10px;color:#94a396}
+.r-news-items>a>b{color:#428468;font-size:18px}
+.r-news-empty{font-size:13px;color:#77887b;padding:35px 10px}.r-news-empty>a{font-weight:800;color:#275e46}
+.r-last-cta{background:#123b30;color:#fff}
+.r-last-cta-inner{min-height:206px;display:flex;justify-content:space-between;align-items:center;gap:25px}
+.r-last-cta span{font-size:10px;letter-spacing:.17em;color:#e7c88f;font-weight:800}
+.r-last-cta h2{font-size:28px;color:#fff;margin:8px 0;letter-spacing:-.06em}
+.r-last-cta p{font-size:12px;color:#c5d9ce;margin:0}
+.r-last-cta .r-section-button{background:#eacb99;color:#153c30}
+.r-last-cta .r-section-button:hover{background:#ffdfaf}
+.r-youtube-hero{background:linear-gradient(100deg,#102f2aef,#184d3db9),url('/static/assets/reland-home-city-v2.webp') center 46%/cover;color:#fff;padding:85px 0}
+.r-youtube-hero .r-overline{color:#e8cca1}
+.r-youtube-hero h1{color:white;font-size:clamp(35px,4vw,53px);margin:5px 0 12px}
+.r-youtube-hero p{max-width:620px;color:#d8eae0;font-size:14px;margin:0}
+.r-youtube-empty,.r-placeholder{font-size:13px;color:#7d9081;padding:24px}
+.r-youtube-empty{grid-column:1/-1;background:#fff;border-radius:12px;min-height:170px}
+.r-youtube-empty h3{font-size:17px}.r-youtube-empty a{color:#125f45;font-weight:800}
+.blogger-steps{background:#f0f6f0;border-radius:10px;padding:18px;margin:0 0 18px;display:flex;flex-direction:column;gap:11px}
+.blogger-steps>strong{font-size:13px;color:#143c30}
+.blogger-steps>p{font-size:12px;color:#657e6b;line-height:1.7;margin:0}
+.blogger-steps>a{align-self:flex-start}
+.r-blog-album-group,.r-blog-list-group{min-width:0}
+.r-blog-content .r-blog-empty{min-width:0}
+.footer{background:#0e3029;color:#dbe9de}
+.footer .brand-wordmark strong{border-color:#e9eadb;color:#fff}
+.footer .brand-wordmark small{color:#b2ccbd}
+@media(max-width:1200px){.main-nav{gap:12px}.main-nav>a,.main-nav .nav-submenu>a{font-size:11px}.header-inner{gap:12px}.r-data-items>div{padding-inline:17px}.r-data-items strong{font-size:21px}.r-community-grid .community-cover{height:130px}}
+@media(max-width:990px){.header{height:68px}.main-nav{gap:10px}.main-nav>a,.main-nav .nav-submenu>a{font-size:10px;padding:22px 0}.brand-wordmark{min-width:115px}.brand-wordmark>strong{font-size:20px;line-height:29px}.brand-wordmark>small{font-size:8px}.r-video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.r-map-layout{grid-template-columns:1fr}.r-map-aside{display:grid;grid-template-columns:repeat(2,1fr)}.r-map-aside h3,.r-map-notice{grid-column:1/-1}.r-community-grid{grid-template-columns:repeat(2,1fr)}.r-community-grid .community-card:last-child{display:none}}
+@media(max-width:760px){.header{height:64px}.header-inner{justify-content:space-between}.main-nav{display:none;position:absolute;top:63px;left:0;right:0;background:#fff;border-bottom:1px solid #e2e9e3;box-shadow:0 12px 28px #0e33231c;padding:15px 22px;align-items:stretch;gap:0;max-height:calc(100vh - 65px);overflow:auto}.header.menu-open .main-nav{display:flex;flex-direction:column}.main-nav>a,.main-nav .nav-submenu>a{font-size:13px;width:100%;padding:13px 6px;border-bottom:1px solid #eef1ec}.nav-submenu{display:block}.nav-submenu-panel{display:flex;position:static;padding:0 0 5px 14px;border:0;box-shadow:none;border-radius:0;width:auto;background:#fbfcfa}.main-nav .nav-submenu-panel>a{font-size:12px;padding:8px;border:0}.menu-button{display:block}.shell{width:min(var(--r-shell),calc(100% - 36px))}.r-section{padding:55px 0}.r-section-heading{align-items:flex-start}.r-section-heading h2{font-size:28px}.r-section-heading p{font-size:12px}.r-hero,.r-hero-content{min-height:490px}.r-hero{background-position:62% 49%;background-image:linear-gradient(90deg,#062924cb 0%,#072c27a0 55%,#14392b4d),url('/static/assets/reland-home-city-v2.webp')}.r-hero h1{font-size:39px}.r-hero-content>p{font-size:13px}.r-data-items{grid-template-columns:repeat(2,1fr);padding:14px 0}.r-data-items>div{border:0;padding:12px 6px;border-bottom:1px solid #e4ebe4}.r-data-items>div:nth-last-child(-n+2){border-bottom:0}.r-editorial-grid{grid-template-columns:1fr}.r-editorial-card{min-height:280px}.r-blog-content{grid-template-columns:1fr}.r-blog-empty{grid-template-columns:1fr}.r-blog-empty-intro{min-height:200px}.r-news-layout{grid-template-columns:1fr}.r-news-feature{min-height:260px}.r-last-cta-inner{padding-block:35px;min-height:0}}
+@media(max-width:520px){.brand-wordmark>strong{font-size:19px;line-height:27px}.brand-wordmark>small{font-size:8px}.login-button{padding:7px 10px}.r-hero,.r-hero-content{min-height:505px}.r-hero{background-position:71% 47%}.r-hero-content{padding:57px 0}.r-hero-label{font-size:9px;line-height:1.6}.r-hero h1{font-size:34px}.r-hero-content>p{font-size:12px}.r-hero-search{padding:6px}.r-hero-search input{font-size:11px}.r-hero-search button{font-size:10px;padding:12px 9px}.r-hero-regions button{font-size:10px;padding:5px 9px}.r-section-heading{display:block}.r-section-more{margin-top:13px;display:inline-flex}.r-section-heading h2{font-size:25px}.r-editorial-card{min-height:250px}.r-editorial-info{inset:auto 20px 19px}.r-editorial-info h3{font-size:23px}.r-editorial-info p{font-size:11px}.r-google-map,.r-map-loading,.r-google-map .google-map,.r-google-map .leaflet-map{height:350px;min-height:350px}.r-map-caption{flex-direction:column;align-items:flex-start}.r-map-aside{grid-template-columns:1fr}.r-map-aside h3,.r-map-notice{grid-column:auto}.r-map-aside .place-row{min-height:59px}.r-community-grid{grid-template-columns:1fr}.r-community-grid .community-card:last-child{display:block}.r-video-grid{grid-template-columns:1fr}.r-video-info{min-height:0}.r-video-photo{aspect-ratio:16/9}.r-blog-album{grid-template-columns:1fr}.r-blog-photo{min-height:210px}.r-news-feature{padding:26px;min-height:240px}.r-last-cta-inner{flex-direction:column;align-items:flex-start;gap:22px}.r-last-cta h2{font-size:25px}}
+@media(prefers-reduced-motion:reduce){.r-editorial-card img,.r-video-card{transition:none!important}html{scroll-behavior:auto}}
+.r-google-iframe{width:100%;height:400px;border:0;display:block;background:#e9eee9}
+.r-map-open-google{position:absolute;right:12px;bottom:12px;padding:8px 13px;background:#fff;color:#174735;font-size:11px;font-weight:800;z-index:400;border-radius:6px;box-shadow:0 4px 16px #08261f25}
+@media(max-width:520px){.r-google-iframe{height:350px}}
