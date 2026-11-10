@@ -21,3 +21,12 @@
  .modal-hero{height:auto;max-height:none;aspect-ratio:16/9}
  .lesson-card .card-visual{max-height:none}
 }
+/* The lesson-specific educational inquiry card keeps topic/name in HTML for accessibility. */
+.lesson-inquiry-banner{display:flex;flex-direction:column;align-items:flex-start;gap:11px;margin:34px 0 4px;padding:24px 28px;border-radius:16px;color:#fff;background:linear-gradient(105deg,rgba(4,43,33,.95),rgba(4,43,33,.80)),url('/kang/assets/kang-course-inquiry-v5.webp') center/cover no-repeat;box-shadow:0 12px 28px #0b34221a}
+.lesson-inquiry-banner .eyebrow{font-size:11px;color:#d3dfbd;letter-spacing:.12em;font-weight:800}
+.lesson-inquiry-banner h3{color:#fff!important;margin:0!important;font-size:clamp(18px,3vw,23px)!important;line-height:1.4}
+.lesson-inquiry-banner p{color:#e6f1e9!important;margin:0!important;font-size:13px!important;line-height:1.7!important}
+.lesson-inquiry-banner a{display:inline-flex;align-items:center;padding:12px 18px;color:#072e23;background:#e8d5ac;border-radius:9px;font-size:13px;font-weight:800;text-decoration:none}
+.lesson-inquiry-banner a:hover{background:#fff1ca}
+.lesson-inquiry-banner small{font-size:11px;color:#c1d5c9;line-height:1.5}
+@media(max-width:600px){.lesson-inquiry-banner{padding:18px;border-radius:12px}.lesson-inquiry-banner a{width:100%;justify-content:center}}
