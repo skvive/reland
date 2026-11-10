@@ -222,7 +222,7 @@ def install(app,db,get_user,require_user,admin_key):
 
  @router.get('/videos')
  def videos(category:str=''):
-  with db() as c: rows=c.execute('SELECT * FROM studio_videos WHERE (?="" OR category=?) ORDER BY id DESC LIMIT 100',(category,category)).fetchall()
+  with db() as c: rows=c.execute("SELECT * FROM studio_videos WHERE (?='' OR category=?) ORDER BY id DESC LIMIT 100",(category,category)).fetchall()
   return {'items':[dict(x) for x in rows], 'note':'운영자가 실제 YouTube URL을 검수·등록한 영상만 표시합니다.'}
 
  @router.get('/admin/expert-applications')
