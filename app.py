@@ -398,6 +398,15 @@ def home(): return FileResponse(ROOT/'static'/'index.html')
 def _health_payload():
     return {'status':'ok','service':'RE:LAND','mode':'demo' if DEMO_MODE else 'production'}
 
+@app.get('/robots.txt',include_in_schema=False)
+def site_robots(): return FileResponse(ROOT/'static'/'robots.txt', media_type='text/plain; charset=utf-8')
+
+@app.get('/sitemap.xml',include_in_schema=False)
+def site_sitemap(): return FileResponse(ROOT/'static'/'sitemap.xml',media_type='application/xml')
+
+@app.get('/favicon.ico',include_in_schema=False)
+def site_favicon(): return FileResponse(ROOT/'static'/'assets'/'favicon.ico',media_type='image/x-icon')
+
 @app.get('/api/health')
 @app.get('/api/health/', include_in_schema=False)
 @app.get('/health', include_in_schema=False)
@@ -1007,7 +1016,25 @@ def kang_qa(category:str=''):
 def spa_fallback(full_path:str):
     if full_path.startswith(('api/','static/')) or '.' in full_path:
         raise HTTPException(404,'Not found')
-    return FileResponse(ROOT/'static'/'index.html')
+    # Per-route SEO head for SPA navigation: only curated public pages are indexable.
+    from html import escape as esc
+    public_pages={"map":["재개발 지도 | RE:LAND 리랜드","전국 재개발·재건축 구역정보와 사업 진행단계를 지도로 확인하세요."],"community":["동네사랑방 | RE:LAND 리랜드","Google Blogger와 연결되는 주민 커뮤니티와 동네 소식을 만나보세요."],"news":["재개발 뉴스룸 | RE:LAND 리랜드","전국 도시정비사업과 재건축 관련 뉴스·정책 정보를 원문 출처와 함께 확인하세요."],"guide":["재개발 절차와 법률 가이드 | RE:LAND","정비구역 지정부터 관리처분·착공·준공까지 재개발 기본 절차를 알아보세요."],"columns":["재개발 법률 저널 | RE:LAND 리랜드","법령 원문을 함께 읽는 재개발·정비사업 실무 교육 저널입니다. 전문가 개별 감수 전 원고가 포함됩니다."],"directory":["전문가 디렉터리 | RE:LAND","도시정비 분야 전문가의 공개 프로필과 정보를 확인하세요."],"youtube":["재개발 YouTube 영상관 | RE:LAND","재개발·재건축 실무 영상과 법률 해설 콘텐츠를 주제별로 찾아보세요."],"experts":["정비사업 상담 접수 | RE:LAND","정비사업 관련 공개 안내와 상담 접수 절차를 확인하세요."],"sources":["정비사업 공공데이터 출처 | RE:LAND","공공 원본의 출처와 위치 정밀도, 구역별 데이터 사용 범위를 안내합니다."],"partners":["리랜드 파트너십 안내 | RE:LAND","도시정비 정보 커뮤니티의 콘텐츠 및 제휴 안내입니다."],"privacy":["개인정보 처리 안내 | RE:LAND","리랜드 서비스의 개인정보 처리 및 계정 사용 정책을 확인하세요."]}
+    slug=full_path.strip('/')
+    raw=(ROOT/'static'/'index.html').read_text(encoding='utf-8')
+    if slug in public_pages:
+        page_title,page_desc=public_pages[slug]
+        page_url='https://reland.lexid.site/'+slug
+        raw=re.sub(r'<title>[^<]*</title>','<title>'+esc(page_title)+'</title>',raw,count=1)
+        raw=re.sub(r'<meta name="description" content="[^"]*">','<meta name="description" content="'+esc(page_desc,quote=True)+'">',raw,count=1)
+        raw=re.sub(r'<meta property="og:title" content="[^"]*">','<meta property="og:title" content="'+esc(page_title,quote=True)+'">',raw,count=1)
+        raw=re.sub(r'<meta property="og:description" content="[^"]*">','<meta property="og:description" content="'+esc(page_desc,quote=True)+'">',raw,count=1)
+        raw=re.sub(r'<meta name="twitter:title" content="[^"]*">','<meta name="twitter:title" content="'+esc(page_title,quote=True)+'">',raw,count=1)
+        raw=raw.replace('rel="canonical" href="https://reland.lexid.site/"','rel="canonical" href="'+page_url+'"',1)
+        raw=raw.replace('property="og:url" content="https://reland.lexid.site/"','property="og:url" content="'+page_url+'"',1)
+    else:
+        raw=raw.replace('content="index,follow,max-image-preview:large"','content="noindex,follow"',1)
+        raw=raw.replace('<link rel="canonical" href="https://reland.lexid.site/">','',1)
+    return HTMLResponse(raw)
 
 if __name__=='__main__':
     import uvicorn

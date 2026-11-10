@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /profile
+Disallow: /post/
+Disallow: /expert/
+Disallow: /openapi.json
+Disallow: /docs
+Disallow: /redoc
+
+Sitemap: https://reland.lexid.site/sitemap.xml

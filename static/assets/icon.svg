@@ -1,11 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="RE:LAND">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a5c50"/>
-      <stop offset="100%" stop-color="#0f3d36"/>
-    </linearGradient>
-  </defs>
-  <rect width="192" height="192" rx="44" fill="url(#bg)"/>
-  <path d="M48 44h58c34 0 48 14 48 42 0 20-11 33-28 37l27 26h-44l-28-34H76v34H48V44zm28 32v14h27c11 0 15-3 15-7s-4-7-15-7H76z" fill="#d8f572"/>
-  <circle cx="148" cy="46" r="10" fill="#fff"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-labelledby="title"><title id="title">RE:LAND 리랜드</title><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#155444"/><stop offset="1" stop-color="#0b3029"/></linearGradient></defs><rect width="192" height="192" rx="41" fill="url(#bg)"/><path d="M51 44h55c33 0 47 14 47 41 0 19-9 31-25 36l27 28h-44l-28-34h-5v34H51V44zm27 31v15h25c13 0 16-4 16-8 0-5-5-7-16-7H78z" fill="#f4d9ab"/><circle cx="148" cy="45" r="9" fill="#a4d0ab"/></svg>

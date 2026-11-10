@@ -1,0 +1,47 @@
+/* Kang Class responsive polish with accessible cards and Q&A (2026-11-10) */
+@media(max-width:790px){
+ .site-header{height:58px}
+ .rk-nav.open{max-height:calc(100dvh - 125px);overflow-y:auto;box-shadow:0 20px 30px #0c30232a}
+ .rk-faq .qa-button{min-height:42px!important}
+ .rk-faq .qa-title{font-size:12px!important;white-space:normal;line-height:1.55}
+ .rk-contact>a,.rk-solid-link{min-height:44px}
+ .rk-catalog .lesson-grid{gap:13px}
+}
+@media(max-width:520px){
+ .rk-shell{width:calc(100% - 30px)}
+ .rk-logo img{height:31px;max-width:120px}
+ .rk-hero{min-height:394px;height:auto;background-position:67% center}
+ .rk-hero-copy{padding:32px 0 29px;max-width:100%}
+ .rk-hero h1{font-size:clamp(24px,6.9vw,30px)}
+ .rk-hero-sub{font-size:11px;max-width:340px;line-height:1.65}
+ .rk-hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-width:390px}
+ .rk-hero-actions a{min-width:0;display:flex;justify-content:center;font-size:10px;text-align:center;gap:5px;line-height:1.4;padding:10px 7px;min-height:46px}
+ .rk-hero-actions .arr{margin-left:0}
+ .rk-metrics{margin-top:0;border-radius:0;box-shadow:none}
+ .metric{gap:9px;padding:12px 7px}
+ .metric-icon{flex:0 0 31px;height:34px;font-size:20px}
+ .rk-featured{margin-top:29px}
+ .featured-heading h2{font-size:24px}
+ .feature-card{flex-basis:85%;height:247px}
+ .feature-list{height:250px}
+ .feature-thumb{height:132px}
+ .feature-tag{top:-122px}
+ .feature-copy h3{font-size:13px}
+ .feature-copy p{font-size:11px}
+ .rk-middle{gap:25px}
+ .process-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .step{min-height:123px;padding:10px}
+ .step b{font-size:12px}
+ .step-art{font-size:29px;height:38px}
+ .step p{font-size:10px;line-height:1.45}
+ .rk-faq .qa-button{padding:11px 8px!important}
+ .rk-faq .qa-title{font-size:11px!important}
+ .rk-resources{gap:10px}
+ .resources-intro{flex-wrap:wrap}
+ .rk-catalog,.rk-sources{padding:28px 0 45px}
+ .catalog-heading h2{font-size:25px}
+ .rk-catalog .lesson-grid,.rk-sources .sources-grid{grid-template-columns:1fr}
+ .footer-strip{padding:14px 0}
+ .modal-content{padding:20px;max-height:calc(100dvh - 100px);overflow-y:auto}
+}
+@media(max-width:359px){.rk-hero-actions{grid-template-columns:1fr}.rk-hero{min-height:430px}.rk-hero h1{font-size:25px}.metric>div strong{font-size:16px}}

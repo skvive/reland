@@ -4,12 +4,36 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10272c"><meta name="description" content="RE:LAND 리랜드 — 전국 도시정비사업 지도, 뉴스, 법률·정책 정보와 주민 커뮤니티를 연결합니다.">
 <title>리랜드 RE:LAND — 우리 동네의 변화가 시작되는 곳</title>
+<link rel="canonical" href="https://reland.lexid.site/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="RE:LAND 리랜드">
+<meta property="og:title" content="RE:LAND 리랜드 | 도시의 변화, 삶의 가능성이 되다">
+<meta property="og:description" content="우리 동네 재개발·재건축 지도와 최신 정책, 강실장 클래스, 동네사랑방과 YouTube 콘텐츠를 한곳에서 만나보세요.">
+<meta property="og:url" content="https://reland.lexid.site/">
+<meta property="og:image" content="https://reland.lexid.site/static/assets/og-reland-1200x630.jpg">
+<meta property="og:image:secure_url" content="https://reland.lexid.site/static/assets/og-reland-1200x630.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="석양 서울의 한강 도시 전경과 RE:LAND 리랜드 브랜드 메시지">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RE:LAND 리랜드 | 도시의 변화, 삶의 가능성이 되다">
+<meta name="twitter:description" content="재개발 지도 · 법률·정책 · 강실장 클래스 · 동네사랑방">
+<meta name="twitter:image" content="https://reland.lexid.site/static/assets/og-reland-1200x630.jpg">
+<meta name="color-scheme" content="light">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"RE:LAND 리랜드","url":"https://reland.lexid.site/","inLanguage":"ko-KR","potentialAction":{"@type":"SearchAction","target":"https://reland.lexid.site/map?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
 <link rel="manifest" href="/static/manifest.webmanifest">
+<link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/static/assets/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/static/assets/icon.svg">
+<link rel="icon" href="/static/assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/static/assets/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="/static/assets/apple-touch-icon.png" sizes="180x180">
 <link rel="stylesheet" href="/static/style.css?v=20261110v21">
 <link rel="stylesheet" href="/static/reland-v2.css?v=20261110v21">
-<link rel="preload" as="image" href="/static/assets/reland-hero-city.webp" fetchpriority="high">
+<link rel="stylesheet" href="/static/reland-mobile-v3.css?v=20261110m3">
+<link rel="preload" as="image" href="/static/assets/reland-home-city-v2.webp" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
@@ -17,11 +41,19 @@
 <script defer src="https://accounts.google.com/gsi/client" async></script>
 <script defer src="/static/app.js?v=20261110v21"></script>
 <script defer src="/static/reland-v2.js?v=20261110v21"></script>
+<script defer src="/static/reland-mobile-v3.js?v=20261110m3"></script>
 </head>
 <body>
 <div id="app">
-<header class="header"><div class="shell header-inner"><a class="brand" href="/" data-nav="home" aria-label="리랜드 홈"><span class="brand-wordmark"><strong>RE<span>:</span>LAND</strong><small>도시의 내일을 잇다</small></span></a><nav class="main-nav" aria-label="주요 메뉴"><a href="/" data-nav="home" class="active">홈</a><a href="/map" data-nav="map">재개발 지도</a><div class="nav-submenu"><a href="/community" data-nav="community" aria-haspopup="true">동네 커뮤니티 <span aria-hidden="true">⌄</span></a><div class="nav-submenu-panel"><a href="/community" data-nav="community">동네사랑방</a><a href="/kang/">재개발 강실장</a></div></div><a href="/news" data-nav="news">뉴스룸</a><a href="/guide" data-nav="guide">법률·정책</a><a href="/columns" data-nav="columns">법률 저널</a><a href="/youtube" data-nav="youtube">YouTube</a><a href="/experts" data-nav="experts">상담 접수</a></nav><div class="header-actions"><button class="icon-button search-toggle" data-action="search" aria-label="검색">⌕</button><button class="login-button" data-action="login"><span class="g-symbol">G</span><span>구글로 시작하기</span></button><button class="menu-button" data-action="mobile-menu" aria-label="메뉴 열기">☰</button></div></div></header>
+<header class="header"><div class="shell header-inner"><a class="brand" href="/" data-nav="home" aria-label="리랜드 홈"><span class="brand-wordmark"><strong>RE<span>:</span>LAND</strong><small>도시의 내일을 잇다</small></span></a><nav class="main-nav" id="mainSiteNav" aria-label="주요 메뉴"><a href="/" data-nav="home" class="active">홈</a><a href="/map" data-nav="map">재개발 지도</a><div class="nav-submenu"><a href="/community" data-nav="community" aria-haspopup="true">동네 커뮤니티 <span aria-hidden="true">⌄</span></a><div class="nav-submenu-panel"><a href="/community" data-nav="community">동네사랑방</a><a href="/kang/">재개발 강실장</a></div></div><a href="/news" data-nav="news">뉴스룸</a><a href="/guide" data-nav="guide">법률·정책</a><a href="/columns" data-nav="columns">법률 저널</a><a href="/youtube" data-nav="youtube">YouTube</a><a href="/experts" data-nav="experts">상담 접수</a></nav><div class="header-actions"><button class="icon-button search-toggle" data-action="search" aria-label="검색">⌕</button><button class="login-button" data-action="login" aria-label="로그인 또는 내 계정 열기"><span class="g-symbol">G</span><span>구글로 시작하기</span></button><button class="menu-button" data-action="mobile-menu" aria-label="메뉴 열기" aria-controls="mainSiteNav" aria-expanded="false">☰</button></div></div></header>
 <main id="main" tabindex="-1"><section class="hero"><div class="shell hero-inner"><div class="hero-content"><div class="hero-badge">RE:LAND · 도시를 이해하는 새로운 방법</div><h1>도시의 변화,<br><em>이제 우리 가까이.</em></h1><p class="hero-sub">재개발과 재건축의 복잡한 정보를 명료하게 정리합니다.</p><a class="btn btn-accent" href="/map">우리 동네 지도 보기 →</a></div></div></section></main>
+<nav class="mobile-dock" aria-label="모바일 빠른 메뉴">
+<a href="/" data-nav="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg><span>홈</span></a>
+<a href="/map" data-nav="map" ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg><span>지도</span></a>
+<a href="/community" data-nav="community" ><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2 20c0-5 12-5 12 0M14 16.5c2.5-.8 6.5.7 7 3.5"/></svg><span>동네사랑방</span></a>
+<a href="/youtube" data-nav="youtube" ><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/></svg><span>YouTube</span></a>
+<a href="/kang/"  ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h8l1 2 1-2h8v16h-8l-1 1-1-1H3z"/><path d="M12 6v14"/></svg><span>강실장</span></a>
+</nav>
 <footer class="footer"><div class="shell footer-inner"><div><a class="footer-brand" href="/" data-nav="home"><span class="brand-wordmark footer-wordmark"><strong>RE<span>:</span>LAND</strong><small>도시의 내일을 잇다</small></span></a><p>우리 동네의 변화, 더 가까운 정보와 더 따뜻한 연결.</p><p class="footer-small">민간 정보·커뮤니티 서비스 · 정부기관 또는 법정 조합의 공식 서비스가 아닙니다.</p></div><div class="footer-links"><a href="/guide" data-nav="guide">이용 안내</a><a href="/sources" data-nav="sources">데이터 출처</a><a href="/privacy" data-nav="privacy">개인정보 안내</a><a href="/columns" data-nav="columns">법률 저널</a><a href="/kang/">재개발 강실장</a><a href="/youtube" data-nav="youtube">YouTube</a><a href="/community" data-nav="community">동네사랑방</a><a href="/experts" data-nav="experts">상담 접수</a></div></div><div class="shell footer-bottom">© 2026 RE:LAND. 공공 원본의 기준일과 현장 상태를 반드시 재확인하세요. <span>Made for better neighborhoods.</span></div></footer>
 <div id="toast" class="toast" role="status" aria-live="polite"></div><div id="modal" class="modal-backdrop hidden" role="presentation"></div>
 </div>
