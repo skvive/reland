@@ -1,6 +1,6 @@
 /* RE:LAND v4: never cache auth, user data, Blogger API or private feeds. */
-const CACHE='reland-shell-v5-mobile-20261110';
-const STATIC=['/static/style.css','/static/reland-v2.css','/static/app.js','/static/reland-v2.js','/static/reland-mobile-v4.css','/static/reland-mobile-v4.js','/static/assets/logo-reland.svg','/static/assets/reland-home-city-v2.webp','/static/assets/icon.svg'];
+const CACHE='reland-shell-v6-assets-20261111';
+const STATIC=['/static/style.css','/static/reland-v2.css','/static/app.js','/static/reland-v2.js','/static/reland-mobile-v4.css','/static/reland-mobile-v4.js','/static/assets/logo-reland.svg','/static/assets/reland-home-city-v2.webp','/static/assets/icon.svg','/static/reland-editorial-v5.css','/static/assets/editorial-class-v5.webp','/static/assets/editorial-journal-v5.webp'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(STATIC).catch(()=>{})).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('reland-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{

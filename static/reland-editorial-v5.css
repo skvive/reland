@@ -1,0 +1,28 @@
+/* RE:LAND homepage paired hero artwork v5; original links and copy remain semantic HTML. */
+.r-editorial-primary,.r-editorial-secondary{isolation:isolate;background-color:#0a3027}
+.r-editorial-primary img{object-position:center 49%}
+.r-editorial-secondary img{object-position:57% 32%}
+.r-editorial-primary::after{background:linear-gradient(0deg,rgba(2,27,25,.96),rgba(3,30,28,.40) 48%,rgba(2,30,27,.1) 82%)}
+.r-editorial-secondary::after{background:linear-gradient(0deg,rgba(2,28,24,.96),rgba(1,32,26,.20) 67%,rgba(2,22,18,.07))}
+.r-editorial-info{z-index:2;max-width:calc(100% - 55px)}
+.r-editorial-card img{filter:saturate(1.01)}
+.r-editorial-card:focus-visible{outline:3px solid #e5c994;outline-offset:4px}
+@media(max-width:920px){
+ .r-editorial-card{min-height:310px}
+ .r-editorial-secondary img{object-position:58% 25%}
+}
+@media(max-width:600px){
+ .r-editorial-grid{grid-template-columns:1fr;gap:16px}
+ .r-editorial-card{min-height:235px;aspect-ratio:1.74;border-radius:15px}
+ .r-editorial-info{inset:auto 20px 19px;max-width:calc(100% - 40px)}
+ .r-editorial-info h3{font-size:clamp(20px,5.5vw,25px);line-height:1.27;margin:6px 0}
+ .r-editorial-info p{font-size:11px;line-height:1.5;margin:0 0 8px}
+ .r-editorial-secondary img{object-position:56% 37%}
+}
+@media(max-width:359px){.r-editorial-card{min-height:220px}.r-editorial-info h3{font-size:20px}}
+/* Small-screen intrinsic sizing correction, validated at 320–430px. */
+@media(max-width:920px){
+ .r-editorial-grid{grid-template-columns:minmax(0,1fr);min-width:0}
+ .r-editorial-card{min-width:0;max-width:100%}
+ .r-editorial-info{min-width:0;overflow-wrap:anywhere}
+}
