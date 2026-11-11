@@ -5,7 +5,7 @@
  const $=s=>document.querySelector(s), esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let selected='전체',search='',page=1;const PAGE_SIZE=9;
  const categories=[...new Set(DATA.lectures.map(a=>a.category))];
- const categoryBanner=x=>`/kang/assets/kang-category-${String(Math.max(0,categories.indexOf(x.category))+1).padStart(2,'0')}-v6.webp`;
+ const categoryBanner=x=>`/kang/assets/kang-clean-category-${String(Math.max(0,categories.indexOf(x.category))+1).padStart(2,'0')}-v8.webp`;
  function renderTags(){const root=$('#tags');root.replaceChildren();['전체',...categories].forEach(cat=>{const btn=document.createElement('button');btn.type='button';btn.className='tag'+(selected===cat?' active':'');btn.textContent=cat;btn.onclick=()=>{selected=cat;page=1;renderTags();renderLessons()};root.appendChild(btn)})}
  function filtered(){return DATA.lectures.filter(x=>(selected==='전체'||x.category===selected)&&(!search||`${x.title} ${x.summary} ${x.category}`.toLocaleLowerCase('ko').includes(search)))}
  function renderLessons(){const items=filtered(),max=Math.max(1,Math.ceil(items.length/PAGE_SIZE));page=Math.max(1,Math.min(page,max));
