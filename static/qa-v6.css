@@ -1,0 +1,8 @@
+/* RE:LAND Q&A community: official educational media, not attorney advertising. */
+.qa-top-banner,.qa-mid-banner{position:relative;margin:0 0 24px;border-radius:18px;overflow:hidden;background:#103b30;box-shadow:0 12px 30px #123c2e15}
+.qa-top-banner a,.qa-mid-banner a{display:block;text-decoration:none;color:inherit}
+.qa-top-banner img,.qa-mid-banner img{display:block;width:100%;height:auto;object-fit:contain;aspect-ratio:16/9;background:#103b30}
+.qa-top-banner figcaption,.qa-mid-banner figcaption{padding:13px 18px;background:#f3f6f0;color:#1c5540;font-size:12px;line-height:1.6;font-weight:700}
+.qa-education-note{font-size:11px;color:#657a6f;background:#f3f7f2;border:1px solid #e1ebe3;border-radius:12px;padding:15px;margin:18px 0 25px;line-height:1.85}
+.qa-post-help{font-size:12px;color:#527361;margin-top:10px}
+@media(max-width:600px){.qa-top-banner,.qa-mid-banner{border-radius:12px;margin-bottom:17px}.qa-top-banner figcaption,.qa-mid-banner figcaption{padding:10px 12px;font-size:11px}.qa-education-note{padding:12px 14px}}

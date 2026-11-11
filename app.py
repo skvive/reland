@@ -758,6 +758,7 @@ def report_post(post_id:int,data:ReportCreate,request:Request):
 
 @app.post('/api/consultations',status_code=201)
 def consultation(data:ConsultationCreate,request:Request):
+    raise HTTPException(status_code=403, detail='리랜드는 교육 목적 플랫폼으로 개별 사건 법률상담·수임·대리 신청을 접수하지 않습니다.')
     u=require_user(request);throttle(request,'consultation',3,3600)
     if not data.consent:raise HTTPException(422,'상담 접수 및 연락을 위한 개인정보 처리에 동의해야 합니다.')
     with db() as c:

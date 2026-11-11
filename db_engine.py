@@ -107,6 +107,11 @@ class CompatCursor:
             self._raw.execute(stmt)
         return self
 
+    def __iter__(self):
+        # Mirror sqlite3.Cursor and psycopg.Cursor iteration semantics.
+        # Several GET endpoints iterate directly over c.execute(...).
+        return iter(self.fetchall())
+
     def fetchone(self):
         row = self._raw.fetchone()
         if row is None:
