@@ -1,0 +1,10 @@
+/* RE:LAND Q&A board: approved instructor photo + dedicated educational fallback */
+.board-qa-hero,.board-qa-mid{border-radius:17px;overflow:hidden;margin:0 0 22px;box-shadow:0 14px 32px #173b3217;background:#0b362c}
+.board-qa-hero>a,.board-qa-mid>a{display:block;position:relative;text-decoration:none;color:inherit}
+.board-qa-hero img,.board-qa-mid img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
+.board-qa-hero a:focus-visible,.board-qa-mid a:focus-visible{outline:3px solid #edd8a9;outline-offset:3px}
+.board-qa-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 19px;color:#f9f7ee;background:#153e33}
+.board-qa-footer strong{font-size:14px}.board-qa-footer span{font-size:13px;border-radius:8px;background:#f1e1bb;color:#13382d;padding:10px 15px;font-weight:850}
+.board-qa-mid .board-qa-footer{background:#f1f6ed;color:#123b30}.board-qa-mid .board-qa-footer span{background:#164a38;color:#fff}
+.board-qa-caption{font-size:11px;color:#667c70;line-height:1.75;margin:0 0 18px}
+@media(max-width:680px){.board-qa-hero,.board-qa-mid{border-radius:12px;margin-bottom:16px}.board-qa-footer{padding:12px;align-items:stretch;flex-direction:column}.board-qa-footer strong{font-size:12px}.board-qa-footer span{display:inline-block;text-align:center;font-size:12px;padding:10px}}
