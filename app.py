@@ -531,6 +531,105 @@ def districts(q:str='',region:str='',kind:str='',stage:str='',limit:int=2000):
     return {'items':items,'verified_data_rows':total,'shown':len(items),
             'message':'시연용 지역 허브는 실제 정비구역 또는 경계를 뜻하지 않습니다.'}
 
+
+# National Urban Renewal Data, Ministry of Land, Infrastructure and Transport.
+# The 2026-05-18 snapshot includes province/city/project/stage/type/operator/households,
+# NOT exact project coordinates, verified boundaries, contacts or current legal status.
+OFFICIAL_MOLIT_URL = 'https://www.data.go.kr/data/15160169/fileData.do'
+MOLIT_ODCLOUD_API = 'https://api.odcloud.kr/api/15160169/v1/uddi:4d7f16a9-b0fd-4d07-b266-d0ad82aeaf34'
+MOLIT_SERVICE_KEY = os.getenv('DATA_GO_KR_SERVICE_KEY', '').strip()
+_MOLIT_MEMORY = {'at': 0, 'data': [], 'error': None}
+
+def _clean_field(x):
+    return re.sub(r'\s+', '', str(x or '')).lower()
+
+def _molit_api_items():
+    """Optional server-side live fetch. Never expose API key or fail a user page when unconfigured."""
+    if not MOLIT_SERVICE_KEY:
+        return []
+    now=time.time()
+    if now-_MOLIT_MEMORY['at']<3600:
+        return _MOLIT_MEMORY['data']
+    _MOLIT_MEMORY.update(at=now,data=[],error=None)
+    try:
+        items=[]
+        for page in (1,2):
+            res=httpx.get(MOLIT_ODCLOUD_API,params={
+                'page':page, 'perPage':1000,'serviceKey':MOLIT_SERVICE_KEY},timeout=12)
+            res.raise_for_status()
+            payload=res.json()
+            batch=payload.get('data') if isinstance(payload,dict) else None
+            if not isinstance(batch,list):
+                raise ValueError('공공데이터 API 응답 형식 변경')
+            items.extend(batch)
+            if len(batch)<1000:
+                break
+        _MOLIT_MEMORY['data']=items
+    except Exception as ex:
+        _MOLIT_MEMORY['error']=type(ex).__name__
+    return _MOLIT_MEMORY['data']
+
+@app.get('/api/map/public-status')
+def map_public_status():
+    with db() as c:
+        verified=c.execute('SELECT COUNT(*) FROM districts WHERE demo=0').fetchone()[0]
+        demo=c.execute('SELECT COUNT(*) FROM districts WHERE demo=1').fetchone()[0]
+    return {'official_rows_imported':verified,'demo_region_hubs':demo,
+        'google_maps_configured':bool(GOOGLE_MAPS_BROWSER_KEY),
+        'molit_api_configured':bool(MOLIT_SERVICE_KEY),
+        'source_url':OFFICIAL_MOLIT_URL,'source_asof':'2026-05-18',
+        'notice':'공공데이터의 지역 대표점은 정비구역 실제 좌표·경계가 아닙니다.'}
+
+@app.get('/api/districts/{district_id}/public')
+def public_district_profile(district_id:int):
+    with db() as c:
+        row=c.execute('SELECT * FROM districts WHERE id=?',(district_id,)).fetchone()
+    if not row:
+        raise HTTPException(404,'조회할 수 없는 사업 정보입니다.')
+    d=dict(row)
+    match=None
+    if not d['demo']:
+        for item in _molit_api_items():
+            if (_clean_field(item.get('구역명칭'))==_clean_field(d['name'])
+                and _clean_field(item.get('시도'))==_clean_field(d['province'])
+                and _clean_field(item.get('시군구'))==_clean_field(d['city'])):
+                match=item
+                break
+    def field(column,official):
+        if match is not None:
+            val=match.get(official)
+            if val is not None and str(val).strip():
+                return str(val).strip()
+        return str(d.get(column) or '').strip()
+    demo=bool(d['demo'])
+    values=[
+      {'key':'province','label':'시·도','value':field('province','시도')},
+      {'key':'city','label':'시·군·구','value':field('city','시군구')},
+      {'key':'name','label':'정비구역명','value':field('name','구역명칭')},
+      {'key':'stage','label':'공개 데이터 추진단계','value':field('stage','현 사업추진단계')},
+      {'key':'kind','label':'사업유형','value':field('kind','사업유형')},
+      {'key':'operator','label':'사업시행자·사업주체','value':field('operator','사업시행자')},
+      {'key':'households','label':'공급 예정 세대 수','value':field('households','공급 예정 세대수')},
+    ]
+    return {'id':d['id'],'demo':demo,'name':d['name'],'values':values,
+      'source':{'name':'국토교통부 전국 도시정비사업 통합 데이터',
+          'url':d.get('source_url') or OFFICIAL_MOLIT_URL,
+          'snapshot_date':d.get('source_date') or ('2026-05-18' if not demo else ''),
+          'live_confirmed':bool(match),
+          'method':'공공데이터 API 원문 대조' if match else ('시연용 지역 허브' if demo else '기존 공식 데이터 가져오기 자료')},
+      'location':{'latitude':d.get('lat'),'longitude':d.get('lon'),
+          'precision':d.get('precision'),'verified_boundary':d.get('precision')=='boundary_polygon'},
+      'message':('시연용 지역 허브로, 실제 정비사업이 아닙니다.' if demo else
+          '국토교통부 공개자료의 기준일 기준 참고정보입니다. 사업시행자는 연락처나 법률대리인이 아니며, 현재 상태·권리관계는 관할 지자체의 최신 공고로 확인하세요.'),
+      'official_api_available':bool(MOLIT_SERVICE_KEY),
+      'official_api_checked':bool(match)}
+
+@app.get('/district-info/{district_id}')
+def standalone_district_profile(district_id:int):
+    if district_id<1:
+        raise HTTPException(404,'잘못된 사업 번호입니다.')
+    return FileResponse(ROOT/'static'/'district-info-v8.html',media_type='text/html')
+
 @app.get('/api/districts/{district_id}')
 def district_detail(district_id:int):
     with db() as c:row=c.execute('SELECT * FROM districts WHERE id=?',(district_id,)).fetchone()

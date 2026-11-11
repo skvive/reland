@@ -72,27 +72,74 @@ async function homePage(){const newsPromise=api('/news?limit=3').catch(()=>({ite
    list.innerHTML=items.slice(0,3).map((n,i)=>`<a class="news-item" href="${A(n.url)}" target="_blank" rel="noopener noreferrer"><span class="news-number">0${i+1}</span><span><h4>${E(n.title)}</h4><small>${E(n.source)} · ${E(n.published)}</small></span></a>`).join('');
  }).catch(()=>{});
 }
-function mapFallback(items,elementId){const elem=document.getElementById(elementId);if(!elem)return;const nonNull=items.filter(x=>x.lat!=null&&x.lon!=null);elem.innerHTML=`<div class="mini-map"><div class="map-grid-road"></div><div class="map-water"></div><div class="map-top-label">지도 미리보기 · 축척·경계 비정확</div>${nonNull.slice(0,60).map((d,i)=>{const x=Math.max(7,Math.min(89,((d.lon-124.5)/8)*90+5)),y=Math.max(16,Math.min(86,((39-d.lat)/7)*76+10));return `<button class="map-pin ${i===0?'primary':''}" style="left:${x}%;top:${y}%" data-action="district" data-id="${d.id}" title="지역 중심점 (경계 아님)">${E(d.city||d.name)}</button>`}).join('')}<div class="map-caption"><strong>배경은 장식용 지도입니다</strong><span>실제 지도를 이용하려면 인터넷 연결이 필요해요.</span></div></div>`}
+function mapFallback(items,elementId){
+ const elem=document.getElementById(elementId);if(!elem)return;
+ const first=items.find(x=>x.lat!=null&&x.lon!=null);
+ const lat=Number(first?.lat)||37.5665,lon=Number(first?.lon)||126.978;
+ const candidates=items.filter(d=>Number.isInteger(+d.id)&&+d.id>0).slice(0,12);
+ elem.innerHTML='<div class="map-iframe-fallback"><iframe title="Google 지도 위치 참고" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q='+encodeURIComponent(lat+','+lon)+'&z=10&output=embed"></iframe><div class="map-fallback-caption"><b>Google 지도 참고 화면</b><span>브라우저의 지도 SDK가 차단되어 마커 대신 사업 목록을 제공합니다. 지점은 정확 경계가 아닙니다.</span><div class="map-fallback-links">'+candidates.map(d=>'<a href="/district-info/'+Number(d.id)+'" target="_blank" rel="noopener noreferrer">'+E(d.name)+' ↗</a>').join('')+'</div></div></div>';
+}
 let mapsLoadState='idle',pendingMapJob=null;
 function destroyActiveMap(){if(STATE.googleMap){STATE.googleMap=null}if(STATE.map&&STATE.map.remove){try{STATE.map.remove()}catch{}}STATE.map=null}
 function mapReady(){return !!(STATE.config?.google_maps_browser_key&&window.google?.maps)}
-function loadGoogleMaps(){const key=STATE.config?.google_maps_browser_key;if(!key){mapsLoadState='missing';return Promise.resolve(false)}if(window.google?.maps){mapsLoadState='ready';return Promise.resolve(true)}if(mapsLoadState==='loading')return new Promise(resolve=>{const t=setInterval(()=>{if(mapsLoadState==='ready'||mapsLoadState==='error'){clearInterval(t);resolve(mapsLoadState==='ready')}},150)});mapsLoadState='loading';return new Promise((resolve,reject)=>{window.relandMapsLoaded=()=>{mapsLoadState='ready';resolve(true);const job=pendingMapJob;pendingMapJob=null;if(job)job()};const scr=document.createElement('script');scr.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&loading=async&callback=relandMapsLoaded';scr.async=true;scr.onerror=()=>{mapsLoadState='error';reject(new Error('Google Maps SDK'))};document.head.appendChild(scr)})}
-function addDistrictMarkersToGoogleMap(map,items){const groups={};for(const d of items){if(!Number.isFinite(+d.lat)||!Number.isFinite(+d.lon)||d.lat===null||d.lon===null)continue;const key=(+d.lat).toFixed(3)+':'+(+d.lon).toFixed(3);if(!groups[key])groups[key]=[];groups[key].push(d)}for(const group of Object.values(groups)){const d=group[0];const label=group.length>1?`${d.city} · ${group.length}건`:d.demo?d.city:d.name;const marker=new google.maps.Marker({map,position:{lat:+d.lat,lng:+d.lon},title:label});const info=new google.maps.InfoWindow({content:`<strong>${E(group.length>1?d.city:d.name)}</strong><p>${group.length>1?'이 좌표에 '+group.length+'개 목록':'위치는 '+(d.precision==='boundary_polygon'?'경계 자료 기반':d.precision==='exact'?'구역 좌표':'지역 중심점')+' · 정확 경계 아님'}</p><a href="/district/${d.id}" class="popup-link">상세 보기 →</a>`});marker.addListener('click',()=>info.open({map,anchor:marker}));info.addListener('domready',()=>{const link=document.querySelector('.popup-link');if(link)link.addEventListener('click',e=>{e.preventDefault();go('/district/'+d.id)})})}}
-async function showDistrictMap(items,elementId,zoom=7,center=[36.2,127.75]){const elem=document.getElementById(elementId);if(!elem)return;if(STATE.config?.google_maps_browser_key){try{await loadGoogleMaps();if(mapReady()){elem.innerHTML='<div class="google-map" id="gmap-'+elementId+'"></div><div class="map-top-label">● Google Maps · 정확한 경계 아님 · 지역 기준점</div>';const map=new google.maps.Map(document.getElementById('gmap-'+elementId),{center:{lat:center[0],lng:center[1]},zoom,streetViewControl:false,mapTypeControl:false,fullscreenControl:true});STATE.googleMap=map;STATE.map=map;addDistrictMarkersToGoogleMap(map,items);return}}catch(err){console.warn('Google Maps unavailable, using OpenStreetMap.',err)}}leafletMap(items,elementId,zoom,center)}
-function leafletMap(items,elementId,zoom=7,center=[36.2,127.75]){const elem=document.getElementById(elementId);if(!elem)return;
- // Leaflet is optional: the fallback works even if CDN assets are inaccessible.
- if(!window.L){mapFallback(items,elementId);return}
- elem.innerHTML='<div class="leaflet-map" id="leaflet-' +elementId+'"></div><div class="map-top-label">● 정확한 경계 아님 · 지역 기준점</div>';
- STATE.map=L.map('leaflet-'+elementId,{scrollWheelZoom:false}).setView(center,zoom);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(STATE.map);
- let groups={};for(const d of items){if(!Number.isFinite(+d.lat)||!Number.isFinite(+d.lon)||d.lat===null||d.lon===null)continue;const key=(+d.lat).toFixed(3)+':'+(+d.lon).toFixed(3);if(!groups[key])groups[key]=[];groups[key].push(d)}
- for(const group of Object.values(groups)){const d=group[0];let label=group.length>1?`${d.city} · ${group.length}건`:d.demo?d.city:d.name;const marker=L.marker([d.lat,d.lon],{icon:L.divIcon({className:'leaflet-div-icon',html:`<span class="leaflet-marker-reland">${E(label.slice(0,16))}</span>`,iconSize:[30,32]})}).addTo(STATE.map);
- marker.bindPopup(`<strong>${E(group.length>1?d.city:d.name)}</strong><p>${group.length>1?'이 좌표에 '+group.length+'개 목록이 모여 있습니다.':'위치는 '+(d.precision==='boundary_polygon'?'경계 자료 기반 좌표':d.precision==='exact'?'구역 좌표':'지역 중심점')+'으로 표시됩니다.'}</p><a href="/district/${d.id}" class="popup-link">상세 보기 →</a>`);
- marker.on('popupopen',()=>{const link=document.querySelector('.popup-link');if(link)link.addEventListener('click',e=>{e.preventDefault();go('/district/'+d.id)})});
- }
- setTimeout(()=>STATE.map?.invalidateSize(),100);
+function loadGoogleMaps(){
+ const key=STATE.config?.google_maps_browser_key;
+ if(!key){mapsLoadState='missing';return Promise.resolve(false)}
+ if(window.google?.maps){mapsLoadState='ready';return Promise.resolve(true)}
+ if(mapsLoadState==='loading')return new Promise(resolve=>{const start=Date.now();const t=setInterval(()=>{if(mapsLoadState==='ready'||mapsLoadState==='error'||Date.now()-start>10000){clearInterval(t);resolve(mapsLoadState==='ready')}},150)});
+ mapsLoadState='loading';
+ return new Promise((resolve,reject)=>{
+  const timer=setTimeout(()=>{mapsLoadState='error';reject(new Error('Google Maps SDK timeout'))},10000);
+  const fail=msg=>{clearTimeout(timer);mapsLoadState='error';reject(new Error(msg))};
+  window.gm_authFailure=()=>fail('Google Maps 인증·결제 설정 오류');
+  window.relandMapsLoaded=()=>{clearTimeout(timer);mapsLoadState='ready';resolve(true)};
+  const scr=document.createElement('script');
+  scr.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&loading=async&callback=relandMapsLoaded';
+  scr.async=true;scr.onerror=()=>fail('Google Maps SDK network failure');
+  document.head.appendChild(scr);
+ })
 }
-function mapResultRow(d){return `<div class="result-row" data-action="district" data-id="${d.id}" role="button" tabindex="0"><div class="result-meta"><span class="pill ${d.demo?'orange':'navy'}">${d.demo?'시연 지역':E(d.kind)}</span><small>${E(d.province)}</small></div><h4>${E(d.name)}</h4><small>${d.demo?'실제 구역 데이터 연결 전':E(d.stage)} · ${d.precision==='boundary_polygon'?'검증 등록된 경계':d.precision==='exact'?'상세좌표':'행정구역 기준점'}</small></div>`}
+function groupedDistricts(items){
+ const groups=new Map();
+ for(const d of items){
+  if(d.lat==null||d.lon==null||!Number.isFinite(+d.lat)||!Number.isFinite(+d.lon))continue;
+  const key=(+d.lat).toFixed(3)+':'+(+d.lon).toFixed(3);
+  if(!groups.has(key))groups.set(key,[]);
+  groups.get(key).push(d);
+ }
+ return [...groups.values()];
+}
+function mapProjectPopup(group){
+ const title=group.length>1?(E(group[0].province||group[0].city)+' · '+group.length+'개 사업') : E(group[0].name);
+ const items=group.slice(0,100);
+ return '<div class="reland-map-popup"><strong>'+title+'</strong><p>공공자료의 행정구역 대표점으로 실제 위치나 확정 경계가 아닐 수 있습니다.</p><div class="map-popup-projects">'+items.map(d=>'<a href="/district-info/'+Number(d.id)+'" target="_blank" rel="noopener noreferrer"><span>'+E(d.name)+'</span><small>'+E(d.operator||'사업시행자 미제공')+' · '+E(d.stage||'단계 미기재')+'</small> ↗</a>').join('')+'</div>'+(group.length>100?'<p>한 지점의 사업이 많아 처음 100개만 보입니다. 지역 검색결과에서 확인하세요.</p>':'')+'</div>';
+}
+function addDistrictMarkersToGoogleMap(map,items){
+ for(const group of groupedDistricts(items)){
+  const d=group[0],label=group.length>1?(d.city||d.province)+' · '+group.length+'건':d.name;
+  const marker=new google.maps.Marker({map,position:{lat:+d.lat,lng:+d.lon},title:label});
+  const info=new google.maps.InfoWindow({content:mapProjectPopup(group),maxWidth:350});
+  marker.addListener('click',()=>info.open({map,anchor:marker}));
+ }
+}
+async function showDistrictMap(items,elementId,zoom=7,center=[36.2,127.75]){const elem=document.getElementById(elementId);if(!elem)return;if(STATE.config?.google_maps_browser_key){try{await loadGoogleMaps();if(mapReady()){elem.innerHTML='<div class="google-map" id="gmap-'+elementId+'"></div><div class="map-top-label">● Google Maps · 정확한 경계 아님 · 지역 기준점</div>';const map=new google.maps.Map(document.getElementById('gmap-'+elementId),{center:{lat:center[0],lng:center[1]},zoom,streetViewControl:false,mapTypeControl:false,fullscreenControl:true});STATE.googleMap=map;STATE.map=map;addDistrictMarkersToGoogleMap(map,items);return}}catch(err){console.warn('Google Maps unavailable, using OpenStreetMap.',err)}}leafletMap(items,elementId,zoom,center)}
+function leafletMap(items,elementId,zoom=7,center=[36.2,127.75]){
+ const elem=document.getElementById(elementId);if(!elem)return;
+ if(!window.L){mapFallback(items,elementId);return}
+ elem.innerHTML='<div class="leaflet-map" id="leaflet-'+elementId+'"></div><div class="map-top-label">● 위치 참고 지도 · 정확한 구역 경계 아님 · 핀 선택 시 상세 정보 새창</div>';
+ const map=L.map('leaflet-'+elementId,{scrollWheelZoom:false}).setView(center,zoom);STATE.map=map;
+ const tiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);
+ tiles.on('tileerror',()=>{const label=elem.querySelector('.map-top-label');if(label)label.textContent='● 지도 타일 로딩 제한 · 핀 클릭은 가능합니다 · Google 지도는 상세페이지에서 열기'});
+ for(const group of groupedDistricts(items)){
+  const d=group[0],label=group.length>1?String(group.length)+'개 사업':d.name;
+  const marker=L.marker([+d.lat,+d.lon],{title:label,icon:L.divIcon({className:'reland-custom-pin',html:'<span class="reland-marker"><b>'+E(String(group.length))+'</b><small>사업</small></span>',iconSize:[56,44],iconAnchor:[28,44]})}).addTo(map);
+  marker.bindPopup(mapProjectPopup(group),{maxWidth:350,minWidth:240});
+ }
+ setTimeout(()=>{if(STATE.map===map)map.invalidateSize()},150);
+}
+function mapResultRow(d){
+ return '<a class="result-row re-open-detail" href="/district-info/'+Number(d.id)+'" target="_blank" rel="noopener noreferrer" aria-label="'+E(d.name)+' 공공정보 새창 열기"><div class="result-meta"><span class="pill '+(d.demo?'orange':'navy')+'">'+(d.demo?'시연 지역':E(d.kind))+'</span><small>'+E(d.province)+'</small></div><h4>'+E(d.name)+'</h4><small>'+(d.demo?'실제 구역 데이터 아님':E(d.stage))+' · '+(d.precision==='boundary_polygon'?'검증 경계':d.precision==='exact'?'좌표':'행정구역 대표점')+' · 상세 새창 ↗</small></a>';
+}
 async function mapPage(){let params=new URLSearchParams(location.search);let query=params.get('q')||'',region=params.get('region')||'전국',kind=params.get('kind')||'전체',stage=params.get('stage')||'전체';let data=await api('/districts?'+new URLSearchParams({q:query,region,kind,stage,limit:'2000'}));STATE.districts=data.items;
  main.innerHTML=headerPage('우리 동네 정비사업 지도','지도로 지역별 변화를 발견하세요. 위치가 확인되지 않은 데이터는 시군구 대표점으로 표시됩니다.','REDEVELOPMENT ATLAS')+`<div class="shell page-body"><form class="filters" id="map-filter"><input class="filter-input" name="q" value="${E(query)}" aria-label="구역명 또는 지역명" placeholder="⌕  지역명 / 구역명 검색"><select class="filter-select" name="region" aria-label="지역 선택">${REGIONS.map(x=>`<option ${region===x?'selected':''}>${x}</option>`).join('')}</select><select class="filter-select" name="kind" aria-label="사업유형"><option>전체</option>${['재개발사업','재건축사업','주거환경개선사업','지역 안내'].map(x=>`<option ${kind===x?'selected':''}>${x}</option>`).join('')}</select><select class="filter-select" name="stage" aria-label="추진단계"><option>전체</option>${STAGES.map(x=>`<option ${stage===x?'selected':''}>${x}</option>`).join('')}</select><button class="btn btn-primary" type="submit">검색하기</button></form><div class="map-page-layout"><div id="full-map" class="full-map" aria-label="전국 정비사업 지도"></div><aside class="map-results"><div class="map-results-head"><strong>검색 결과 ${compact(data.items.length)}건</strong><span class="pill">실제 데이터 ${compact(data.verified_data_rows)}건</span></div>${data.items.length?data.items.slice(0,100).map(mapResultRow).join(''):empty('🔍','검색 결과가 없어요','검색어 또는 필터를 변경해 보세요.')}</aside></div><div class="notice warn">⚑ 지도에 표시된 시연용 지역 허브는 재개발 확정 지역이 아닙니다. 공공데이터 원본에도 위경도·경계가 없어 좌표 검증 없이 정확한 구역 경계로 표시하지 않습니다. <a class="inline-link" href="/sources" data-nav="sources">데이터 출처·연동 안내 ↗</a></div></div>`;
  await showDistrictMap(data.items,'full-map',region==='서울'?10:7,region==='서울'?[37.5665,126.978]:[36.25,127.75]);
@@ -161,7 +208,7 @@ function formData(form){return Object.fromEntries(new FormData(form).entries())}
 async function handleForm(form){let name=form.id,v=formData(form);try{switch(name){case'studio-search-form':go('/columns?q='+encodeURIComponent(v.q||''));break;case'studio-expert-filter':go('/directory?'+new URLSearchParams(v));break;case'studio-story-form':{const d=await api('/studio/experts/stories',{method:'POST',body:v});closeModal();tip('원고 #'+d.id+' 심사 요청이 접수됐습니다.');break}case'studio-expert-apply':{v.consent=!!form.querySelector('[name=consent]').checked;const d=await api('/studio/experts/apply',{method:'POST',body:v});closeModal();modal(`${modalTitle('전문가 등록 심사 접수')}<p>접수번호 #${d.id}입니다. 자격증·등록번호 등은 운영자가 별도 공식 경로로 확인해야 합니다. 확인 전 프로필은 공개되지 않습니다.</p><button class="btn btn-primary" data-action="close-modal">확인</button>`);break}case'community-blog-form':await api('/communities/'+form.dataset.community+'/blog',{method:'PUT',body:v});closeModal();tip('공개 Blogger 링크를 등록했습니다.');render();break;case'delete-account-form':await api('/auth/account',{method:'DELETE',body:v});STATE.user=null;closeModal();updateLogin();tip('계정 탈퇴가 처리되었습니다.');go('/');break;case'hero-search':go('/map?q='+encodeURIComponent(v.q));break;case'map-filter':go('/map?'+new URLSearchParams(v));break;case'community-form':{const blog=v.blog_url;delete v.blog_url;let d=await api('/communities',{method:'POST',body:v});try{await api('/communities/'+d.id+'/blog',{method:'PUT',body:{blog_url:blog}});closeModal();tip('Google Blogger 동네사랑방을 연결했습니다.')}catch(err){closeModal();tip('모임은 만들어졌지만 Blogger 연결에 실패했습니다: '+err.message)}go('/community/'+d.id);break}case'post-form':{v.community_id=+v.community_id;let d=await api('/posts',{method:'POST',body:v});closeModal();tip('게시글이 등록됐습니다.');go('/post/'+d.id);break}case'comment-form':await api('/posts/'+form.dataset.postId+'/comments',{method:'POST',body:v});tip('답변이 등록되었습니다.');render();break;case'profile-form':await api('/auth/profile',{method:'PUT',body:v});STATE.user=(await api('/auth/me')).user;updateLogin();tip('프로필을 저장했습니다.');render();break;case'consultation-form':{v.consent=!!form.querySelector('[name=consent]').checked;let d=await api('/consultations',{method:'POST',body:v});form.reset();modal(`${modalTitle('상담 문의가 접수됐습니다')}<div class="notice">접수번호 #${d.id}</div><p>문의 내용이 저장되었습니다. 이 단계는 전문가 배정이나 답변 약속이 아닙니다. 법정 기한이 있다면 직접 전문가를 찾거나 관할기관에 문의하세요.</p><button class="btn btn-primary" data-action="close-modal" style="width:100%">확인</button>`);break}case'verification-form':await api('/communities/'+form.dataset.community+'/verification',{method:'POST',body:v});closeModal();tip('조합 관련 확인 요청이 접수됐습니다.');break;case'report-form':await api('/posts/'+form.dataset.post+'/report',{method:'POST',body:v});closeModal();tip('신고가 접수됐습니다.');break;case'neon-login-form':{const signup=!!form.querySelector('[name=signup]')?.checked;const payload={email:v.email,password:v.password,callbackURL:location.origin+location.pathname};if(signup){await neonAuthFetch('sign-up/email',{method:'POST',body:{...payload,name:(v.email||'').split('@')[0]||'회원'}})}else{await neonAuthFetch('sign-in/email',{method:'POST',body:payload})}if(await syncNeonToReland()){closeModal();updateLogin();tip(signup?'Neon Auth 회원가입 및 로그인 완료':'Neon Auth로 로그인했습니다.');render()}else tip('세션을 연결하지 못했습니다.');break}}}catch(err){if(err.message.includes('로그인'))loginModal();else tip(err.message)}}
 document.addEventListener('click',async event=>{const link=event.target.closest('a[data-nav]');if(link){event.preventDefault();go(link.getAttribute('href'));return}const action=event.target.closest('[data-action]');if(action){event.preventDefault();await handleAction(action);return}if(event.target.id==='modal')closeModal()});
 document.addEventListener('submit',async event=>{if(event.target.id){event.preventDefault();await handleForm(event.target)}});
-document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal();if((event.key==='Enter'||event.key===' ')&&event.target.classList.contains('result-row')){event.preventDefault();handleAction(event.target)}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeModal();if((event.key==='Enter'||event.key===' ')&&event.target.classList.contains('result-row')&&event.target.tagName!=='A'){event.preventDefault();handleAction(event.target)}});
 window.addEventListener('popstate',render);
 initialize();
 if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
