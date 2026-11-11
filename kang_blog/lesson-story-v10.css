@@ -1,0 +1,12 @@
+/* RE:LAND v10 — per-lecture narrative learning, standalone additive styles */
+.story-v10-module{margin:24px 0 8px;padding:24px;border:1px solid #d7e4db;border-radius:18px;background:#f7faf7;color:#16362c}
+.story-v10-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px;font-size:.84rem;letter-spacing:.01em}
+.story-v10-top span{font-weight:700;color:#3a725f}.story-v10-top strong{font-size:1.05rem}
+.story-v10-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.story-v10-grid section{min-width:0;padding:20px;border-radius:12px;background:#fff;border:1px solid #e1e9e3}
+.story-v10-tag{display:block;color:#26715b;font-size:.75rem;font-weight:800;letter-spacing:.08em}
+.story-v10-grid h4{margin:10px 0;font-size:1.04rem;line-height:1.5;color:#16362c}
+.story-v10-grid p{margin:0;line-height:1.85;font-size:.97rem;overflow-wrap:anywhere}
+.story-v10-safety{margin:16px 0 0;font-size:.82rem;line-height:1.7;color:#60736b}
+@media(max-width:650px){.story-v10-module{padding:14px}.story-v10-grid{grid-template-columns:minmax(0,1fr)}.story-v10-grid section{padding:15px}.story-v10-grid p{font-size:1rem}}
+@media print{.story-v10-module{break-inside:avoid}.story-v10-grid section{break-inside:avoid}}
