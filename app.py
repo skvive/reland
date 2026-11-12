@@ -1199,6 +1199,25 @@ def kang_qa(category:str=''):
     rows=[x for x in rows if not category or x['category']==category]
     return {'count':len(rows),'items':rows}
 
+@app.post('/api/boards/operator/claim')
+def claim_theme_board_operator(request:Request):
+    """Authorize a signed-in RE:LAND user via the pre-existing admin secret.
+
+    The secret is checked only on the server, never stored or echoed in
+    responses. Claiming requires the same key used by existing admin routes.
+    """
+    user=require_user(request)
+    throttle(request,'theme-operator-claim',3,3600)
+    candidate=request.headers.get('x-admin-key','')
+    if not ADMIN_KEY or not candidate or not hmac.compare_digest(candidate,ADMIN_KEY):
+        raise HTTPException(403,'본사 운영자 확인 정보가 올바르지 않습니다.')
+    with db() as c:
+        c.execute('UPDATE users SET role=? WHERE id=?',('admin',user['id']))
+        c.execute('INSERT INTO audit_events(action,target_id,note,created_at) VALUES(?,?,?,?)',
+                  ('theme_board_operator_claim',user['id'],'기존 관리자 키 검증 성공',utcnow()))
+    return {'ok':True,'role':'admin'}
+
+
 register_community_builder(app, ROOT, db, require_user, validate_blog, throttle, utcnow)
 register_theme_board_routes(app, ROOT, db)
 
