@@ -404,6 +404,11 @@ def site_robots(): return FileResponse(ROOT/'static'/'robots.txt', media_type='t
 @app.get('/sitemap.xml',include_in_schema=False)
 def site_sitemap(): return FileResponse(ROOT/'static'/'sitemap.xml',media_type='application/xml')
 
+@app.get('/feed.xml', include_in_schema=False)
+def site_feed():
+    from rss_feed import build_rss
+    return Response(content=build_rss(),media_type='application/rss+xml; charset=utf-8',headers={'Cache-Control':'public, max-age=900'})
+
 @app.get('/favicon.ico',include_in_schema=False)
 def site_favicon(): return FileResponse(ROOT/'static'/'assets'/'favicon.ico',media_type='image/x-icon')
 
