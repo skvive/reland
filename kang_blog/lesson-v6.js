@@ -9,9 +9,9 @@
   if (!lecture) { $('#lectureTitle').textContent = '강의를 찾을 수 없습니다'; $('#lectureSummary').textContent = '강의 목록에서 다시 선택해주세요.'; return; }
   const categories = [...new Set(DATA.lectures.map(x => x.category))];
   const categoryNumber = String(Math.max(0, categories.indexOf(lecture.category)) + 1).padStart(2,'0');
-  const banner = `/kang/assets/kang-clean-category-${categoryNumber}-v8.webp`;
+  const banner = `/kang/assets/lesson-stories/story-${String(id).padStart(3, '0')}.svg`;
   $('#lectureImage').src = banner;
-  $('#lectureImage').alt = `${lecture.category} 강실장 강의 사진 배너 (공식 합성 이미지)`;
+  $('#lectureImage').alt = `${lecture.category} 주제별 교육용 전용 일러스트, 실제 사업장 사진이 아님`;
   $('#lectureEyebrow').textContent = `RE:LAND · LECTURE ${String(id).padStart(2, '0')} / ${lecture.category}`;
   $('#lectureTitle').textContent = lecture.title;
   $('#lectureSummary').textContent = lecture.summary;

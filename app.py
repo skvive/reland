@@ -1102,6 +1102,19 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
     if not source.is_file():
         raise HTTPException(404, '교육 콘텐츠를 찾을 수 없습니다.')
     html = source.read_text(encoding='utf-8')
+    if folder == 'lectures':
+        # Preserve source HTML and its original legal references; enrich only public response.
+        html = re.sub(
+            r'src="/kang/assets/kang-clean-category-\\d{2}-v8\\.webp"',
+            f'src="/kang/assets/lesson-stories/story-{item_id}.svg"',
+            html,
+            count=1,
+        )
+        html = html.replace(
+            '</article>',
+            '<script defer src="/kang/longform-v12.js?v=20261112v12"></script></article>',
+            1,
+        )
     contact = (
         '<aside aria-label="재개발 교육 및 강의 문의" '
         'style="max-width:920px;margin:36px auto;padding:24px;'
