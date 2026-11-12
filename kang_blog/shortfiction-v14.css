@@ -1,0 +1,12 @@
+/* RE:LAND short fiction v14: coherent three-act short stories, one original scene image per lecture, responsive reader. */
+.story-act-v14{max-width:720px;margin:0 auto 38px;padding:0}
+.story-act-v14+.story-act-v14{margin-top:57px;padding-top:35px;border-top:1px solid #e0e9e2}
+.story-act-title-v14,.fiction-act-v14 h2{font-family:'Noto Serif KR','Nanum Myeongjo',serif;color:#1b463a;font-weight:750;font-size:clamp(20px,2.3vw,24px);letter-spacing:-.03em;line-height:1.5;margin:0 0 24px;word-break:keep-all}
+.story-act-v14 .serial-prose{font-size:clamp(17px,1.75vw,19px);line-height:2.05;letter-spacing:-.018em;margin:0 0 26px;color:#2b4037;word-break:keep-all;overflow-wrap:anywhere}
+.rk-fiction-v14{max-width:710px;margin:0 auto}
+.fiction-act-v14{margin:20px 0 43px}
+.fiction-act-v14+.fiction-act-v14{padding-top:34px;border-top:1px solid #e0e9e2}
+.rk-fiction-v14 .fiction-act-v14 p{font:normal clamp(17px,1.8vw,19px)/2.06 'Noto Serif KR','Nanum Myeongjo',serif;color:#2b4037;margin:0 0 27px;word-break:keep-all;overflow-wrap:anywhere}
+.rk-story img{background:#e9eee9;object-position:center}
+@media(max-width:600px){.story-act-v14+.story-act-v14{margin-top:38px;padding-top:28px}.story-act-v14 .serial-prose,.rk-fiction-v14 .fiction-act-v14 p{font-size:17px;line-height:2.0;margin-bottom:24px}.story-act-title-v14,.fiction-act-v14 h2{font-size:20px;margin-bottom:19px}}
+@media print{.story-act-v14,.fiction-act-v14{break-inside:auto}.story-act-title-v14,.fiction-act-v14 h2{break-after:avoid}}

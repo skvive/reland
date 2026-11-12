@@ -5,6 +5,7 @@
  const ALTS=["분담금이 다른 두 통지서를 비교하는 가상 주민 민지","두 주택의 감정평가 보고서와 토지 기록을 비교하는 가상 주민 영수","비례율과 개인 분담금을 구분해 계산하는 가상 주민 태호","공사비 변경 전후 계약서를 비교하는 가상 주민 수진","달력과 계산기로 분담금 납부 시점을 정리하는 가상 주민 기철","주민 단체방의 사업비 증가 소문을 원자료와 대조하는 가상 주민 정희","총회 소집통지·안건지·회의록을 비교하는 가상 주민 소영","총회 출석 인원과 찬성표를 따로 확인하는 가상 주민 성훈","서로 다른 임시총회 공고문의 발행 주체와 날짜를 확인하는 가상 주민 은주","용역 계약과 지급 내역을 사실 중심으로 비교하는 가상 주민 정희"];
  const id=Number(new URLSearchParams(location.search).get('id'));
  if(!Number.isInteger(id)||id<1||id>10)return;
+ if(window.KANG_SHORTFICTION_V14?.[id])return; // v14 replaces the older repeating portrait + short inserts; keep v13 for rollback.
  const learning=document.querySelector('#learning');
  const prose=learning?.querySelector('.serial-reading');
  if(!prose||learning.querySelector('.episode-art-v13'))return;
