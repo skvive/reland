@@ -33,4 +33,6 @@ jobs:
           done
           status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$base/api/posts" -H "Content-Type: application/json" -d '{"community_id":1,"kind":"notice","title":"무단 시도 차단 확인","body":"게시물 무단 등록은 차단되어야 합니다."}')"
           test "$status" = "401"
-          echo "unauthorized write blocked; smoke passed"
+          operator_status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$base/api/boards/operator/claim" -H "x-admin-key: invalid-probe")"
+          test "$operator_status" = "401"
+          echo "unauthorized writes and operator claims blocked; smoke passed"
