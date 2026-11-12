@@ -71,13 +71,17 @@ def test_post_comment_likes_report(client):
     detail=client.get(f'/api/posts/{pid}').json();assert len(detail['comments'])==1
     posts=client.get('/api/posts').json()['items'];assert any(x['id']==pid for x in posts)
 
-def test_consultation_consent_required(client):
+def test_consultation_disabled_by_editorial_policy(client):
+    # RE:LAND now intentionally rejects legal case intake, regardless of consent.
+    # Regression must not re-enable the legacy consultation endpoint.
     login(client)
     example={'category':'조합원 자격','region':'서울','subject':'자격 관련 상담이 필요합니다','message':'관리처분 시기와 자격의 관계가 궁금합니다. 문의드립니다.','consent':False}
-    assert client.post('/api/consultations',json=example).status_code==422
+    blocked=client.post('/api/consultations',json=example)
+    assert blocked.status_code==403
+    assert '법률상담' in blocked.json()['detail']
     example['consent']=True
-    r=client.post('/api/consultations',json=example);assert r.status_code==201
-    assert '배정' in r.json()['notice']
+    blocked=client.post('/api/consultations',json=example)
+    assert blocked.status_code==403
 
 def test_profile_blogger_validation(client):
     login(client)
