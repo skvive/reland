@@ -7,6 +7,7 @@ import hashlib
 import hmac
 import json
 import os
+import mimetypes
 import re
 import secrets
 import smtplib
@@ -33,6 +34,8 @@ from community_builder import init_community_builder_schema, register_community_
 from theme_boards import init_theme_board_schema, register_theme_board_routes, THEME_BY_SLUG
 
 ROOT = Path(__file__).resolve().parent
+# Vercel Python runtime may not register WebP; make browser image responses explicit.
+mimetypes.add_type('image/webp', '.webp', strict=True)
 # Support a local .env settings file without introducing a mandatory extra package.
 # Existing environment variables always take precedence over file values.
 def load_env_file():
