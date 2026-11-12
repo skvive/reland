@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#123c35">
+<title>동네사랑방 무료 템플릿 빌더 | RE:LAND</title>
+<meta name="description" content="우리 동네 무료 Blogger 커뮤니티의 디자인을 만들고 리랜드와 연결하세요.">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/static/community-builder.css?v=20261112">
+<script defer src="/static/community-builder.js?v=20261112"></script>
+</head>
+<body>
+<header class="topbar"><a class="logo" href="/" aria-label="리랜드 홈">RE:LAND <small>도시의 내일을 잇다</small></a><nav><a href="/community">동네사랑방 목록</a><a href="/" aria-label="리랜드로 돌아가기">리랜드 홈</a></nav></header>
+<main class="layout">
+<section class="intro">
+  <p class="eyebrow">RE:LAND COMMUNITY · FREE BLOGGER BUILDER</p>
+  <h1>우리 동네 이야기를<br><em>우리 손으로 만들어 보세요.</em></h1>
+  <p class="intro-copy">복잡한 코딩 없이 동네 블로그의 이름과 색상을 정하고 무료 템플릿을 받으세요. 공지는 운영자가 전하고, 이웃은 댓글로 이야기를 이어갑니다.</p>
+  <div class="pill-row"><span>① 동네 설정</span><span>② 템플릿 받기</span><span>③ Google 블로그 개설</span><span>④ RE:LAND 등록</span></div>
+</section>
+<div class="columns">
+<div class="workspace">
+  <section class="panel" id="step1">
+    <div class="step-head"><span class="number">01</span><div><h2>동네사랑방 꾸미기</h2><p>먼저 우리 동네에 맞는 이름과 분위기를 정해 주세요.</p></div></div>
+    <div class="fields"><label>사랑방 이름 <strong>*</strong><input id="community-name" maxlength="60" minlength="3" required value="" placeholder="예: 시흥4동 우리동네 사랑방"></label>
+    <label>지역 <strong>*</strong><select id="community-region" required><option value="">지역을 선택하세요</option></select></label>
+    <label class="wide">동네 소개 <strong>*</strong><textarea id="community-description" minlength="8" maxlength="450" rows="3" placeholder="예: 시흥4동 소식과 생활 정보를 나누는 이웃 모임"></textarea></label></div>
+    <p class="small-title">디자인 색상</p>
+    <div class="theme-picker" role="group" aria-label="블로그 테마 색상">
+      <label class="theme-option"><input type="radio" name="theme" value="forest" checked><span class="sample forest"></span><b>리랜드 포레스트</b></label>
+      <label class="theme-option"><input type="radio" name="theme" value="navy"><span class="sample navy"></span><b>어반 네이비</b></label>
+      <label class="theme-option"><input type="radio" name="theme" value="warm"><span class="sample warm"></span><b>따뜻한 마을</b></label>
+    </div>
+    <div class="field"><label>네이버 BAND 연결 주소 <small>(선택)</small><input id="band-url" type="url" placeholder="https://band.us/band/내밴드번호"></label><p class="hint">연결하지 않아도 됩니다. 나중에 운영자가 추가할 수 있습니다.</p></div>
+  </section>
+  <section class="panel" id="step2"><div class="step-head"><span class="number">02</span><div><h2>Google Blogger 테마 다운로드</h2><p>공지형 홈·댓글 기능을 갖춘 Blogger XML 템플릿을 만들어요.</p></div></div>
+    <button class="button primary" id="download-theme" type="button">내 동네 무료 XML 템플릿 받기 <span aria-hidden="true">↓</span></button>
+    <div class="info"><strong>설치 순서</strong><p>Google Blogger 관리 화면 → <b>테마</b> → <b>복원</b> 또는 <b>업로드</b> → 다운로드한 XML을 선택하세요. Blogger에 따라 메뉴명이 조금 다를 수 있습니다.</p></div>
+    <p class="hint">Blogger 댓글 설정에서 댓글 허용, 스팸 관리 및 승인 정책을 설정하세요. 공지 글은 운영자 계정에서 발행하고 댓글로 답변을 받습니다.</p>
+  </section>
+  <section class="panel" id="step3"><div class="step-head"><span class="number">03</span><div><h2>무료 Google 블로그 개설하기</h2><p>새 창에서 개인 Google 계정으로 개설합니다.</p></div></div>
+    <a class="button secondary" href="https://www.blogger.com/" target="_blank" rel="noopener noreferrer">Google Blogger에서 무료로 개설하기 <span aria-hidden="true">↗</span></a>
+    <p class="hint">Blogger는 구글 서비스입니다. RE:LAND는 Google 계정 비밀번호를 받지 않으며, 블로그 이름이나 주소를 미리 예약하지 않습니다.</p>
+    <label class="field">개설한 공개 블로그 주소 <strong>*</strong><input type="url" id="blog-url" placeholder="https://my-town.blogspot.com/" autocomplete="url"></label>
+  </section>
+  <section class="panel" id="step4"><div class="step-head"><span class="number">04</span><div><h2>RE:LAND 동네사랑방 등록</h2><p>주소를 소유한 운영자인지 확인한 다음 동네 목록에 연결합니다.</p></div></div>
+    <div class="info" id="auth-state">연결 상태 확인 중…</div>
+    <button class="button primary" id="register-community" type="button">사랑방 등록하고 확인 코드 발급 <span aria-hidden="true">→</span></button>
+    <div class="verify hidden" id="verify-area"><h3>공개 글로 소유권 확인</h3><p>아래 코드를 복사해 Blogger에서 공개 게시글의 제목 또는 본문에 넣고 발행하세요. 이 작업은 24시간 안에 마쳐야 합니다.</p><div class="code-line"><code id="verify-code"></code><button type="button" id="copy-code">복사</button></div><label>확인 코드<input id="verify-input" placeholder="RELAND-..." autocomplete="off"></label><button class="button primary" id="verify-community" type="button">코드 게시 확인하고 등록 완료 <span aria-hidden="true">✓</span></button></div>
+    <div class="success hidden" id="finish-area"><strong>이웃 커뮤니티 연결 완료</strong><p>블로그 소유를 확인했습니다. 이제 RE:LAND에서 공지를 작성하고, 주민 댓글을 받을 수 있습니다.</p><a class="button secondary" id="community-link" href="/community">동네사랑방으로 이동하기 ↗</a></div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </section>
+</div>
+<aside class="preview-col"><div class="preview-wrap"><div class="preview-heading"><span>LIVE PREVIEW</span><b>내 동네 블로그 미리보기</b></div>
+<div class="device"><div class="device-bar"><span></span><span></span><span></span><i>my-town.blogspot.com</i></div><div class="preview-hero" id="preview-hero"><small>OUR NEIGHBORHOOD</small><h2 id="preview-name">우리 동네 사랑방</h2><p id="preview-description">동네 이야기를 함께 만드는 공간</p></div><div class="notice-sample"><span>운영자 공지</span><h3>반가워요, 이웃 여러분!</h3><p>동네 소식을 편하게 확인하고 질문을 남겨 주세요.</p><small>운영자 · 댓글 열림</small></div><div class="reply-sample"><strong>이웃의 댓글</strong><p>우리 동네 소식 알기 편해졌네요 🙌</p></div><div class="band-sample hidden" id="band-sample">네이버 BAND에서 모임 이어가기 ↗</div></div>
+<div class="preview-foot">미리보기는 디자인 예시입니다. 실제 게시물은 Blogger에서 운영자가 작성하며 RE:LAND 댓글과 자동 동기화되지는 않습니다.</div></div></aside>
+</div></main>
+<footer>RE:LAND 동네사랑방 · 무료 Blogger 템플릿 빌더 <a href="/community">← 커뮤니티로 돌아가기</a></footer>
+</body></html>
