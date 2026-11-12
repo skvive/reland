@@ -1,0 +1,12 @@
+/* RE:LAND 2026-11-12 v13 · 1~10강 실제 상황별 삽화와 소설형 읽기 리듬 */
+.episode-v13 .serial-reading{max-width:710px}
+.episode-art-v13{max-width:710px;margin:18px auto 38px;padding:0}
+.episode-art-v13 img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:13px;background:#e7eee7;box-shadow:0 16px 32px rgba(20,55,38,.11)}
+.episode-art-v13 figcaption{font:400 12px/1.7 'Noto Sans KR',sans-serif;color:#79877e;margin-top:11px;text-align:right}
+.episode-reading-guide-v13{font-size:12px;line-height:1.8;letter-spacing:.02em;font-weight:700;color:#35765c;margin:17px 0 8px}
+.episode-v13 .serial-reading .serial-prose{font-size:clamp(17px,1.8vw,19px);line-height:2.08;letter-spacing:-.016em;margin-bottom:28px;text-wrap:pretty;word-break:keep-all}
+.episode-v13 .serial-reading .episode-added-v13{border:0;background:none;margin:30px 0;padding:0}
+.episode-v13 .serial-reading .serial-dialogue{font-size:clamp(18px,2vw,20px);line-height:1.9}
+.episode-v13 .serial-reading p:first-child::first-letter{font-weight:800}
+@media(max-width:600px){.episode-art-v13{margin:12px -3px 26px}.episode-art-v13 img{border-radius:10px}.episode-art-v13 figcaption{text-align:left;font-size:11px;padding:0 4px}.episode-v13 .serial-reading .serial-prose{font-size:17px;line-height:2.02;margin-bottom:24px}.episode-v13 .serial-reading .serial-dialogue{font-size:18px;line-height:1.86}.episode-reading-guide-v13{font-size:11px}}
+@media print{.episode-art-v13{break-inside:avoid}.episode-v13 .episode-added-v13{break-inside:avoid}}
