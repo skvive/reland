@@ -30,6 +30,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from neon_auth_jwt import validate_neon_token
 from community_builder import init_community_builder_schema, register_community_builder
+from theme_boards import init_theme_board_schema, register_theme_board_routes, THEME_BY_SLUG
 
 ROOT = Path(__file__).resolve().parent
 # Support a local .env settings file without introducing a mandatory extra package.
@@ -181,6 +182,7 @@ def init_db():
         if not table_has_column(c, 'communities', 'blog_url'):
             c.execute("ALTER TABLE communities ADD COLUMN blog_url TEXT NOT NULL DEFAULT ''")
         init_community_builder_schema(c, table_has_column)
+        init_theme_board_schema(c, table_has_column, utcnow)
         if c.execute('SELECT count(*) FROM districts').fetchone()[0] == 0:
             c.executemany('''INSERT INTO districts (name,province,city,stage,kind,lat,lon,precision,source_url,demo)
                 VALUES (?,?,?,?,?,?,?,?,?,1)''', [
@@ -233,6 +235,7 @@ class CommunityCreate(BaseModel):
     description: str = Field(min_length=8,max_length=450)
     region: str = Field(min_length=2,max_length=20)
     district_id: int | None = None
+    theme_slug: str = Field(default='neighborhood', max_length=32)
 
 class CommunityBlogUpdate(BaseModel):
     blog_url: str = Field(default='',max_length=250)
@@ -720,17 +723,18 @@ def communities(q:str='',region:str=''):
        FROM communities c WHERE 1=1'''; params=[]
     if q:sql+=' AND (c.name LIKE ? OR c.description LIKE ?)';params.extend(['%'+q[:80]+'%']*2)
     if region and region!='전국':sql+=' AND (c.region=? OR c.region=?)';params.extend([region,'전국'])
-    sql+=' ORDER BY followers DESC,c.id DESC'
+    sql+=' AND c.is_theme_board=0 ORDER BY followers DESC,c.id DESC'
     with db() as c:items=[dict(r) for r in c.execute(sql,params).fetchall()]
     return {'items':items}
 
 @app.post('/api/communities',status_code=201)
 def create_community(data:CommunityCreate,request:Request):
     u=require_user(request)
+    if data.theme_slug not in THEME_BY_SLUG:raise HTTPException(422,'올바른 테마판을 선택해 주세요.')
     with db() as c:
         if data.district_id and not c.execute('SELECT 1 FROM districts WHERE id=?',(data.district_id,)).fetchone():raise HTTPException(404,'지역 정보가 없습니다.')
-        cur=c.execute('INSERT INTO communities(name,region,description,district_id,owner_id,created_at) VALUES(?,?,?,?,?,?)',
-                      (data.name.strip(),data.region.strip(),data.description.strip(),data.district_id,u['id'],utcnow()))
+        cur=c.execute('INSERT INTO communities(name,region,description,district_id,owner_id,created_at,board_slug) VALUES(?,?,?,?,?,?,?)',
+                      (data.name.strip(),data.region.strip(),data.description.strip(),data.district_id,u['id'],utcnow(),data.theme_slug))
         c.execute('INSERT INTO follows(user_id,community_id) VALUES(?,?)',(u['id'],cur.lastrowid))
         return {'id':cur.lastrowid,'official':False}
 
@@ -1180,6 +1184,7 @@ def kang_qa(category:str=''):
     return {'count':len(rows),'items':rows}
 
 register_community_builder(app, ROOT, db, require_user, validate_blog, throttle, utcnow)
+register_theme_board_routes(app, ROOT, db)
 
 @app.get('/{full_path:path}',include_in_schema=False)
 def spa_fallback(full_path:str):
