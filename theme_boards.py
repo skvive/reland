@@ -57,6 +57,8 @@ def public_board(c, slug):
 
 
 def board_data(c, slug, index, include_local=False, search="", region=""):
+    if slug not in THEME_BY_SLUG:
+        raise HTTPException(404, "존재하지 않는 테마판입니다.")
     theme = THEME_BY_SLUG[slug]
     board_id = public_board(c, slug)
     local_count = c.execute(
