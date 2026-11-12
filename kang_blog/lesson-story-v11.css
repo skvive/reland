@@ -1,0 +1,22 @@
+/* RE:LAND v11 story-first typography; original tables and legal refs remain accessible. */
+.serial-chapter,.serial-explainer{background:#fff}
+.serial-eyebrow{display:block;margin-bottom:16px;font-size:12px;color:#348468;font-weight:800;letter-spacing:.07em}
+.serial-chapter h2.serial-title{font-size:clamp(26px,3.5vw,36px);line-height:1.46;letter-spacing:-.035em;margin:0 0 14px;color:#183e32;word-break:keep-all}
+.serial-deck{margin:0 0 34px;font-size:15px;color:#687b71}
+.serial-reading{max-width:700px;margin:0 auto;font-family:'Noto Serif KR','Nanum Myeongjo','Batang',Georgia,serif}
+.serial-reading .serial-prose{font-size:clamp(17px,2vw,19px);line-height:2.05;color:#2b4036;letter-spacing:-.01em;word-break:keep-all;margin:0 0 26px;overflow-wrap:break-word}
+.serial-reading .serial-dialogue{font-size:clamp(18px,2.1vw,21px);line-height:1.85;color:#205340;border-left:3px solid #459374;padding:4px 0 4px 19px;margin:30px 0;font-weight:700;word-break:keep-all}
+.serial-disclaimer{max-width:700px;font-size:12px;line-height:1.8;color:#718176;margin:22px auto}
+.serial-original{margin-top:25px;border-top:1px solid #e5e9e3}
+.serial-original summary{padding:18px 0;cursor:pointer;font-size:14px;font-weight:700;color:#386954;min-height:50px}
+.serial-original-body{padding:12px 0}
+.serial-original-body .brief-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.serial-original-body .roadmap{grid-template-columns:repeat(5,minmax(0,1fr))}
+.serial-takeaway{max-width:700px;margin:23px auto;padding:22px;background:#f1f6ef;border-left:4px solid #459374;border-radius:4px}
+.serial-takeaway b{color:#266c51;font-size:13px}.serial-takeaway p{font-size:16px;line-height:1.9;margin:6px 0;color:#315241}
+.serial-archive{margin:18px 0;background:#fbfcfa;border:1px solid #dfe8df;border-radius:12px;overflow:hidden}
+.serial-archive>summary{padding:20px 22px;cursor:pointer;color:#1e513c;font-size:15px;font-weight:750;min-height:54px}
+.serial-archive>section{margin:0;border-radius:0;border:0;border-top:1px solid #e4ebe4;box-shadow:none}
+@media(max-width:900px){.serial-original-body .brief-grid{grid-template-columns:1fr}.serial-original-body .roadmap{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.serial-chapter,.serial-explainer{padding:24px 20px}.serial-chapter h2.serial-title{font-size:27px}.serial-deck{font-size:14px;margin-bottom:26px}.serial-reading .serial-prose{font-size:17px;line-height:2.05;margin-bottom:24px}.serial-reading .serial-dialogue{font-size:18px;line-height:1.88;margin:24px 0;padding-left:15px}.serial-archive>summary{padding:16px 18px}}
+@media print{.serial-original,.serial-archive{display:none}.serial-reading .serial-prose{break-inside:avoid}}
