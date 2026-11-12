@@ -711,7 +711,7 @@ def my_dashboard(request:Request):
 def stats():
     with db() as c:
         real=c.execute('SELECT COUNT(*) FROM districts WHERE demo=0').fetchone()[0]
-        community=c.execute('SELECT COUNT(*) FROM communities').fetchone()[0]
+        community=c.execute('SELECT COUNT(*) FROM communities WHERE is_theme_board=0').fetchone()[0]
         post=c.execute('SELECT COUNT(*) FROM posts WHERE hidden=0 AND demo=0').fetchone()[0]
         news=c.execute('SELECT COUNT(*) FROM news').fetchone()[0]
     return {'districts':real,'communities':community,'posts':post,'news':news,'official_catalog_rows':1566}
