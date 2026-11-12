@@ -79,3 +79,31 @@ def test_qa_case_only_validated():
  cases=load('sources.json')['precedents']
  for x in load('qa_30.json'):
   assert all(c in cases for c in x['cases'])
+
+
+def test_kang_education_inquiry_is_visible_on_all_pages():
+    email = 'kangjunchul8@gmail.com'
+    for url in ('/', '/kang/', '/kang/lesson-v6.html?id=1', '/kang/qa/'):
+        response = client.get(url)
+        assert response.status_code == 200, (url, response.status_code)
+        assert email in response.text, url
+        assert 'mailto:' + email in response.text, url
+
+    for number in range(1, 61):
+        n = f'{number:03d}'
+        for url in (f'/kang/lectures/lesson-{n}.html', f'/kang/slides/lesson-{n}.html'):
+            response = client.get(url)
+            assert response.status_code == 200, (url, response.status_code)
+            assert email in response.text, url
+            assert '재개발 교육·강의 문의' in response.text, url
+
+    for number in range(1, 31):
+        url = f'/kang/qa/qa-{number:03d}.html'
+        response = client.get(url)
+        assert response.status_code == 200, (url, response.status_code)
+        assert email in response.text, url
+        assert '재개발 교육·강의 문의' in response.text, url
+
+    assert client.get('/kang/lectures/lesson-999.html').status_code == 404
+    assert client.get('/kang/qa/qa-999.html').status_code == 404
+    assert client.get('/kang/qa/qa-v7.css').status_code == 200
