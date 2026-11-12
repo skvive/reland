@@ -29,6 +29,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from neon_auth_jwt import validate_neon_token
+from community_builder import init_community_builder_schema, register_community_builder
 
 ROOT = Path(__file__).resolve().parent
 # Support a local .env settings file without introducing a mandatory extra package.
@@ -179,6 +180,7 @@ def init_db():
             c.execute('ALTER TABLE posts ADD COLUMN resolved INTEGER NOT NULL DEFAULT 0')
         if not table_has_column(c, 'communities', 'blog_url'):
             c.execute("ALTER TABLE communities ADD COLUMN blog_url TEXT NOT NULL DEFAULT ''")
+        init_community_builder_schema(c, table_has_column)
         if c.execute('SELECT count(*) FROM districts').fetchone()[0] == 0:
             c.executemany('''INSERT INTO districts (name,province,city,stage,kind,lat,lon,precision,source_url,demo)
                 VALUES (?,?,?,?,?,?,?,?,?,1)''', [
@@ -752,7 +754,7 @@ def set_community_blog(community_id:int,data:CommunityBlogUpdate,request:Request
         row=c.execute('SELECT owner_id FROM communities WHERE id=?',(community_id,)).fetchone()
         if not row:raise HTTPException(404,'없는 커뮤니티입니다.')
         if row['owner_id'] != u['id']:raise HTTPException(403,'모임 운영자만 공개 블로그 링크를 등록할 수 있습니다.')
-        c.execute('UPDATE communities SET blog_url=? WHERE id=?',(blog,community_id))
+        c.execute('UPDATE communities SET blog_url=?,blog_verified=0 WHERE id=?',(blog,community_id))
     return {'ok':True,'blog_url':blog,'verified_blog_owner':False}
 
 @app.get('/api/communities/{community_id}/blog')
@@ -796,7 +798,7 @@ def posts(request:Request,community_id:int|None=None,kind:str='',q:str='',limit:
     if community_id:sql+=' AND p.community_id=?';args.append(community_id)
     if kind in ('question','discussion','notice'):sql+=' AND p.kind=?';args.append(kind)
     if q:sql+=' AND (p.title LIKE ? OR p.body LIKE ?)';args.extend(['%'+q[:90]+'%']*2)
-    sql+=' ORDER BY p.id DESC LIMIT ?';args.append(max(1,min(limit,100)))
+    sql+=(" ORDER BY CASE WHEN p.kind='notice' THEN 0 ELSE 1 END, p.id DESC LIMIT ?" if community_id else ' ORDER BY p.id DESC LIMIT ?');args.append(max(1,min(limit,100)))
     with db() as c:items=[dict(row) for row in c.execute(sql,args).fetchall()]
     return {'items':items}
 
@@ -812,7 +814,10 @@ def throttle(request,key,limit=8,window=60):
 def create_post(data:PostCreate,request:Request):
     u=require_user(request);throttle(request,'post',6,60)
     with db() as c:
-        if not c.execute('SELECT 1 FROM communities WHERE id=?',(data.community_id,)).fetchone():raise HTTPException(404,'커뮤니티가 없습니다.')
+        community=c.execute('SELECT owner_id FROM communities WHERE id=?',(data.community_id,)).fetchone()
+        if not community:raise HTTPException(404,'커뮤니티가 없습니다.')
+        if data.kind=='notice' and community['owner_id']!=u['id'] and u.get('role')!='admin':
+            raise HTTPException(403,'공지사항은 동네사랑방 운영자만 게시할 수 있습니다.')
         cur=c.execute('INSERT INTO posts(community_id,author_id,kind,title,body,created_at) VALUES(?,?,?,?,?,?)',
                       (data.community_id,u['id'],data.kind,data.title.strip(),data.body.strip(),utcnow()))
     return {'id':cur.lastrowid}
@@ -1173,6 +1178,8 @@ def kang_qa(category:str=''):
     rows=json.loads((ROOT/'content'/'kang'/'qa_30.json').read_text(encoding='utf-8'))
     rows=[x for x in rows if not category or x['category']==category]
     return {'count':len(rows),'items':rows}
+
+register_community_builder(app, ROOT, db, require_user, validate_blog, throttle, utcnow)
 
 @app.get('/{full_path:path}',include_in_schema=False)
 def spa_fallback(full_path:str):
