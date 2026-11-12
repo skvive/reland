@@ -61,7 +61,8 @@
     $('#page').innerHTML=`<div class="app-shell">
       <aside class="sidebar"><div class="side-kicker">NEIGHBORHOOD CHANNELS</div><h2>테마별 본사판</h2>
       <nav class="side-nav" aria-label="테마판 이동">${themes.map(([slug,title],i)=>`<a href="/board/${slug}" target="_self" class="${slug===page?'active':''}"><span class="side-dot">${String(i+1).padStart(2,'0')}</span>${esc(title)}<span class="side-next">↗</span></a>`).join('')}</nav>
-      <div class="sidebar-guide"><b>이 공간은 이렇게 운영됩니다</b><p>본사판에서 공지와 질문을 읽고, 지역모임으로 이동해 개별 Blogger와 연결됩니다. 법정 조합의 공식 통지 기능과는 다릅니다.</p></div></aside>
+      <div class="sidebar-guide"><b>이 공간은 이렇게 운영됩니다</b><p>본사판에서 공지와 질문을 읽고, 지역모임으로 이동해 개별 Blogger와 연결됩니다. 법정 조합의 공식 통지 기능과는 다릅니다.</p></div>
+      ${state.user?.role==='admin'?'<div class="operator-confirmed">✓ 본사판 운영자 권한 연결됨</div>':state.user?'<button class="outline operator-access" id="operator-access" type="button">본사판 운영자 인증</button>':''}</aside>
       <div class="main-panel">
         <section class="board-hero" ${photo(b.image_index)}>
           <div class="hero-overlay"><span class="eyebrow">RE:LAND EDITORIAL BOARD · ${esc(b.eyebrow)}</span><h1>${esc(b.title)}</h1>
@@ -85,6 +86,7 @@
     $('#search-local').addEventListener('submit',searchLocal);
     $('#write-board').addEventListener('click',writeModal);
     $('#write-board-secondary').addEventListener('click',writeModal);
+    if($('#operator-access'))$('#operator-access').addEventListener('click',operatorModal);
     document.querySelectorAll('[data-filter]').forEach(el=>el.addEventListener('click',()=>{state.filter=el.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===el));renderPosts();}));
     document.querySelectorAll('[data-post]').forEach(el=>el.addEventListener('click',()=>postModal(Number(el.dataset.post))));
   };
@@ -108,6 +110,22 @@
     $('#close-dialog').focus();
   };
   const closeDialog=()=>{$('#layer').classList.add('hidden');document.body.classList.remove('modal-open');};
+  const operatorModal=()=>{
+    if(!state.user)return;
+    openDialog('본사판 운영자 인증',`<p class="micro">RE:LAND 기존 관리자 키를 알고 있는 운영자만 본사 공지 작성 권한을 연결할 수 있습니다. 이 키는 서버에서만 확인되며 저장하거나 다시 표시하지 않습니다.</p>
+    <form id="operator-claim"><label>기존 RE:LAND 관리자 키<input id="operator-key" type="password" minlength="8" maxlength="240" required autocomplete="off" placeholder="관리자 키 입력"></label>
+    <button class="primary submit" type="submit">운영자 권한 확인</button></form>`);
+    $('#operator-claim').addEventListener('submit',async(e)=>{
+      e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type=submit]'),key=f.querySelector('#operator-key').value;
+      btn.disabled=true;
+      try{
+        await api('/boards/operator/claim',{method:'POST',headers:{'x-admin-key':key}});
+        f.querySelector('#operator-key').value='';
+        state.user=(await api('/auth/me')).user;
+        closeDialog();render();msg('본사판 운영자 권한을 연결했습니다. 이제 공지글을 작성할 수 있습니다.');
+      }catch(e){msg(e.message,true)}finally{btn.disabled=false}
+    });
+  };
   const writeModal=()=>{
     if(!state.user){openDialog('로그인이 필요합니다','<p>RE:LAND Google 계정으로 로그인하면 동네판에 글을 쓸 수 있습니다.</p><p><a class="primary buttonish" href="/community" target="_blank" rel="noopener noreferrer">리랜드에서 로그인하기 ↗</a></p>');return}
     const admin=state.user.role==='admin';
