@@ -8,6 +8,10 @@ on:
       - "static/app.js"
       - "static/community-builder.*"
       - "tests/test_community_builder.py"
+      - "theme_boards.py"
+      - "static/theme-board.*"
+      - "static/theme-portal.css"
+      - "tests/test_theme_boards.py"
       - "tests/test_api.py"
       - ".github/workflows/community-builder-qa.yml"
   workflow_dispatch:
@@ -30,7 +34,8 @@ jobs:
         with:
           node-version: "22"
       - run: pip install -r requirements.txt pytest
-      - run: python -m compileall -q app.py db_engine.py community_builder.py
+      - run: python -m compileall -q app.py db_engine.py community_builder.py theme_boards.py
       - run: node --check static/app.js
       - run: node --check static/community-builder.js
-      - run: python -m pytest -q tests/test_community_builder.py tests/test_api.py
+      - run: node --check static/theme-board.js
+      - run: python -m pytest -q tests/test_community_builder.py tests/test_theme_boards.py tests/test_api.py
