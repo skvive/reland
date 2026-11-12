@@ -23,7 +23,7 @@ const authorScenes={
 const speaking=row[1].replace(/^[^:：]+[:：]\s*/,'').replace(/‘/g,'“').replace(/’/g,'”');
 const cast=row[1].split(/[:：]/)[0]||'주민';
 const docParts=String(lesson.documents||'공식 원문').split(/[,，、]/).map(x=>x.trim()).filter(Boolean);
-const beats=authorScenes[id]||[
+const beats=storyExtras[id]||authorScenes[id]||[
  scenes[id-1],
  '“'+esc(cast)+' 씨, 오늘 이 문제를 여기서 바로 결정할 필요는 없습니다.” 강실장은 종이를 조금 돌려 놓았다. “먼저 확인된 내용과 아직 모르는 내용을 구분해 볼까요?” '+row[2],
  '그들은 자료를 한 장씩 펼쳤다. '+row[3]+' 이렇게 정리하자 막연한 질문이 확인할 수 있는 항목으로 바뀌었다.'
@@ -31,7 +31,7 @@ const beats=authorScenes[id]||[
 const oldLearning=learning.innerHTML;
 learning.classList.add('serial-chapter');
 learning.innerHTML='<span class="serial-eyebrow">RE:LAND 강실장 · 이야기로 배우는 재개발 / '+String(id).padStart(2,'0')+'</span><h2 class="serial-title">'+esc(lesson.title)+'</h2><p class="serial-deck">서류보다 먼저, 사람의 이야기에서 시작합니다.</p><div class="serial-reading">'+
- '<p class="serial-prose">'+esc(beats[0])+'</p><p class="serial-dialogue">'+esc(speaking)+'</p><p class="serial-prose">'+esc(beats[1])+'</p><p class="serial-prose">'+esc(beats[2])+'</p><p class="serial-prose">강실장은 마지막으로 덧붙였다. '+esc(row[4])+'</p></div>'+
+ beats.map((paragraph,i)=>'<p class="serial-prose">'+esc(paragraph)+'</p>'+(i===0?'<p class="serial-dialogue">'+esc(speaking)+'</p>':'')).join('')+'</div>'+
  '<p class="serial-disclaimer">※ 등장인물·대화는 가상의 교육 이야기입니다. 개별 사업장의 권리·금액·기한이나 법적 결과를 확정하지 않습니다.</p>'+
  '<details class="serial-original"><summary>기존 학습 목표와 개념 카드 펼쳐 보기</summary><div class="serial-original-body">'+oldLearning+'</div></details>';
 const oldRoadmap=roadmap.innerHTML;
