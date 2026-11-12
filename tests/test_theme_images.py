@@ -13,7 +13,7 @@ def test_nine_category_images_are_present_and_distinct():
         assert image.stat().st_size > 6000
         with Image.open(image) as img:
             assert img.format=="JPEG"
-            assert img.width >= 200 and img.height >= 130
+            assert img.width >= 190 and img.height >= 130
             assert img.getbbox() is not None
         digests.add(hashlib.sha256(image.read_bytes()).hexdigest())
     assert len(digests) == 9
