@@ -1,0 +1,36 @@
+name: RE:LAND Production Smoke (one-off)
+on:
+  push:
+    branches: [feat/community-blogger-builder-20261112]
+    paths:
+      - .github/workflows/reland-prod-smoke-once.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployed production routes and nine assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://reland.lexid.site"
+          curl --retry 3 --max-time 25 -fsSL "$base/api/health" | python -c 'import json,sys; d=json.load(sys.stdin); assert d["status"]=="ok",d; print("health ok",d["status"])'
+          curl --retry 3 --max-time 25 -fsSL "$base/api/boards" | python -c 'import json,sys; d=json.load(sys.stdin); assert len(d["items"])==9,d; print("9 theme boards ok")'
+          curl --retry 3 --max-time 25 -fsSL "$base/api/boards/seoul" | python -c 'import json,sys; d=json.load(sys.stdin)["item"]; assert d["slug"]=="seoul" and d["id"]>0,d; print("seoul board ok",d["id"],len(d["communities"]))'
+          curl --retry 3 --max-time 25 -fsSL "$base/api/communities" | python -c 'import json,sys; d=json.load(sys.stdin)["items"]; assert isinstance(d,list); assert all(x.get("is_theme_board",0)==0 for x in d); print("local communities ok",len(d))'
+          curl --retry 3 --max-time 25 -fsSL "$base/board/seoul" | grep -q 'theme-board.js'
+          curl --retry 3 --max-time 25 -fsSL "$base/community/builder" | grep -q 'community-builder.js'
+          curl --retry 3 --max-time 25 -fsSL "$base/community" | grep -q 'static/app.js'
+          curl --retry 3 --max-time 25 -fsSL "$base/static/theme-board.js" | grep -q 'RE:LAND theme board'
+          curl --retry 3 --max-time 25 -fsSL "$base/static/theme-portal.css" | grep -q 'theme-board-grid'
+          for n in 01 02 03 04 05 06 07 08 09; do
+            curl --retry 2 --max-time 25 -fsSL "$base/static/assets/boards/cover-$n.jpg" | head -c 3 | od -An -tx1 | grep -qi 'ff d8 ff'
+            echo "image-$n ok"
+          done
+          status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$base/api/posts" -H "Content-Type: application/json" -d '{"community_id":1,"kind":"notice","title":"무단 시도 차단 확인","body":"게시물 무단 등록은 차단되어야 합니다."}')"
+          test "$status" = "401"
+          echo "unauthorized write blocked; smoke passed"
