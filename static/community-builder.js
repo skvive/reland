@@ -24,16 +24,17 @@
     return 'https://band.us' + u.pathname.replace(/\/$/,'');
   };
   const validate = (needBlog) => {
-    const name = getVal('community-name'), description = getVal('community-description'), region = getVal('community-region');
+    const name = getVal('community-name'), description = getVal('community-description'), region = getVal('community-region'), theme_slug = getVal('community-theme');
     if (name.length < 3 || name.length > 60) throw new Error('사랑방 이름은 3~60자로 입력해 주세요.');
     if (description.length < 8 || description.length > 450) throw new Error('동네 소개는 8~450자로 입력해 주세요.');
     if (!regionList.includes(region)) throw new Error('지역을 선택해 주세요.');
+    if (!['neighborhood','operations','moving','busan','seoul','qa','academy','law','chungcheong'].includes(theme_slug)) throw new Error('소속 테마판을 선택해 주세요.');
     const band = safeBand();
     const blogUrl = getVal('blog-url');
     if (needBlog && !/^https:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.blogspot\.com\/?$/i.test(blogUrl)) {
       throw new Error('개설한 블로그 주소를 https://이름.blogspot.com/ 형식으로 입력해 주세요.');
     }
-    return {name, description, region, band, blog_url:blogUrl};
+    return {name, description, region, theme_slug, band, blog_url:blogUrl};
   };
   const renderPreview = () => {
     $('preview-name').textContent = getVal('community-name') || '우리 동네 사랑방';
@@ -101,7 +102,7 @@ ${band}
       if (!state.user) throw new Error('RE:LAND 로그인 후 사랑방을 등록할 수 있습니다. 먼저 리랜드에서 로그인해 주세요.');
       busy(btn,true);setStatus('소유 확인 코드를 준비하고 있습니다.');
       if (!state.id) {
-        const created=await api('/communities',{method:'POST',body:JSON.stringify({name:v.name,description:v.description,region:v.region})});
+        const created=await api('/communities',{method:'POST',body:JSON.stringify({name:v.name,description:v.description,region:v.region,theme_slug:v.theme_slug})});
         state.id=created.id;
       }
       const claim=await api('/communities/'+state.id+'/blog/claim',{method:'POST',body:JSON.stringify({blog_url:v.blog_url})});
