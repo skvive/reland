@@ -1105,7 +1105,7 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
     if folder == 'lectures':
         # Preserve source HTML and its original legal references; enrich only public response.
         html = re.sub(
-            r'src="/kang/assets/kang-clean-category-\\d{2}-v8\\.webp"',
+            r'src="/kang/assets/kang-clean-category-\d{2}-v8\.webp"',
             f'src="/kang/assets/lesson-stories/story-{item_id}.svg"',
             html,
             count=1,
