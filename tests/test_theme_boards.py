@@ -102,3 +102,25 @@ def test_board_filtered_local_group_and_migration_idempotency(client):
     with site.db() as c:
         after = c.execute("SELECT count(*) FROM communities WHERE is_theme_board=1").fetchone()[0]
     assert before == after == 9
+
+
+def test_operator_claim_uses_existing_admin_secret_and_audit(client, monkeypatch):
+    monkeypatch.setattr(site, "ADMIN_KEY", "secret-existing-admin-key-123")
+    board = client.get("/api/boards/seoul").json()["item"]
+    unauthenticated=client.post("/api/boards/operator/claim",headers={"x-admin-key":"secret-existing-admin-key-123"})
+    assert unauthenticated.status_code == 401
+    assert client.post("/api/auth/demo").status_code == 200
+    wrong = client.post("/api/boards/operator/claim", headers={"x-admin-key":"wrong-key-123"})
+    assert wrong.status_code == 403
+    assert "secret-existing-admin-key-123" not in wrong.text
+    good = client.post("/api/boards/operator/claim", headers={"x-admin-key":"secret-existing-admin-key-123"})
+    assert good.status_code == 200 and good.json()["role"] == "admin"
+    assert client.get("/api/auth/me").json()["user"]["role"] == "admin"
+    created=client.post("/api/posts",json={"community_id":board["id"], "kind":"notice",
+        "title":"리랜드 본사 운영자 주간 공지",
+        "body":"이웃 여러분, 이번 주 지역별 소식을 전달합니다."})
+    assert created.status_code==201, created.text
+    with site.db() as c:
+        audits = c.execute("SELECT note FROM audit_events WHERE action='theme_board_operator_claim'").fetchall()
+    assert len(audits)==1
+    assert "secret-existing-admin-key-123" not in audits[0]["note"]
