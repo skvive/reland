@@ -18,8 +18,7 @@
   const regions = ['전국','서울','경기','인천','부산','대구','대전','광주','울산','세종','충북','충남','전북','전남','경북','경남','강원','제주'];
   const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   const photo = i => {
-    const x = ['0%','50%','100%'][i%3], y = ['0%','50%','100%'][Math.floor(i/3)];
-    return `style="--tile-x:${x};--tile-y:${y}"`;
+    return `style="--board-image:url('/static/assets/boards/cover-${String(i+1).padStart(2,'0')}.jpg')"`;
   };
   const msg = (s, bad=false) => {
     const n=$('#toast');n.textContent=s;n.className=bad?'show bad':'show';
