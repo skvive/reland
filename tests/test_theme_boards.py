@@ -40,9 +40,17 @@ def test_theme_boards_are_not_in_local_community_list(client):
     locals_ = client.get("/api/communities").json()["items"]
     assert not any(c["id"] in {b["id"] for b in themes} for c in locals_)
     assert all(not c["is_theme_board"] for c in locals_)
-    assert any(x["name"] == "서울 정비사업 이웃모임" for x in locals_)
+    # A production DB may have more historic communities than a fresh test DB.
+    # Register a known Seoul member and verify parent-child routing explicitly.
+    assert client.post("/api/auth/demo").status_code == 200
+    name = "서울 정비사업 테스트 지역모임"
+    created = client.post("/api/communities", json={
+        "name":name, "description":"서울 주민 정보와 소식을 서로 나눕니다.",
+        "region":"서울", "theme_slug":"seoul"
+    })
+    assert created.status_code == 201
     seoul = client.get("/api/boards/seoul").json()["item"]
-    assert any(c["name"] == "서울 정비사업 이웃모임" for c in seoul["communities"])
+    assert any(c["id"] == created.json()["id"] for c in seoul["communities"])
 
 
 def test_create_local_community_under_selected_board(client):
@@ -78,9 +86,16 @@ def test_parent_board_post_comment_and_notice_permissions(client):
 
 
 def test_board_filtered_local_group_and_migration_idempotency(client):
+    assert client.post("/api/auth/demo").status_code == 200
+    new = client.post("/api/communities", json={
+        "name":"서울 지역민 교류 사랑방",
+        "region":"서울", "theme_slug":"seoul",
+        "description":"서울 지역 이웃과 생활 소식을 공유합니다."
+    })
+    assert new.status_code == 201
     a = client.get("/api/boards/seoul?q=서울&region=서울").json()["item"]["communities"]
-    assert any("서울" in x["name"] for x in a)
-    assert client.get("/api/boards/seoul?region=부산").json()["item"]["communities"] == []
+    assert any(x["id"] == new.json()["id"] for x in a)
+    assert not any(x["id"] == new.json()["id"] for x in client.get("/api/boards/seoul?region=부산").json()["item"]["communities"])
     with site.db() as c:
         before = c.execute("SELECT count(*) FROM communities WHERE is_theme_board=1").fetchone()[0]
     site.init_db()
