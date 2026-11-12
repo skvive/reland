@@ -20,7 +20,8 @@ CONTENT_FILE = Path(__file__).resolve().parent / "content" / "kang" / "lectures_
 
 def build_rss() -> bytes:
     lessons = json.loads(CONTENT_FILE.read_text(encoding="utf-8"))
-    root = ET.Element("rss", {"version": "2.0", "xmlns:atom": ATOM_NS})
+    ET.register_namespace("atom", ATOM_NS)
+    root = ET.Element("rss", {"version": "2.0"})
     channel = ET.SubElement(root, "channel")
 
     def tag(parent, name: str, value: str):
