@@ -12,6 +12,8 @@ on:
       - "static/theme-board.*"
       - "static/theme-portal.css"
       - "tests/test_theme_boards.py"
+      - "tests/test_theme_images.py"
+      - "static/assets/boards/**"
       - "tests/test_api.py"
       - ".github/workflows/community-builder-qa.yml"
   workflow_dispatch:
@@ -38,4 +40,4 @@ jobs:
       - run: node --check static/app.js
       - run: node --check static/community-builder.js
       - run: node --check static/theme-board.js
-      - run: python -m pytest -q tests/test_community_builder.py tests/test_theme_boards.py tests/test_api.py
+      - run: python -m pytest -q tests/test_community_builder.py tests/test_theme_boards.py tests/test_theme_images.py tests/test_api.py
