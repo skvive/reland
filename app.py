@@ -1088,6 +1088,63 @@ def editorial_html(article_id: int):
     raw=raw.replace('<div class="loading-screen"><div class="loading-dot"></div>리랜드를 준비하고 있어요</div>',fallback,1)
     return HTMLResponse(raw)
 
+# Standalone lecture, Q&A and slide files are preserved verbatim on disk.
+# The public response receives one shared education/lecture contact block at the end.
+# Register specific HTML paths before the /kang StaticFiles mount so that shared CSS,
+# JavaScript, images, and the Kang landing pages keep their existing behavior.
+_KANG_EDUCATION_EMAIL = 'kangjunchul8@gmail.com'
+
+def _kang_document_with_contact(folder: str, kind: str, item_id: str):
+    if not re.fullmatch(r'[0-9]{3}', item_id):
+        raise HTTPException(404, '교육 콘텐츠를 찾을 수 없습니다.')
+    filename = f'{kind}-{item_id}.html'
+    source = ROOT / 'kang_blog' / folder / filename
+    if not source.is_file():
+        raise HTTPException(404, '교육 콘텐츠를 찾을 수 없습니다.')
+    html = source.read_text(encoding='utf-8')
+    contact = (
+        '<aside aria-label="재개발 교육 및 강의 문의" '
+        'style="max-width:920px;margin:36px auto;padding:24px;'
+        'border:1px solid #d8e5df;border-radius:16px;background:#f3f8f5;'
+        'color:#1d4238;font:15px/1.75 system-ui,sans-serif">'
+        '<strong>재개발 교육·강의 문의</strong><br>'
+        f'<a href="mailto:{_KANG_EDUCATION_EMAIL}" '
+        'style="color:#126c50;font-weight:700;text-decoration:underline">'
+        f'{_KANG_EDUCATION_EMAIL}</a>'
+        '<p style="margin:8px 0 0;color:#546e61;font-size:13px">'
+        '교육·강연 관련 문의 전용입니다. 개별 법률상담은 제공하지 않습니다.</p>'
+        '</aside>'
+    )
+    if '</article>' in html:
+        html = html.replace('</article>', contact + '</article>', 1)
+    elif folder == 'slides':
+        # Slide files intentionally have no closing body tag.
+        html += (
+            '<section style="padding:7vw;min-height:40vh;box-sizing:border-box;'
+            'background:#102b29;color:#ffffff">'
+            '<h2>재개발 교육·강의 문의</h2>'
+            f'<p><a href="mailto:{_KANG_EDUCATION_EMAIL}" '
+            f'style="color:#b4eed4">{_KANG_EDUCATION_EMAIL}</a></p>'
+            '<small>교육·강연 문의 전용 · 개별 법률상담 제외</small></section>'
+        )
+    return HTMLResponse(html, headers={'Cache-Control': 'public, max-age=300'})
+
+
+@app.get('/kang/lectures/lesson-{item_id}.html', response_class=HTMLResponse, include_in_schema=False)
+def kang_standalone_lecture(item_id: str):
+    return _kang_document_with_contact('lectures', 'lesson', item_id)
+
+
+@app.get('/kang/qa/qa-{item_id}.html', response_class=HTMLResponse, include_in_schema=False)
+def kang_standalone_qa(item_id: str):
+    return _kang_document_with_contact('qa', 'qa', item_id)
+
+
+@app.get('/kang/slides/lesson-{item_id}.html', response_class=HTMLResponse, include_in_schema=False)
+def kang_standalone_slides(item_id: str):
+    return _kang_document_with_contact('slides', 'lesson', item_id)
+
+
 # Separate editor brand. Public educational content only; no case intake or paid legal advice.
 # Must be registered before SPA catch-all. Independent Blogger-compatible design mock.
 app.mount('/kang', StaticFiles(directory=str(ROOT/'kang_blog'), html=True), name='kang-blog')
