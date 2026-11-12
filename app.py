@@ -1126,7 +1126,7 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
             '</article>',
             '<script defer src="/kang/longform-v12.js?v=20261112v12"></script>'
             '<script defer src="/kang/story-photo-v14.js?v=20261112v14"></script>'
-            '<script defer src="/kang/shortfiction-v14.js?v=20261112v14"></script>'
+            '<script defer src="/kang/shortfiction-v14.js?v=20261112v15"></script>'
             '<link rel="stylesheet" href="/kang/shortfiction-v14.css?v=20261112v14">'
             '</article>',
             1,
