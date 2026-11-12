@@ -54,6 +54,7 @@ class CompatCursor:
         "bookmarks",
         "district_watches",
         "district_geometries",
+        "community_blog_claims",
     )
 
     def _needs_returning(self, sql: str) -> bool:
