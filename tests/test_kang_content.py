@@ -141,3 +141,33 @@ def test_all_sixty_lecture_covers_are_local_and_http_decodable():
         page = client.get(url)
         assert page.status_code == 200
         assert 'story-photo-v14.js?v=20261113v16' in page.text
+
+def test_approved_brand_hero_and_individual_scene_visuals_on_all_60():
+    """Instructor portrait stays approved; scene image changes with every course."""
+    brand = client.get('/kang/assets/kang-class-hero-v5.webp')
+    assert brand.status_code == 200
+    assert brand.headers['content-type'].startswith('image/webp')
+    assert brand.content[:4] == b'RIFF'
+
+    detail = client.get('/kang/lesson-v6.html?id=1')
+    assert detail.status_code == 200
+    assert 'id="lectureImage" data-brand-hero="1"' in detail.text
+    assert 'src="/kang/assets/kang-class-hero-v5.webp"' in detail.text
+    assert 'id="storySceneImage"' in detail.text
+    assert '/kang/lesson-brand-v17.css?v=20261113v17' in detail.text
+    assert client.get('/kang/lesson-brand-v17.css').status_code == 200
+
+    controller = (ROOT/'kang_blog'/'lesson-v6.js').read_text(encoding='utf-8')
+    assert "brandImage.src = '/kang/assets/kang-class-hero-v5.webp'" in controller
+    assert 'sceneImage.src = scenePath' in controller
+    assert "storySceneTitle" in controller
+
+    for number in range(1, 61):
+        n = f'{number:03d}'
+        response = client.get(f'/kang/lectures/lesson-{n}.html')
+        assert response.status_code == 200, number
+        assert '<div class="rk-brand-banner"' in response.text, number
+        assert '/kang/assets/kang-class-hero-v5.webp' in response.text, number
+        assert '/kang/lesson-brand-v17.css?v=20261113v17' in response.text, number
+        assert f'/kang/assets/lessons/lesson-{n}.webp' in response.text, number
+        assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in response.text, number
