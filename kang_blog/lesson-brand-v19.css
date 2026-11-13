@@ -1,0 +1,84 @@
+/* v19 story hero only. Restore the upper banner to v17 by not loading v18.
+ * Use the approved photograph untouched. No RE:LAND lettering is rendered in this image.
+ * The old meeting-office stock image files remain in the repository for backwards compatibility. */
+.episode-scene .scene-image-wrap{
+  height:clamp(195px,30vw,365px)!important;
+  aspect-ratio:auto!important;
+  isolation:isolate;
+  position:relative;
+  overflow:hidden;
+  background:#0b3128!important;
+}
+.episode-scene .scene-image-wrap img{
+  height:100%!important;
+  max-height:none!important;
+  width:100%!important;
+  object-fit:cover!important;
+  object-position:58% 33%!important;
+  display:block!important;
+  aspect-ratio:auto!important;
+}
+.episode-scene .scene-image-wrap:after,
+.rk-story-scene-brand:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(4,33,27,.6) 0%,rgba(4,33,27,.32) 35%,transparent 65%);
+  z-index:1;
+  pointer-events:none;
+}
+.episode-scene .scene-image-badge{display:none!important}
+.scene-kang-label,.rk-kang-only{
+  position:absolute;
+  z-index:2;
+  left:clamp(20px,4vw,55px);
+  top:50%;
+  transform:translateY(-50%);
+  color:#fff;
+  text-shadow:0 3px 12px #0b241d;
+  font-weight:850;
+  font-size:clamp(46px,7vw,98px);
+  letter-spacing:-.055em;
+  line-height:1.13;
+  word-break:keep-all;
+}
+.scene-kang-label span,.rk-kang-only small{
+  display:block;
+  color:#f3dcab;
+  font:800 clamp(10px,1.3vw,15px)/1.5 system-ui,sans-serif;
+  letter-spacing:.18em;
+  text-shadow:none;
+  margin-bottom:13px;
+}
+.scene-kang-label strong{font-weight:850}
+.rk-story-scene-brand{
+  display:block;
+  position:relative;
+  margin:22px 0 28px;
+  height:clamp(185px,32vw,325px);
+  overflow:hidden;
+  border-radius:12px;
+  isolation:isolate;
+  background:#0b3128;
+}
+.rk-story-scene-brand>img{
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  border:0!important;
+  max-height:none!important;
+  border-radius:0!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:58% 33%!important;
+}
+@media(max-width:700px){
+ .episode-scene .scene-image-wrap{height:clamp(175px,50vw,270px)!important}
+ .episode-scene .scene-image-wrap img,.rk-story-scene-brand>img{object-position:59% 33%!important}
+ .scene-kang-label,.rk-kang-only{left:15px;font-size:clamp(37px,9.7vw,60px)}
+ .scene-kang-label span,.rk-kang-only small{font-size:10px;margin-bottom:6px}
+ .rk-story-scene-brand{height:clamp(165px,50vw,245px)}
+}
+@media print{
+ .episode-scene .scene-image-wrap,.rk-story-scene-brand{height:230px!important;break-inside:avoid}
+}

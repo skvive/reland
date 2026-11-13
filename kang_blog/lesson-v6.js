@@ -19,15 +19,17 @@
   $('#lectureTitle').textContent = '강실장 클래스';
   $('#lectureSummary').textContent = '재개발·재건축 실전 지식을 이야기로 배웁니다';
   const sceneImage = $('#storySceneImage');
-  const scenePath = window.KANG_MEDIA_V16?.get(id) || `/kang/assets/lessons/lesson-${String(id).padStart(3,'0')}.webp`;
-  sceneImage.dataset.lessonMediaId = String(id);
-  sceneImage.src = scenePath;
-  sceneImage.alt = `제${id}강 ${lecture.title} · AI 제작 교육용 장면 이미지, 실제 사업장 사진 아님`;
-  $('#storySceneEyebrow').textContent = `RE:LAND · 제${id}강 / 총 ${DATA.lectures.length}강 · ${lecture.category}`;
+  // Brand-only story banner: the previous generic office photograph is not displayed.
+  // Keep all 60 original per-lesson artwork files intact for future chapter illustrations.
+  sceneImage.removeAttribute('data-lesson-media-id');
+  sceneImage.dataset.brandHero = '1';
+  sceneImage.src = '/kang/assets/kang-class-hero-v5.webp';
+  sceneImage.alt = '승인된 강실장 실사 사진을 사용한 강실장 클래스 브랜드 배너';
+  $('#storySceneEyebrow').textContent = `제${id}강 / 총 ${DATA.lectures.length}강 · ${lecture.category}`;
   $('#storySceneTitle').textContent = lecture.title;
   $('#storySceneSummary').textContent = lecture.summary;
-  $('#sceneImageBadge').textContent = `LESSON ${String(id).padStart(2,'0')} / STORY VISUAL`;
-  $('#storySceneCaption').textContent = `제${id}강 교육을 위해 제작된 AI 이미지 · 실제 사업장 및 법률 원문 사진이 아닙니다.`;
+  $('#sceneImageBadge').textContent = `KANG CLASS`;
+  $('#storySceneCaption').textContent = `강실장 클래스 공식 브랜드 배너 · 강의 원고와 자료는 아래에서 확인하세요.`;
   $('#lessonCategory').textContent = lecture.category;
   $('#lessonCount').textContent = `제${id}강 / 총 ${DATA.lectures.length}강`;
   document.title = `${lecture.title} | RE:LAND 강실장 클래스`;

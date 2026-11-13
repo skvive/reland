@@ -53,7 +53,7 @@
    const onStandalone=location.pathname.match(/\/kang\/lectures\/lesson-(\d{3})\.html$/);
    if(onStandalone){
      const id=Number(onStandalone[1]),img=document.querySelector('.rk-story > img');
-     if(img&&originals[id]){
+     if(img&&originals[id]&&img.dataset.brandHero!=='1'){
        img.dataset.lessonMediaId=String(id);
        img.alt=window.KANG_STORY_PHOTO_CAPTIONS_V14[id];
        if(img.getAttribute('src')!==originals[id])img.src=originals[id];

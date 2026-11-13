@@ -35,12 +35,12 @@ for(let id=1;id<=60;id++){
   const expected='/kang/assets/lessons/lesson-'+String(id).padStart(3,'0')+'.webp';
   assert.equal(hero.src,'/kang/assets/kang-class-hero-v5.webp', 'brand on '+id);
   assert.equal(hero.dataset.brandHero,'1', 'approved branding locked '+id);
-  assert.equal(scene.src,expected,'story photo on '+id);
-  assert.equal(scene.dataset.lessonMediaId,String(id),'correct image fallback id '+id);
+  assert.equal(scene.src,'/kang/assets/kang-class-hero-v5.webp','approved Kang scene banner on '+id);
+  assert.equal(scene.dataset.brandHero,'1','Kang-only brand visual on '+id);
   assert.equal(el('#storySceneTitle').textContent, course.title,'story caption on '+id);
   assert.match(el('#storySceneEyebrow').textContent,new RegExp('제'+id+'강'));
   assert.match(doc.title,new RegExp(course.title.slice(0,5)));
   destinations.add(scene.src);
 }
-assert.equal(destinations.size,60,'60 distinct scene photo references');
-console.log('PASS: approved master hero + 60 distinct contextual photo references + 60 titles');
+assert.equal(destinations.size,1,'one approved original branding image across 60 lessons');
+console.log('PASS: restored header + 60 Kang brand-only scene banners + 60 titles');

@@ -135,7 +135,7 @@ def test_all_sixty_lecture_covers_are_local_and_http_decodable():
     for n in (1, 10, 11, 20, 30, 60):
         html = client.get(f'/kang/lectures/lesson-{n:03d}.html')
         assert html.status_code == 200
-        assert f'/kang/assets/lessons/lesson-{n:03d}.webp' in html.text
+        assert '/kang/assets/kang-class-hero-v5.webp' in html.text
         assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text
     for url in ('/kang/', '/kang/lesson-v6.html?id=1', '/kang/lesson-v6.html?id=60'):
         page = client.get(url)
@@ -169,27 +169,35 @@ def test_approved_brand_hero_and_individual_scene_visuals_on_all_60():
         assert '<div class="rk-brand-banner"' in response.text, number
         assert '/kang/assets/kang-class-hero-v5.webp' in response.text, number
         assert '/kang/lesson-brand-v17.css?v=20261113v17' in response.text, number
-        assert f'/kang/assets/lessons/lesson-{n}.webp' in response.text, number
+        assert '/kang/assets/kang-class-hero-v5.webp' in response.text, number
         assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in response.text, number
 
 
-def test_kang_v18_thumbnails_use_official_logo_in_every_lecture():
-    """A large vector RE:LAND logo overlays the approved man/photo on all 60 pages."""
-    master = client.get('/kang/assets/kang-class-hero-v5.webp')
+def test_kang_v19_restores_top_brand_and_replaces_meeting_picture():
+    """All 60 chapters use approved instructor visual without RE:LAND text in scene."""
     logo = client.get('/static/assets/logo-reland.svg')
-    css = client.get('/kang/lesson-brand-v18.css')
-    assert master.status_code == 200 and master.content[:4] == b'RIFF'
-    assert logo.status_code == 200 and b'RE:LAND' in logo.content
-    assert css.status_code == 200 and b'.hero-logo-panel' in css.content
+    assert logo.status_code == 200
+    brand = client.get('/kang/assets/kang-class-hero-v5.webp')
+    assert brand.status_code == 200 and brand.content[:4] == b'RIFF'
+    assert client.get('/kang/lesson-brand-v19.css').status_code == 200
     detail = client.get('/kang/lesson-v6.html?id=1')
     assert detail.status_code == 200
-    assert 'class="hero-logo-panel"' in detail.text
-    assert 'class="re-land-logo"' in detail.text
-    assert '/kang/lesson-brand-v18.css?v=20261113v18' in detail.text
-    for i in range(1,61):
-        content=client.get(f'/kang/lectures/lesson-{i:03d}.html')
-        assert content.status_code == 200
-        assert content.text.count('class="hero-logo-panel"') == 1
-        assert '/static/assets/logo-reland.svg' in content.text
-        assert '/kang/lesson-brand-v18.css?v=20261113v18' in content.text
-        assert f'/kang/assets/lessons/lesson-{i:03d}.webp' in content.text
+    assert '<div class="hero-copy">' in detail.text
+    assert 'class="hero-logo-panel"' not in detail.text
+    assert 'id="storySceneImage" data-brand-hero="1"' in detail.text
+    assert '/kang/lesson-brand-v18.css' not in detail.text
+    assert '/kang/lesson-brand-v19.css' in detail.text
+    js = (ROOT / 'kang_blog' / 'lesson-v6.js').read_text(encoding='utf-8')
+    assert "sceneImage.src = '/kang/assets/kang-class-hero-v5.webp'" in js
+    assert "sceneImage.dataset.brandHero = '1'" in js
+    assert 'sceneImage.src = scenePath' not in js
+    for i in range(1, 61):
+        html = client.get(f'/kang/lectures/lesson-{i:03d}.html')
+        assert html.status_code == 200
+        assert 'class="rk-brand-banner"' in html.text
+        assert 'class="rk-story-scene-brand"' in html.text
+        assert 'class="rk-kang-only"' in html.text
+        assert 'data-brand-hero="1"' in html.text
+        assert '/kang/lesson-brand-v18.css' not in html.text
+        assert '/kang/assets/kang-class-hero-v5.webp' in html.text
+        assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text

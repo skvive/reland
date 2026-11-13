@@ -1120,16 +1120,22 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
             '<div class="rk-brand-banner" aria-label="강실장 클래스 공식 브랜드 배너">'
             '<img src="/kang/assets/kang-class-hero-v5.webp" data-brand-hero="1" '
             'alt="승인된 강실장 클래스 공식 브랜드 이미지" loading="eager">'
-            '<div class="hero-logo-panel"><img class="re-land-logo" '
-            'src="/static/assets/logo-reland.svg" alt="RE:LAND 리랜드, 도시의 내일" '
-            'loading="eager" decoding="async"></div></div>'
+            '<div class="rk-brand-copy"><span>RE:LAND · KANG CLASS</span>'
+            '<strong>강실장 클래스</strong><p>이야기로 배우는 재개발 실전 강의</p>'
+            '</div></div>'
         )
         html = html.replace('<section class="rk-story">', '<section class="rk-story">' + branding, 1)
         html = html.replace('</style>', '</style><link rel="stylesheet" href="/kang/lesson-brand-v17.css?v=20261113v17"><link rel="stylesheet" href="/kang/lesson-brand-v18.css?v=20261113v18">', 1)
         # Preserve source HTML and its original legal references; enrich only public response.
+        # Replace the unrelated office/meeting illustration with the exact approved
+        # Kang instructor portrait. Never substitute a generated person or RE:LAND logo.
         html = re.sub(
-            r'src="/kang/assets/kang-clean-category-\d{2}-v8\.webp"',
-            f'src="/kang/assets/lessons/lesson-{item_id}.webp"',
+            r'<img src="/kang/assets/kang-clean-category-\d{2}-v8\.webp"[^>]*>',
+            '<figure class="rk-story-scene-brand">'
+            '<img src="/kang/assets/kang-class-hero-v5.webp" data-brand-hero="1" '
+            'alt="강실장 실사 브랜드 배너" loading="eager" decoding="async">'
+            '<span class="rk-kang-only"><small>KANG CLASS</small>강실장</span>'
+            '</figure>',
             html,
             count=1,
         )
