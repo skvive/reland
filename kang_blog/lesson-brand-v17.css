@@ -1,0 +1,57 @@
+/* RE:LAND v17 · approved Kang brand + individual lecture-specific images for all sixty lessons. */
+.lecture-hero{height:clamp(285px,33vw,475px)!important;min-height:0!important;max-height:none!important;position:relative;background:#0b2f27!important;isolation:isolate;overflow:hidden}
+.lecture-hero>img{height:100%!important;width:100%!important;max-height:none!important;aspect-ratio:auto!important;object-fit:cover!important;object-position:center 37%!important;display:block}
+.lecture-hero:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(5,30,25,.40) 0%,rgba(5,30,25,.20) 40%,transparent 76%)}
+.lecture-hero .hero-copy{display:flex!important;flex-direction:column;gap:11px;position:absolute;z-index:2;left:clamp(22px,6vw,85px);top:50%;bottom:auto;transform:translateY(-50%);width:min(545px,53%);max-width:53%;padding:0;border-radius:0;background:transparent;color:#fff}
+.lecture-hero .hero-copy>span{font-weight:800;font-size:clamp(10px,1.15vw,13px);letter-spacing:.10em;color:#eed5a5;text-shadow:0 1px 7px #06231c}
+.lecture-hero .hero-copy h1{margin:0;font-size:clamp(28px,4vw,58px);font-weight:850;letter-spacing:-.045em;line-height:1.18;color:#fff;text-shadow:0 2px 12px #072921}
+.lecture-hero .hero-copy p{margin:0;max-width:410px;font-size:clamp(13px,1.4vw,17px);line-height:1.6;word-break:keep-all;color:#f3f7ef}
+.lecture-hero .hero-copy>div{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+.lecture-hero .hero-copy>div span{font-size:clamp(10px,1vw,12px);padding:5px 10px;background:#0b30288a;border:1px solid #ffffff5e;border-radius:999px;color:#f4f7f0}
+.hero-brand-mark{position:absolute;z-index:2;right:clamp(13px,2.3vw,35px);bottom:14px;color:#fff;opacity:.73;font-weight:750;font-size:10px;letter-spacing:.12em;text-shadow:0 1px 4px #102e26}
+.episode-scene{background:#fff;border:1px solid #dfe9e2;border-radius:20px;overflow:hidden;box-shadow:0 9px 32px #17442d0a;margin-bottom:24px;scroll-margin-top:24px}
+.episode-scene-heading{padding:clamp(23px,3.8vw,42px) clamp(23px,4.5vw,48px) 25px}
+.scene-eyebrow{display:inline-flex;font-size:12px;font-weight:850;color:#347b60;letter-spacing:.055em;margin-bottom:11px;line-height:1.6}
+.episode-scene-heading h2{font-size:clamp(24px,3vw,37px);line-height:1.37;letter-spacing:-.045em;font-weight:850;color:#173d30;margin:0 0 13px;word-break:keep-all}
+.episode-scene-heading p{font-size:clamp(14px,1.4vw,16px);line-height:1.8;color:#64756b;margin:0;word-break:keep-all}
+.episode-scene-figure{margin:0;padding:0 clamp(14px,2.9vw,28px) 25px}
+.scene-image-wrap{position:relative;overflow:hidden;border-radius:14px;background:#e4eee8;line-height:0}
+.scene-image-wrap img{width:100%;height:auto;aspect-ratio:16/9;max-height:535px;display:block;object-fit:cover;object-position:center;background:#e4eee8}
+.scene-image-badge{position:absolute;top:16px;left:16px;padding:9px 12px;border-radius:6px;background:#103b30e8;color:#fff;font-size:11px;line-height:1.3;font-weight:800;letter-spacing:.11em}
+.episode-scene-figure figcaption{font-size:12px;line-height:1.7;text-align:right;color:#698075;margin:12px 3px 0}
+.rk-brand-banner{position:relative;width:100%;height:clamp(220px,36vw,330px);overflow:hidden;border-radius:16px;background:#0b3027;margin:0 0 27px;isolation:isolate}
+.rk-brand-banner>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:50% 38%!important;aspect-ratio:auto!important;margin:0!important;border-radius:0!important}
+.rk-brand-banner:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(4,28,23,.44),transparent 72%);z-index:1}
+.rk-brand-banner .rk-brand-copy{position:absolute;z-index:2;left:clamp(18px,4vw,40px);top:50%;transform:translateY(-50%);width:56%;color:#fff;font-family:system-ui,'Noto Sans KR',sans-serif;text-shadow:0 2px 9px #073227}
+.rk-brand-copy>span{display:block;color:#f0d9a5;font-size:11px;font-weight:800;letter-spacing:.1em}
+.rk-brand-copy>strong{display:block;font-size:clamp(25px,3.2vw,38px);margin:10px 0;font-weight:850;letter-spacing:-.04em}
+.rk-brand-copy>p{font-size:clamp(11px,1.25vw,14px);line-height:1.65;margin:0;color:#f3f7f3}
+@media(max-width:700px){
+ .lecture-hero{height:clamp(230px,63vw,320px)!important}
+ .lecture-hero>img{object-position:65% 37%!important}
+ .lecture-hero .hero-copy{left:16px;width:59%;max-width:59%;gap:7px}
+ .lecture-hero .hero-copy h1{font-size:clamp(23px,6.4vw,35px)}
+ .lecture-hero .hero-copy>span{font-size:10px}
+ .lecture-hero .hero-copy p{font-size:12px;line-height:1.5}
+ .lecture-hero .hero-copy>div span{font-size:9px;padding:4px 7px}
+ .hero-brand-mark{display:none}
+ .episode-scene{margin-bottom:16px;border-radius:14px}
+ .episode-scene-heading{padding:21px 18px 16px}
+ .episode-scene-heading h2{font-size:clamp(22px,5.5vw,27px)}
+ .episode-scene-heading p{font-size:13px}
+ .episode-scene-figure{padding:0 12px 16px}
+ .scene-image-wrap{border-radius:9px}
+ .scene-image-badge{top:9px;left:9px;font-size:9px;padding:7px 9px}
+ .episode-scene-figure figcaption{font-size:11px;text-align:left}
+ .rk-brand-banner{height:230px;border-radius:10px}
+ .rk-brand-banner>img{object-position:65% 36%!important}
+ .rk-brand-banner .rk-brand-copy{left:18px;width:56%}
+ .rk-brand-copy>strong{font-size:24px}
+ .rk-brand-copy>p{font-size:11px}
+}
+@media print{
+ .lecture-hero{height:235px!important;break-inside:avoid}
+ .lecture-hero .hero-copy{display:flex!important}
+ .episode-scene,.rk-brand-banner{box-shadow:none;break-inside:avoid}
+ .scene-image-wrap img{max-height:280px}
+}

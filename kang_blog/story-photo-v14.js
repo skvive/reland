@@ -18,15 +18,21 @@
    return exact?Number(exact[1]):Number(new URLSearchParams(location.search).get('id'));
  };
  const resolvedId=img=>{
-   if(!img||img.tagName!=='IMG')return 0;
+   if(!img||img.tagName!=='IMG'||img.dataset.brandHero==='1')return 0;
    let id=Number(img.dataset.lessonMediaId||img.closest('[data-lesson]')?.dataset.lesson);
    if(!Number.isInteger(id)||id<1||id>60){
-     if(img.id==='lectureImage'||img.id==='lessonDiagram'||img.closest('.rk-story'))id=routeId();
+     if(img.id==='storySceneImage'||img.id==='lessonDiagram'||img.closest('.rk-story'))id=routeId();
    }
    return Number.isInteger(id)&&id>=1&&id<=60?id:0;
  };
  function fallback(img){
    if(img.dataset.mediaExhausted==='1')return;
+   if(img.dataset.brandHero==='1'){
+     const photos=['/kang/assets/kang-class-hero-v5.webp','/kang/assets/kang-class-promo-identity-v6.webp','/kang/assets/kang-master-approved-20261111.jpg'];
+     const index=photos.indexOf((img.getAttribute('src')||'').split('?')[0]);
+     if(index>=photos.length-1){img.dataset.mediaExhausted='1';img.style.background='#113d32';return;}
+     img.src=photos[Math.max(0,index+1)];return;
+   }
    const id=resolvedId(img);
    if(!id)return;
    const choices=[originals[id],illustrations(id),category(id),fallbackImage];
@@ -53,7 +59,7 @@
        if(img.getAttribute('src')!==originals[id])img.src=originals[id];
      }
    }
-   document.querySelectorAll('.card-visual img, #lectureImage, .rk-story > img, .modal-hero, #lessonDiagram').forEach(img=>{
+   document.querySelectorAll('.card-visual img, #lectureImage, #storySceneImage, .rk-brand-banner img, .rk-story > img, .modal-hero, #lessonDiagram').forEach(img=>{
      const id=resolvedId(img);if(id)img.dataset.lessonMediaId=String(id);
      if(id&&img.complete&&img.naturalWidth===0)fallback(img);
    });
