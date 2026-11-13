@@ -6,6 +6,7 @@ on:
       - "tests/test_kang_content.py"
       - "kang_blog/story-photo-v14.js"
       - "kang_blog/blog.js"
+      - "kang_blog/index.html"
       - "kang_blog/lesson-v6.js"
       - "kang_blog/assets/lessons/**"
       - "kang_blog/assets/lesson-stories/**"
