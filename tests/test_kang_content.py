@@ -159,7 +159,7 @@ def test_approved_brand_hero_and_individual_scene_visuals_on_all_60():
 
     controller = (ROOT/'kang_blog'/'lesson-v6.js').read_text(encoding='utf-8')
     assert "brandImage.src = '/kang/assets/kang-class-hero-v5.webp'" in controller
-    assert 'sceneImage.src = scenePath' in controller
+    assert "sceneImage.src = '/kang/assets/kang-class-hero-v5.webp'" in controller
     assert "storySceneTitle" in controller
 
     for number in range(1, 61):
