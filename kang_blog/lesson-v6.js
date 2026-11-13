@@ -10,6 +10,9 @@
   const categories = [...new Set(DATA.lectures.map(x => x.category))];
   const categoryNumber = String(Math.max(0, categories.indexOf(lecture.category)) + 1).padStart(2,'0');
   const banner = window.KANG_STORY_PHOTO_V14?.[id] || `/kang/assets/lesson-stories/story-${String(id).padStart(3, '0')}.svg`;
+  $('#lectureImage').dataset.lessonMediaId = String(id);
+  $('#lectureImage').loading='eager';
+  $('#lectureImage').decoding='async';
   $('#lectureImage').src = banner;
   $('#lectureImage').alt = window.KANG_STORY_PHOTO_V14?.[id] ? (window.KANG_STORY_PHOTO_CAPTIONS_V14?.[id] || lecture.title)+' — AI 생성 가상 교육 장면' : `${lecture.category} 주제별 교육용 전용 일러스트, 실제 사업장 사진이 아님`;
   $('#lectureEyebrow').textContent = `RE:LAND · LECTURE ${String(id).padStart(2, '0')} / ${lecture.category}`;
@@ -23,6 +26,7 @@
   $('#briefSummary').textContent = lecture.summary;
   $('#briefDocuments').textContent = lecture.documents || '원본 자료와 작성기관을 확인하세요.';
   $('#briefPitfall').textContent = lecture.pitfall || '문서와 법령 확인 전에 결론을 내리지 마세요.';
+  $('#lessonDiagram').dataset.lessonMediaId = String(id);
   $('#lessonDiagram').src = `/kang/${lecture.diagram}`;
   $('#lessonDiagram').alt = `${lecture.title}에 관한 교육용 절차 도식`;
   $('#chapterList').innerHTML = (lecture.pages || []).map((p, idx) =>

@@ -17,3 +17,8 @@
 /* v8: only photo pixels in banners; all copy/CTAs are HTML, never baked into an image. */
 .feature-tag{position:absolute}.rk-hero-signature{display:none!important}
 @media(max-width:600px){.rk-hero{background-position:58% center}.rk-hero-copy{max-width:78%;}.rk-contact{background-position:64% center}}
+
+/* 2026-11-13 v16: cover cards with real local images, not empty padded green boxes. */
+.lesson-card .card-visual{aspect-ratio:16/9!important;height:auto!important;overflow:hidden;background:#e6eee9!important}
+.lesson-card .card-visual img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+.lesson-card .card-visual .num{z-index:2}

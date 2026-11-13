@@ -1118,14 +1118,14 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
         # Preserve source HTML and its original legal references; enrich only public response.
         html = re.sub(
             r'src="/kang/assets/kang-clean-category-\d{2}-v8\.webp"',
-            f'src="/kang/assets/lesson-stories/story-{item_id}.svg"',
+            f'src="/kang/assets/lessons/lesson-{item_id}.webp"',
             html,
             count=1,
         )
         html = html.replace(
             '</article>',
             '<script defer src="/kang/longform-v12.js?v=20261112v12"></script>'
-            '<script defer src="/kang/story-photo-v14.js?v=20261112v14"></script>'
+            '<script defer src="/kang/story-photo-v14.js?v=20261113v16"></script>'
             '<script defer src="/kang/shortfiction-v14.js?v=20261112v15"></script>'
             '<link rel="stylesheet" href="/kang/shortfiction-v14.css?v=20261112v14">'
             '</article>',
