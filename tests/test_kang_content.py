@@ -107,3 +107,37 @@ def test_kang_education_inquiry_is_visible_on_all_pages():
     assert client.get('/kang/lectures/lesson-999.html').status_code == 404
     assert client.get('/kang/qa/qa-999.html').status_code == 404
     assert client.get('/kang/qa/qa-v7.css').status_code == 200
+
+
+def test_all_sixty_lecture_covers_are_local_and_http_decodable():
+    """Prevents CDN expiry or missing media turning Android cards/heroes dark green."""
+    asset_root = ROOT / 'kang_blog' / 'assets'
+    loader = (ROOT / 'kang_blog' / 'story-photo-v14.js').read_text(encoding='utf-8')
+    assert 'cloudfront.net' not in loader
+    assert "const originals=Object.freeze" in loader
+    assert "document.addEventListener('error'" in loader
+    checksums = set()
+    for n in range(1, 61):
+        number = f'{n:03d}'
+        webp = asset_root / 'lessons' / f'lesson-{number}.webp'
+        svg = asset_root / 'lesson-stories' / f'story-{number}.svg'
+        assert webp.is_file() and svg.is_file(), number
+        image_response = client.get(f'/kang/assets/lessons/lesson-{number}.webp')
+        assert image_response.status_code == 200, number
+        assert image_response.headers['content-type'].startswith('image/webp')
+        assert image_response.content[:4] == b'RIFF'
+        assert image_response.content[8:12] == b'WEBP'
+        checksums.add(__import__('hashlib').sha256(image_response.content).hexdigest())
+        svg_response = client.get(f'/kang/assets/lesson-stories/story-{number}.svg')
+        assert svg_response.status_code == 200, number
+        assert b'<svg' in svg_response.content[:1000]
+    assert len(checksums) == 60
+    for n in (1, 10, 11, 20, 30, 60):
+        html = client.get(f'/kang/lectures/lesson-{n:03d}.html')
+        assert html.status_code == 200
+        assert f'/kang/assets/lessons/lesson-{n:03d}.webp' in html.text
+        assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text
+    for url in ('/kang/', '/kang/lesson-v6.html?id=1', '/kang/lesson-v6.html?id=60'):
+        page = client.get(url)
+        assert page.status_code == 200
+        assert 'story-photo-v14.js?v=20261113v16' in page.text
