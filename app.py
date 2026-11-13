@@ -1125,7 +1125,7 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
             '</div></div>'
         )
         html = html.replace('<section class="rk-story">', '<section class="rk-story">' + branding, 1)
-        html = html.replace('</style>', '</style><link rel="stylesheet" href="/kang/lesson-brand-v17.css?v=20261113v17"><link rel="stylesheet" href="/kang/lesson-brand-v18.css?v=20261113v18">', 1)
+        html = html.replace('</style>', '</style><link rel="stylesheet" href="/kang/lesson-brand-v17.css?v=20261113v17"><link rel="stylesheet" href="/kang/lesson-brand-v19.css?v=20261113v19">', 1)
         # Preserve source HTML and its original legal references; enrich only public response.
         # Replace the unrelated office/meeting illustration with the exact approved
         # Kang instructor portrait. Never substitute a generated person or RE:LAND logo.
