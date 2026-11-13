@@ -1,5 +1,15 @@
 name: Community Blogger Builder QA
 on:
+  push:
+    branches: [main]
+    paths:
+      - "tests/test_kang_content.py"
+      - "kang_blog/story-photo-v14.js"
+      - "kang_blog/blog.js"
+      - "kang_blog/lesson-v6.js"
+      - "kang_blog/assets/lessons/**"
+      - "kang_blog/assets/lesson-stories/**"
+      - ".github/workflows/community-builder-qa.yml"
   pull_request:
     paths:
       - "app.py"
