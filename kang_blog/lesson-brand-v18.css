@@ -1,0 +1,83 @@
+/* RE:LAND compact hero v18 — from approved original photograph + exact official SVG logo.
+   This reproduces the latest approved banner composition with a sharper vector wordmark.
+   No synthesized presenter, unrelated tagline, or excessive text. */
+.lecture-hero {
+  height:clamp(215px,28vw,375px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  isolation:isolate;
+  background:#0d352c;
+}
+.lecture-hero>img {
+  object-position:center 37%!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  object-fit:cover!important;
+}
+.lecture-hero:after {
+  background:linear-gradient(90deg,rgba(5,34,25,.38),rgba(5,34,25,.04) 58%,transparent 79%)!important;
+  pointer-events:none!important;
+}
+.lecture-hero .hero-copy,.lecture-hero .hero-brand-mark {display:none!important}
+.lecture-hero .hero-logo-panel,.rk-brand-banner .hero-logo-panel {
+  position:absolute!important;
+  z-index:4!important;
+  left:clamp(16px,3.5vw,55px)!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  display:block!important;
+  box-sizing:border-box;
+  width:clamp(200px,43%,620px);
+  padding:clamp(10px,1.6vw,20px) clamp(11px,1.7vw,22px);
+  border-radius:3px;
+  background:#fff;
+  box-shadow:0 6px 20px rgba(1,24,19,.19);
+}
+.lecture-hero .re-land-logo,.rk-brand-banner .re-land-logo {
+  display:block!important;
+  object-fit:contain!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%;
+  aspect-ratio:240/50;
+}
+.rk-brand-banner {
+  height:clamp(185px,29vw,305px)!important;
+  min-height:0!important;
+}
+.rk-brand-banner:after {
+  background:linear-gradient(90deg,rgba(5,34,25,.38),transparent 72%)!important;
+}
+.rk-brand-banner .hero-logo-panel {
+  width:clamp(185px,45%,475px);
+}
+.rk-brand-banner .re-land-logo {
+  margin:0!important;
+  border:0!important;
+  padding:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+@media(max-width:700px){
+  .lecture-hero {height:clamp(168px,51vw,246px)!important}
+  .lecture-hero>img,.rk-brand-banner>img {object-position:58% 35%!important}
+  .lecture-hero .hero-logo-panel,.rk-brand-banner .hero-logo-panel {
+    left:12px!important;
+    width:min(49%,248px)!important;
+    padding:9px 10px!important;
+    box-shadow:0 3px 13px rgba(0,0,0,.15);
+  }
+  .rk-brand-banner {height:clamp(170px,51vw,228px)!important}
+}
+@media(max-width:380px){
+  .lecture-hero .hero-logo-panel,.rk-brand-banner .hero-logo-panel {
+    width:51%!important;
+    left:9px!important;
+    padding:7px!important;
+  }
+}
+@media print{
+  .lecture-hero {height:240px!important}
+  .hero-logo-panel {box-shadow:none!important}
+}
