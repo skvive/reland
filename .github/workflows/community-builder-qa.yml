@@ -25,6 +25,14 @@ on:
       - "db_engine.py"
       - "community_builder.py"
       - "static/app.js"
+      - "static/index.html"
+      - "static/map-project-detail-v9.css"
+      - "static/map-v8.css"
+      - "static/district-info-v8.html"
+      - "static/district-info-v8.js"
+      - "static/district-info-v8.css"
+      - "tests/test_api.py"
+      - "scripts/verify_map_inspector_v9.py"
       - "static/community-builder.*"
       - "tests/test_community_builder.py"
       - "theme_boards.py"
@@ -73,6 +81,7 @@ jobs:
       - run: node --check static/app.js
       - run: node --check static/community-builder.js
       - run: node --check static/theme-board.js
+      - run: node --check static/district-info-v8.js && node --check static/app.js
       - run: node --check kang_blog/blog.js && node --check kang_blog/lesson-v6.js && node --check kang_blog/story-photo-v14.js
       - run: node --check kang_blog/lesson-story-v11.js
       - run: node scripts/verify_kang_brand_v17.cjs
@@ -116,6 +125,8 @@ jobs:
           PY
       - name: Validate responsive brand presentation
         run: python scripts/verify_kang_mobile_v20.py
+      - name: Validate project map inspector and capture mobile
+        run: python scripts/verify_map_inspector_v9.py
       - name: Upload viewport screenshots and report
         if: always()
         uses: actions/upload-artifact@v4

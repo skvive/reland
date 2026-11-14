@@ -160,3 +160,39 @@ def test_community_blogger_owner_permissions(client):
     ok=client.put(f'/api/communities/{cid}/blog',json={'blog_url':'https://town.blogspot.com/'})
     assert ok.status_code==200 and ok.json()['verified_blog_owner'] is False
     assert client.get(f'/api/communities/{cid}').json()['item']['blog_url']=='https://town.blogspot.com/'
+
+
+def test_map_inspector_detail_and_official_government_links(client):
+    """Map selection remains inside RE:LAND; government portals open in a secure new tab."""
+    from pathlib import Path
+    static = Path(__file__).resolve().parents[1] / 'static'
+    index = client.get('/')
+    assert index.status_code == 200
+    assert '/static/map-project-detail-v9.css?v=20261114v9' in index.text
+    assert '/static/app.js?v=20261114v9' in index.text
+    assert client.get('/static/map-project-detail-v9.css').status_code == 200
+    source=(static/'app.js').read_text(encoding='utf-8')
+    assert 'data-action="map-project-select"' in source
+    assert 'showMapDistrictDetail' in source
+    assert 'map-project-detail' in source
+    assert 'target="_blank" rel="noopener noreferrer"' in source
+    for url in ['https://www.data.go.kr/data/15160169/fileData.do',
+                'https://www.eum.go.kr/web/am/amMain.jsp',
+                'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000026',
+                'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=15000000098',
+                'https://www.law.go.kr/법령/도시및주거환경정비법',
+                'https://cleanup.seoul.go.kr/']:
+        assert url in source
+    rows=client.get('/api/districts?limit=50').json()['items']
+    assert rows and all(r['demo'] for r in rows)
+    detail=client.get(f"/api/districts/{rows[0]['id']}/public")
+    assert detail.status_code == 200
+    d=detail.json()
+    assert d['demo'] is True and len(d['values']) == 7
+    assert d['source']['live_confirmed'] is False
+    html=client.get(f"/district-info/{rows[0]['id']}")
+    assert html.status_code == 200
+    assert 'id="governmentLinks"' in html.text
+    assert '사업별 추가 확인 항목' in html.text
+    assert '정부 사이트에서 원문 조회' in html.text
+    assert 'target="_blank"' in (static/'district-info-v8.js').read_text(encoding='utf-8')
