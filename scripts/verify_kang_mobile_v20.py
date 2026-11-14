@@ -57,6 +57,12 @@ def inspect(page, lesson_id: int, width: int, standalone: bool = False) -> dict:
     page_width = page.evaluate("document.documentElement.scrollWidth")
     assert page_width <= width + 3, (route, width, "horizontal overflow", page_width)
     if not standalone:
+        eyebrow = page.locator("#lectureEyebrow")
+        assert "RE:LAND · CLASS" in eyebrow.inner_text(), (route, width, "unexpected long heading")
+        eyebrow_box = eyebrow.bounding_box()
+        if width <= 430:
+            assert eyebrow_box and eyebrow_box["x"] + eyebrow_box["width"] < width * .53, (
+                route, width, "eyebrow crosses the presenter's face", eyebrow_box)
         assert page.locator("#storySceneTitle").inner_text().strip(), (route, width, "missing lesson title")
         assert page.locator("#learning").count() == 1
         if width == 390:
