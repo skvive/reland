@@ -11,8 +11,8 @@ on:
       - "kang_blog/lesson-v6.html"
       - "kang_blog/lesson-brand-v17.css"
       - "kang_blog/lesson-brand-v19.css"
-      - "kang_blog/lesson-brand-v19.css"
       - "scripts/verify_kang_brand_v17.cjs"
+      - "scripts/verify_kang_mobile_v20.py"
       - "app.py"
       - "kang_blog/assets/lessons/**"
       - "kang_blog/assets/lesson-stories/**"
@@ -40,6 +40,7 @@ on:
       - "kang_blog/lesson-brand-v17.css"
       - "kang_blog/lesson-brand-v19.css"
       - "scripts/verify_kang_brand_v17.cjs"
+      - "scripts/verify_kang_mobile_v20.py"
       - "app.py"
       - "kang_blog/assets/lessons/**"
       - "kang_blog/assets/lesson-stories/**"
@@ -71,3 +72,50 @@ jobs:
       - run: node --check kang_blog/blog.js && node --check kang_blog/lesson-v6.js && node --check kang_blog/story-photo-v14.js
       - run: node scripts/verify_kang_brand_v17.cjs
       - run: python -m pytest -q tests/test_community_builder.py tests/test_theme_boards.py tests/test_theme_images.py tests/test_api.py tests/test_kang_content.py
+
+  mobile-visual:
+    name: Kang brand / mobile Chromium 320–768px
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    permissions:
+      contents: read
+    env:
+      ENVIRONMENT: development
+      RELAND_DEMO_MODE: "1"
+      RELAND_QA_URL: "http://127.0.0.1:8765"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install app and browser
+        run: |
+          pip install -r requirements.txt playwright
+          python -m playwright install --with-deps chromium
+      - name: Start preview API
+        run: |
+          (python -m uvicorn app:app --host 127.0.0.1 --port 8765 > /tmp/reland-mobile-qa-api.log 2>&1 &)
+          python - <<'PY'
+          import time
+          from urllib.request import urlopen
+          for attempt in range(45):
+              try:
+                  with urlopen("http://127.0.0.1:8765/kang/lesson-v6.html?id=1", timeout=3) as r:
+                      assert r.status == 200
+                      print("Preview ready on 8765")
+                      break
+              except Exception:
+                  time.sleep(2)
+          else:
+              raise RuntimeError("Preview did not start")
+          PY
+      - name: Validate responsive brand presentation
+        run: python scripts/verify_kang_mobile_v20.py
+      - name: Upload viewport screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: re-land-kang-mobile-qa-v20
+          path: qa-screenshots/
+          if-no-files-found: ignore
+          retention-days: 14
