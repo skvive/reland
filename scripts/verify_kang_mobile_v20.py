@@ -59,7 +59,14 @@ def inspect(page, lesson_id: int, width: int, standalone: bool = False) -> dict:
     if not standalone:
         eyebrow = page.locator("#lectureEyebrow")
         assert "RE:LAND · " in eyebrow.inner_text(), (route, width, "unexpected long heading")
-        eyebrow_box = eyebrow.bounding_box()
+        # A flex child stretches to its parent's width even for a short caption.
+        # Measure the actual text glyph range instead of the stretched span box.
+        eyebrow_box = eyebrow.evaluate("""el => {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const rect = range.getBoundingClientRect();
+            return { x: rect.x, width: rect.width };
+        }""")
         if width <= 430:
             assert eyebrow_box and eyebrow_box["x"] + eyebrow_box["width"] < width * .53, (
                 route, width, "eyebrow crosses the presenter's face", eyebrow_box)
