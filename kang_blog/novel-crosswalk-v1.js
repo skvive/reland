@@ -31,11 +31,19 @@
       '<p class="novel-bridge-intro"></p>' +
       '<div class="novel-bridge-grid"><div><strong>이 강의에서 확인할 점</strong><p class="novel-bridge-topic"></p></div>' +
       '<div><strong>소설을 읽을 때의 관점</strong><p class="novel-bridge-guide"></p></div></div>' +
+      '<details class="novel-bridge-index"><summary>소설 전체 28장 차례 보기</summary><ol class="novel-chapter-list"></ol></details>' +
       '<p class="novel-bridge-note">※ 편집 중인 28장 장편 경제소설과의 주제 연계 안내입니다. 소설 원문을 게시하거나 특정 사업·인물의 법률적 사실을 확정하는 설명이 아닙니다. 실제 고시·법령은 공식 자료를 확인하세요.</p>';
     section.querySelector('h2').textContent = '소설로 이어 읽기 · 제' + chapterNo + '장 「' + title + '」';
     section.querySelector('.novel-bridge-intro').textContent = '제' + lessonId + '강 「' + lesson.title + '」를 읽은 다음, 같은 경제적 문제를 사람의 선택과 생활 속 갈등으로 생각해 보는 연계 장입니다.';
     section.querySelector('.novel-bridge-topic').textContent = lesson.summary || lesson.title;
     section.querySelector('.novel-bridge-guide').textContent = categoryPrompts[lesson.category] || '가상 서사와 실제 공공기록의 차이를 구분해 읽으세요.';
+    const chapterList = section.querySelector('.novel-chapter-list');
+    chapterTitles.forEach((chapterTitle, i) => {
+      const item = document.createElement('li');
+      item.textContent = '제' + (i + 1) + '장 · ' + chapterTitle;
+      if (i + 1 === chapterNo) { item.className = 'novel-chapter-current'; item.setAttribute('aria-current','true'); }
+      chapterList.appendChild(item);
+    });
     scene.insertAdjacentElement('afterend', section);
     const nav = document.querySelector('.course-side .side-block');
     if(nav && !nav.querySelector('a[href="#novelBridge"]')){
