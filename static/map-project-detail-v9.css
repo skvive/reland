@@ -1,0 +1,71 @@
+
+/* RE:LAND Map Inspector v9. Right-hand dossier remains alongside the real map.
+   No invented parcel boundaries, costs or project timelines. */
+.map-page-layout{grid-template-columns:minmax(0,1fr) minmax(340px,390px);gap:18px}
+.map-inspector{display:flex;flex-direction:column;gap:12px;min-width:0;max-height:660px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.map-project-detail{background:#fff;border:1px solid #d8e7dd;border-radius:18px;min-height:220px;scroll-margin-top:80px;flex:0 0 auto;outline-offset:3px}
+.map-inspector-empty{padding:28px 23px;line-height:1.85}
+.map-inspector-empty>span,.map-dossier-title>span{color:#448168;font-size:10px;font-weight:900;letter-spacing:.12em}
+.map-inspector-empty h2{font-size:20px;color:#143b2d;line-height:1.4;margin:12px 0}
+.map-inspector-empty p,.map-inspector-empty small{color:#617c6e;font-size:12px}
+.map-dossier-title{position:relative;padding:24px 22px 21px;background:linear-gradient(135deg,#123e31,#215d49);border-radius:18px 18px 0 0;color:#fff}
+.map-dossier-title>span{color:#c5ddc5}
+.map-dossier-title h2{font-size:23px;color:#fff;line-height:1.38;margin:11px 25px 9px 0;word-break:keep-all}
+.map-dossier-title p{font-size:12px;color:#e0eae2;line-height:1.65;margin:0 0 12px}
+.map-dossier-status{font-size:11px;line-height:1.5;padding:7px 10px;border:1px solid #a3ccae90;border-radius:7px;background:#ffffff20;display:inline-block}
+.map-dossier-close{position:absolute;right:13px;top:12px;border:1px solid #ffffff7b;border-radius:7px;background:#ffffff18;color:#fff;font-size:20px;min-width:32px;min-height:32px;cursor:pointer}
+.map-dossier-section{padding:19px 22px;border-bottom:1px solid #e8eeea}
+.map-dossier-section h3{font-size:14px;line-height:1.6;color:#1c5341;margin:0 0 13px;font-weight:850}
+.map-facts{display:grid;grid-template-columns:minmax(0,1fr) 1.35fr;gap:8px 12px}
+.map-facts>div{display:contents}
+.map-facts dt{font-size:11px;color:#718477;line-height:1.5}
+.map-facts dd{margin:0;font-size:12px;color:#1b4032;line-height:1.6;overflow-wrap:anywhere;font-weight:750}
+.map-data-caption{font-size:11px;line-height:1.8;color:#688073;margin:10px 0}
+.map-stage-track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.map-stage-track li{padding:8px;font-size:10px;line-height:1.5;border-radius:7px;border:1px solid #e0e9e2;background:#f6f9f6;color:#607a68}
+.map-stage-track li.current{border-color:#3d9772;background:#e5f5eb;color:#155b40;font-weight:850}
+.map-unknown-facts{padding-left:17px;margin:0;display:grid;gap:9px}
+.map-unknown-facts li{font-size:12px;line-height:1.65;color:#324d3c}
+.map-unknown-facts li strong{display:block;font-weight:500;color:#8a8d80;font-size:10px}
+.map-government-links{display:grid;gap:7px}
+.map-official-link{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px;border-radius:9px;text-decoration:none;background:#eef6f0;border:1px solid #d9e9dd;color:#185039}
+.map-official-link:hover,.map-official-link:focus-visible{background:#dff0e5;outline:2px solid #4f9774;outline-offset:2px}
+.map-official-link strong{display:block;font-size:12px;line-height:1.4}
+.map-official-link small{display:block;font-size:10px;font-weight:400;color:#658071;margin-top:5px;line-height:1.5}
+.map-official-link b{font-size:19px;flex-shrink:0}
+.map-dossier-footer{display:flex;gap:8px;flex-wrap:wrap;padding:16px 20px}
+.map-dossier-footer a,.map-dossier-footer button{padding:10px 12px;background:#174c3c;border:1px solid #174c3c;color:#fff;border-radius:8px;font-size:12px;font-weight:750;cursor:pointer;text-decoration:none}
+.map-dossier-footer button{background:white;color:#174c3c}
+.map-data-warning{font-size:10px;line-height:1.8;color:#7e8476;margin:0;padding:6px 22px 22px}
+.map-results-fold{background:#fff;border-radius:15px;border:1px solid #dce8df;min-width:0}
+.map-results-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 17px;font-weight:800;font-size:13px;cursor:pointer;color:#285a42}
+.map-results-fold>summary span{font-weight:500;color:#78917f;font-size:11px}
+.map-results-fold .map-results{border:0;border-radius:0 0 15px 15px;max-height:225px;padding:8px 12px 14px}
+.map-results-fold .result-row{display:block;text-align:left;width:100%;font:inherit;background:#fff;color:inherit}
+.map-results-fold .result-row[aria-pressed="true"]{background:#e4f4e8;border-color:#67a47b}
+.map-results-fold .result-row:hover,.map-results-fold .result-row:focus-visible{background:#eaf5ec;outline-offset:-2px}
+.map-popup-projects>button{font:inherit;padding:9px 10px;display:flex;width:100%;flex-wrap:wrap;gap:3px 7px;justify-content:space-between;align-items:center;color:#0c6347;background:#fff;border:0;border-bottom:1px solid #e4eee5;font-weight:750;text-align:left;cursor:pointer}
+.map-popup-projects>button:hover,.map-popup-projects>button:focus-visible{background:#eaf5ec;outline-offset:-2px}
+.map-popup-projects>button span{flex:1;min-width:90px;overflow-wrap:anywhere}
+.map-popup-projects>button small{width:100%;color:#718777;font-size:10px;font-weight:450}
+.map-popup-projects>button b{font-size:11px;color:#176c4c}
+.map-fallback-links button{padding:5px 9px;border:1px solid #c7ddcc;background:#e8f2e7;color:#17604b;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700}
+@media(max-width:1100px){.map-page-layout{grid-template-columns:minmax(0,1fr) minmax(305px,345px)}}
+@media(max-width:920px){
+ .map-page-layout{display:grid;grid-template-columns:minmax(0,1fr)}
+ .map-inspector{max-height:none;overflow:visible}
+ .map-results-fold .map-results{max-height:270px}
+ .map-project-detail{min-height:170px}
+ .full-map{min-height:430px}
+}
+@media(max-width:520px){
+ .map-page-layout{gap:12px}
+ .map-dossier-title{padding:20px 17px}
+ .map-dossier-section{padding:16px 17px}
+ .map-dossier-title h2{font-size:21px}
+ .map-dossier-footer{padding:14px}
+ .map-facts{grid-template-columns:100px minmax(0,1fr)}
+ .map-stage-track{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .map-results-fold>summary{display:block}
+ .map-results-fold>summary span{display:block;margin-top:4px}
+}
