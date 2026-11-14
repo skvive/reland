@@ -54,6 +54,23 @@ def inspect(page, lesson_id: int, width: int, standalone: bool = False) -> dict:
     assert label_box["y"] >= image_box["y"] - 3, (route, width, "above image")
     assert label_box["y"] + label_box["height"] <= image_box["y"] + image_box["height"] + 3, (route, width, "below image")
     assert "RE:LAND" not in image_region.inner_text(), (route, width, "brand-only visual contains RE:LAND text")
+    # Each lecture's own SVG illustration must appear immediately before the story.
+    art_selector = ".rk-opening-illustration > img" if standalone else ".story-opening-art > img"
+    opening_art = page.locator(art_selector)
+    opening_art.wait_for(state="visible", timeout=20_000)
+    opening_art.scroll_into_view_if_needed()
+    opening_art.evaluate("(img) => img.decode().catch(() => null)")
+    art_data = opening_art.evaluate("(img) => ({ok: img.complete && img.naturalWidth > 0, src: img.currentSrc})")
+    expected_art = f"/kang/assets/lesson-stories/story-{lesson_id:03d}.svg"
+    assert art_data["ok"] and expected_art in art_data["src"], (
+        route, width, "illustration not rendered", art_data)
+    art_box = page.locator(".rk-opening-illustration" if standalone else ".story-opening-art").bounding_box()
+    assert art_box and art_box["height"] >= 130, (route, width, "opening illustration blank")
+    assert art_box["x"] >= -3 and art_box["x"] + art_box["width"] <= width + 3, (
+        route, width, "illustration out of viewport", art_box)
+    if width == 390:
+        opening_art.screenshot(path=str(OUT / f"lesson-{lesson_id:02d}-opening-illustration-390.png"),
+                               animations="disabled")
     page_width = page.evaluate("document.documentElement.scrollWidth")
     assert page_width <= width + 3, (route, width, "horizontal overflow", page_width)
     if not standalone:
@@ -102,12 +119,26 @@ def main() -> None:
                         results.append(inspect(page, n, width, standalone=True))
             finally:
                 context.close()
+        # Full corpus verification: every illustration is decoded by Chromium at 390px.
+        context = browser.new_context(viewport={"width": 390, "height": 900},
+                                      device_scale_factor=1, is_mobile=True, has_touch=True,
+                                      locale="ko-KR")
+        page = context.new_page()
+        for n in range(1, 61):
+            page.goto(BASE + f"/kang/lesson-v6.html?id={n}", wait_until="domcontentloaded", timeout=45_000)
+            art = page.locator(".story-opening-art > img")
+            art.wait_for(state="visible", timeout=20_000)
+            art.evaluate("(img) => img.decode().catch(() => null)")
+            item = art.evaluate("(img) => ({width: img.naturalWidth, src: img.currentSrc})")
+            assert item["width"] > 0 and f"/story-{n:03d}.svg" in item["src"], (n, item)
+        context.close()
         browser.close()
     (OUT / "results.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
     assert len(results) == 19, f"expected 19 responsive cases; got {len(results)}"
     print(f"PASS: {len(results)} Chromium layout cases / 5 widths / 1,30,60 + standalone 1,60")
     print("MEDIA: Approved Kang source image decoded; Kang wordmark inside scene; no RE:LAND overlay in scene")
     print("VIEWPORT: No horizontal overflow; story title and content anchors retained")
+    print("ILLUSTRATIONS: 60 distinct narrative SVGs decoded in Chromium at 390px")
     print(f"SCREENSHOTS: {len(list(OUT.glob('*.png')))} files in {OUT.name}/")
 
 

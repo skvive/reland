@@ -201,3 +201,38 @@ def test_kang_v19_restores_top_brand_and_replaces_meeting_picture():
         assert '/kang/lesson-brand-v18.css' not in html.text
         assert '/kang/assets/kang-class-hero-v5.webp' in html.text
         assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text
+
+
+def test_sixty_unique_story_illustrations_above_opening_prose():
+    """Local 60/60 vector illustrations appear before each story, not over branding."""
+    import hashlib
+    from xml.etree import ElementTree
+    root = ROOT / 'kang_blog' / 'assets' / 'lesson-stories'
+    hashes = set()
+    for n in range(1, 61):
+        p = f'story-{n:03d}.svg'
+        body = (root / p).read_bytes()
+        assert len(body) > 2500, (n, 'empty illustration')
+        assert ElementTree.fromstring(body).tag.endswith('svg'), n
+        hashes.add(hashlib.sha256(body).hexdigest())
+        img = client.get(f'/kang/assets/lesson-stories/{p}')
+        assert img.status_code == 200, (n, img.status_code)
+        assert img.headers['content-type'].startswith('image/svg+xml'), n
+        html = client.get(f'/kang/lectures/lesson-{n:03d}.html')
+        assert html.status_code == 200, n
+        assert html.text.count('class="rk-opening-illustration"') == 1, n
+        assert f'/kang/assets/lesson-stories/{p}' in html.text, n
+        assert html.text.index('class="rk-opening-illustration"') < html.text.index('<div class="rk-read">'), n
+        assert '/kang/lesson-illustration-v21.css?v=20261114v21' in html.text, n
+        assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text, n
+    assert len(hashes) == 60, 'all 60 editorial illustrations must differ'
+    detail = client.get('/kang/lesson-v6.html?id=1')
+    assert detail.status_code == 200
+    assert '/kang/lesson-story-v11.js?v=20261114v21' in detail.text
+    assert '/kang/lesson-illustration-v21.css?v=20261114v21' in detail.text
+    source = (ROOT / 'kang_blog' / 'lesson-story-v11.js').read_text(encoding='utf-8')
+    assert 'learning.innerHTML=openingArt+' in source
+    assert 'data-story-art-id' in source
+    assert 'data-lesson-media-id' in source
+    assert client.get('/kang/lesson-illustration-v21.css').status_code == 200
+
