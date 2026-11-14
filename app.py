@@ -1139,6 +1139,24 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
             html,
             count=1,
         )
+        # One topic-specific illustrated opening per original lesson.
+        # Inject outside .rk-read: shortfiction-v14 replaces that container on load.
+        illustration = (
+            '<figure class="rk-opening-illustration" '
+            f'data-story-art-id="{int(item_id)}">'
+            f'<img src="/kang/assets/lesson-stories/story-{item_id}.svg" '
+            f'data-lesson-media-id="{int(item_id)}" '
+            f'alt="제{int(item_id)}강 교육용 상황 삽화" '
+            'loading="lazy" decoding="async" width="1600" height="900">'
+            f'<figcaption>제{int(item_id):02d}강 삽화 · 가상의 교육 장면</figcaption>'
+            '</figure>'
+        )
+        html = html.replace('<div class="rk-read">', illustration + '<div class="rk-read">', 1)
+        html = html.replace(
+            '</style>',
+            '</style><link rel="stylesheet" href="/kang/lesson-illustration-v21.css?v=20261114v21">',
+            1,
+        )
         html = html.replace(
             '</article>',
             '<script defer src="/kang/longform-v12.js?v=20261112v12"></script>'

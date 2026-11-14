@@ -1,0 +1,52 @@
+/* RE:LAND v21 — individual narrative illustrations, one per lecture.
+   Reuse 60 verified, unique, self-hosted SVGs. Do not alter the instructor photo. */
+.story-opening-art,.rk-opening-illustration{
+  display:block;
+  position:relative;
+  width:100%;
+  max-width:810px;
+  margin:0 auto 33px;
+  overflow:hidden;
+  border-radius:14px;
+  background:#183149;
+  border:1px solid #d8e5df;
+  box-shadow:0 8px 25px rgba(20,58,45,.09);
+}
+.story-opening-art>img,.rk-opening-illustration>img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:16/9!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:0!important;
+  background:#152c42;
+}
+.story-opening-art figcaption,.rk-opening-illustration figcaption{
+  display:block;
+  padding:11px 15px 12px;
+  color:#527267;
+  background:#f3f8f5;
+  font:600 12px/1.5 system-ui,'Noto Sans KR',sans-serif;
+  letter-spacing:0;
+  text-align:left;
+}
+.rk-opening-illustration{margin:25px auto 31px}
+@media(max-width:600px){
+  .story-opening-art,.rk-opening-illustration{
+    border-radius:10px;
+    margin-bottom:25px;
+    box-shadow:0 4px 13px rgba(20,58,45,.06);
+  }
+  .story-opening-art figcaption,.rk-opening-illustration figcaption{
+    padding:8px 11px 9px;
+    font-size:11px;
+  }
+}
+@media print{
+ .story-opening-art,.rk-opening-illustration{break-inside:avoid;box-shadow:none;max-width:640px}
+ .story-opening-art figcaption,.rk-opening-illustration figcaption{color:#304c40}
+}

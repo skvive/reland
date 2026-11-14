@@ -324,9 +324,12 @@ const added=window.KANG_LONGFORM_ADDITIONS?.[id]||[];
 const finalBeats=beats.flatMap((p,i)=>added[i]?[p,added[i]]:[p]).concat(added.slice(beats.length));
 const v14=window.KANG_SHORTFICTION_V14?.[id];
 const proseHTML=v14 ? v14.scenes.map((scene,i)=>'<section class="story-act-v14"><h3 class="story-act-title-v14">'+esc(scene.heading)+'</h3>'+scene.paragraphs.map(paragraph=>'<p class="serial-prose">'+esc(paragraph)+'</p>').join('')+'</section>').join('') : finalBeats.map((paragraph,i)=>'<p class="serial-prose">'+esc(paragraph)+'</p>'+(i===0?'<p class="serial-dialogue">'+esc(speaking)+'</p>':'')).join('');
+const openingArtId=String(id).padStart(3,'0');
+const openingArtTitle=window.KANG_SHORTFICTION_V14?.[id]?.title||lesson.title;
+const openingArt='<figure class="story-opening-art" data-story-art-id="'+id+'"><img src="/kang/assets/lesson-stories/story-'+openingArtId+'.svg" data-lesson-media-id="'+id+'" alt="'+esc('제'+id+'강 '+openingArtTitle+' 관련 가상 교육 삽화')+'" loading="lazy" decoding="async" width="1600" height="900"><figcaption>제'+String(id).padStart(2,'0')+'강 삽화 · 가상의 교육 장면</figcaption></figure>';
 const oldLearning=learning.innerHTML;
 learning.classList.add('serial-chapter');
-learning.innerHTML='<span class="serial-eyebrow">RE:LAND 강실장 · 이야기로 배우는 재개발 / '+String(id).padStart(2,'0')+'</span><h2 class="serial-title">'+esc(lesson.title)+'</h2><p class="serial-deck">서류보다 먼저, 사람의 이야기에서 시작합니다.</p><div class="serial-reading">'+
+learning.innerHTML=openingArt+'<span class="serial-eyebrow">RE:LAND 강실장 · 이야기로 배우는 재개발 / '+String(id).padStart(2,'0')+'</span><h2 class="serial-title">'+esc(lesson.title)+'</h2><p class="serial-deck">서류보다 먼저, 사람의 이야기에서 시작합니다.</p><div class="serial-reading">'+
  proseHTML+'</div>'+
  '<p class="serial-disclaimer">※ 등장인물·대화는 가상의 교육 이야기입니다. 개별 사업장의 권리·금액·기한이나 법적 결과를 확정하지 않습니다.</p>'+
  '<details class="serial-original"><summary>기존 학습 목표와 개념 카드 펼쳐 보기</summary><div class="serial-original-body">'+oldLearning+'</div></details>';
