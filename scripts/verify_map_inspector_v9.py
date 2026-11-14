@@ -32,7 +32,7 @@ with sync_playwright() as pw:
         for item in page.locator(".map-official-link").all():
             assert item.get_attribute("target")=="_blank",width
             assert item.get_attribute("rel")=="noopener noreferrer",width
-            assert item.get_attribute("href","").startswith("https://"),width
+            assert (item.get_attribute("href") or "").startswith("https://"),width
         assert page.locator("#map-project-detail .map-facts dd").count()==7,width
         assert page.locator("#map-project-detail .map-unknown-facts li").count()>=6,width
         assert page.locator("#map-project-detail .map-stage-track li").count()==8,width
