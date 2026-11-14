@@ -10,3 +10,10 @@
 .novel-bridge-note{font-size:.82rem;line-height:1.7;color:#5c7166;margin:18px 0 0}
 @media(max-width:700px){.reland-novel-bridge{padding:20px 16px;margin:16px 0 26px}.novel-bridge-grid{grid-template-columns:1fr;gap:10px}.novel-bridge-grid>div{padding:14px}}
 @media print{.reland-novel-bridge{break-inside:avoid;background:#fff}}
+
+.novel-bridge-index{margin-top:20px;padding:16px 18px;background:#fff;border:1px solid #e3eae5;border-radius:12px}
+.novel-bridge-index summary{font-weight:700;cursor:pointer;color:#235540;min-height:36px;display:list-item;line-height:36px}
+.novel-chapter-list{columns:2;column-gap:22px;list-style:none;padding:12px 0 0;margin:0}
+.novel-chapter-list li{font-size:.88rem;line-height:1.55;margin:0 0 8px;break-inside:avoid;color:#3a5147}
+.novel-chapter-current{font-weight:700!important;color:#126b4c!important}
+@media(max-width:700px){.novel-chapter-list{columns:1}}
