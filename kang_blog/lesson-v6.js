@@ -15,7 +15,7 @@
   brandImage.decoding = 'async';
   brandImage.src = '/kang/assets/kang-class-hero-v5.webp';
   brandImage.alt = 'RE:LAND 강실장 클래스 공식 승인 브랜드 이미지';
-  $('#lectureEyebrow').textContent = `RE:LAND · CLASS ${String(id).padStart(2, '0')}`;
+  $('#lectureEyebrow').textContent = `RE:LAND · ${String(id).padStart(2, '0')}`;
   $('#lectureTitle').textContent = '강실장 클래스';
   $('#lectureSummary').textContent = '재개발·재건축 실전 지식을 이야기로 배웁니다';
   const sceneImage = $('#storySceneImage');

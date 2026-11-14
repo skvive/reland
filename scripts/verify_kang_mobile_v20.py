@@ -58,7 +58,7 @@ def inspect(page, lesson_id: int, width: int, standalone: bool = False) -> dict:
     assert page_width <= width + 3, (route, width, "horizontal overflow", page_width)
     if not standalone:
         eyebrow = page.locator("#lectureEyebrow")
-        assert "RE:LAND · CLASS" in eyebrow.inner_text(), (route, width, "unexpected long heading")
+        assert "RE:LAND · " in eyebrow.inner_text(), (route, width, "unexpected long heading")
         eyebrow_box = eyebrow.bounding_box()
         if width <= 430:
             assert eyebrow_box and eyebrow_box["x"] + eyebrow_box["width"] < width * .53, (
