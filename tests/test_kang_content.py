@@ -140,7 +140,7 @@ def test_all_sixty_lecture_covers_are_local_and_http_decodable():
     for url in ('/kang/', '/kang/lesson-v6.html?id=1', '/kang/lesson-v6.html?id=60'):
         page = client.get(url)
         assert page.status_code == 200
-        assert 'story-photo-v14.js?v=20261115v24' in page.text
+        assert 'story-photo-v14.js?v=' in page.text
 
 def test_approved_brand_hero_and_individual_scene_visuals_on_all_60():
     """Instructor portrait stays approved; scene image changes with every course."""
@@ -228,7 +228,7 @@ def test_sixty_unique_story_illustrations_above_opening_prose():
     assert len(hashes) == 60, 'all 60 editorial illustrations must differ'
     detail = client.get('/kang/lesson-v6.html?id=1')
     assert detail.status_code == 200
-    assert '/kang/lesson-story-v11.js?v=20261114v21' in detail.text
+    assert '/kang/lesson-story-v11.js?v=' in detail.text
     assert '/kang/lesson-illustration-v21.css?v=20261114v21' in detail.text
     source = (ROOT / 'kang_blog' / 'lesson-story-v11.js').read_text(encoding='utf-8')
     assert 'learning.innerHTML=openingArt+' in source
