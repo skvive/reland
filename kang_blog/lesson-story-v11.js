@@ -326,7 +326,7 @@ const v14=window.KANG_SHORTFICTION_V14?.[id];
 const proseHTML=v14 ? v14.scenes.map((scene,i)=>'<section class="story-act-v14"><h3 class="story-act-title-v14">'+esc(scene.heading)+'</h3>'+scene.paragraphs.map(paragraph=>'<p class="serial-prose">'+esc(paragraph)+'</p>').join('')+'</section>').join('') : finalBeats.map((paragraph,i)=>'<p class="serial-prose">'+esc(paragraph)+'</p>'+(i===0?'<p class="serial-dialogue">'+esc(speaking)+'</p>':'')).join('');
 const openingArtId=String(id).padStart(3,'0');
 const openingArtTitle=window.KANG_SHORTFICTION_V14?.[id]?.title||lesson.title;
-const openingArtSrc=id===1?'/kang/assets/lesson-scenes-v23/lesson-001.svg':(id<=60?'/kang/assets/lesson-scenes-v22/lesson-'+openingArtId+'.svg':'/kang/assets/lesson-stories/story-'+openingArtId+'.svg');
+const openingArtSrc=id<=11?'/kang/assets/lesson-scenes-v23/lesson-'+openingArtId+'.svg':(id<=60?'/kang/assets/lesson-scenes-v22/lesson-'+openingArtId+'.svg':'/kang/assets/lesson-stories/story-'+openingArtId+'.svg');
 const openingArt='<figure class="story-opening-art" data-story-art-id="'+id+'"><img src="'+openingArtSrc+'" data-lesson-media-id="'+id+'" alt="'+esc('제'+id+'강 '+openingArtTitle+' 관련 가상 교육 삽화')+'" loading="lazy" decoding="async" width="1600" height="900"><figcaption>제'+String(id).padStart(2,'0')+'강 삽화 · 가상의 교육 장면</figcaption></figure>';
 const oldLearning=learning.innerHTML;
 learning.classList.add('serial-chapter');
