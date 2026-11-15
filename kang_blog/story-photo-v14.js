@@ -6,7 +6,7 @@
  const prefix='/kang/assets/';
  const fmt=id=>String(id).padStart(3,'0');
  const originals=Object.freeze(Object.fromEntries(Array.from({length:60},(_,i)=>[i+1,prefix+'lessons/lesson-'+fmt(i+1)+'.webp'])));
- const illustrations=id=>prefix+(id<=20?'lesson-scenes-v22/lesson-':'lesson-stories/story-')+fmt(id)+'.svg';
+ const illustrations=id=>prefix+(id<=60?'lesson-scenes-v22/lesson-':'lesson-stories/story-')+fmt(id)+'.svg';
  const originalIllustration=id=>prefix+'lesson-stories/story-'+fmt(id)+'.svg';
  const category=id=>prefix+'kang-clean-category-'+String(Math.ceil(id/6)).padStart(2,'0')+'-v8.webp';
  const defaultSvg=()=> 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#e6eee9"/><path d="M0 555L260 428L460 500L700 315L950 447L1200 310V675H0Z" fill="#b5d1bd"/><path d="M105 493V290L270 197L436 290V493M520 520V210L710 112L915 210V520M965 485V315L1080 255L1170 315V485" fill="#d3e5d8" stroke="#42715d" stroke-width="18"/><path d="M90 547H1100" stroke="#245b49" stroke-width="14"/><rect x="150" y="324" width="72" height="85" rx="4" fill="#8cb69e"/><rect x="286" y="324" width="72" height="85" rx="4" fill="#8cb69e"/><rect x="615" y="254" width="82" height="98" rx="4" fill="#8cb69e"/><rect x="755" y="254" width="82" height="98" rx="4" fill="#8cb69e"/></svg>');
