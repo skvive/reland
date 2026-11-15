@@ -140,7 +140,7 @@ def test_all_sixty_lecture_covers_are_local_and_http_decodable():
     for url in ('/kang/', '/kang/lesson-v6.html?id=1', '/kang/lesson-v6.html?id=60'):
         page = client.get(url)
         assert page.status_code == 200
-        assert 'story-photo-v14.js?v=20261113v16' in page.text
+        assert 'story-photo-v14.js?v=20261115v24' in page.text
 
 def test_approved_brand_hero_and_individual_scene_visuals_on_all_60():
     """Instructor portrait stays approved; scene image changes with every course."""
@@ -207,21 +207,21 @@ def test_sixty_unique_story_illustrations_above_opening_prose():
     """Local 60/60 vector illustrations appear before each story, not over branding."""
     import hashlib
     from xml.etree import ElementTree
-    root = ROOT / 'kang_blog' / 'assets' / 'lesson-stories'
+    root = ROOT / 'kang_blog' / 'assets' / 'lesson-scenes-v22'
     hashes = set()
     for n in range(1, 61):
-        p = f'story-{n:03d}.svg'
+        p = f'lesson-{n:03d}.svg'
         body = (root / p).read_bytes()
         assert len(body) > 2500, (n, 'empty illustration')
         assert ElementTree.fromstring(body).tag.endswith('svg'), n
         hashes.add(hashlib.sha256(body).hexdigest())
-        img = client.get(f'/kang/assets/lesson-stories/{p}')
+        img = client.get(f'/kang/assets/lesson-scenes-v22/{p}')
         assert img.status_code == 200, (n, img.status_code)
         assert img.headers['content-type'].startswith('image/svg+xml'), n
         html = client.get(f'/kang/lectures/lesson-{n:03d}.html')
         assert html.status_code == 200, n
         assert html.text.count('class="rk-opening-illustration"') == 1, n
-        assert f'/kang/assets/lesson-stories/{p}' in html.text, n
+        assert f'/kang/assets/lesson-scenes-v22/{p}' in html.text, n
         assert html.text.index('class="rk-opening-illustration"') < html.text.index('<div class="rk-read">'), n
         assert '/kang/lesson-illustration-v21.css?v=20261114v21' in html.text, n
         assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text, n
