@@ -61,7 +61,7 @@ def inspect(page, lesson_id: int, width: int, standalone: bool = False) -> dict:
     opening_art.scroll_into_view_if_needed()
     opening_art.evaluate("(img) => img.decode().catch(() => null)")
     art_data = opening_art.evaluate("(img) => ({ok: img.complete && img.naturalWidth > 0, src: img.currentSrc})")
-    expected_art = f"/kang/assets/lesson-scenes-v22/lesson-{lesson_id:03d}.svg"
+    expected_art = f"/kang/assets/lesson-scenes-v23/lesson-001.svg" if lesson_id == 1 else f"/kang/assets/lesson-scenes-v22/lesson-{lesson_id:03d}.svg"
     assert art_data["ok"] and expected_art in art_data["src"], (
         route, width, "illustration not rendered", art_data)
     art_box = page.locator(".rk-opening-illustration" if standalone else ".story-opening-art").bounding_box()
@@ -130,7 +130,8 @@ def main() -> None:
             art.wait_for(state="visible", timeout=20_000)
             art.evaluate("(img) => img.decode().catch(() => null)")
             item = art.evaluate("(img) => ({width: img.naturalWidth, src: img.currentSrc})")
-            assert item["width"] > 0 and f"/lesson-scenes-v22/lesson-{n:03d}.svg" in item["src"], (n, item)
+            expected = "/lesson-scenes-v23/lesson-001.svg" if n == 1 else f"/lesson-scenes-v22/lesson-{n:03d}.svg"
+            assert item["width"] > 0 and expected in item["src"], (n, item)
         context.close()
         browser.close()
     (OUT / "results.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")

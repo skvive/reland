@@ -221,11 +221,17 @@ def test_sixty_unique_story_illustrations_above_opening_prose():
         html = client.get(f'/kang/lectures/lesson-{n:03d}.html')
         assert html.status_code == 200, n
         assert html.text.count('class="rk-opening-illustration"') == 1, n
-        assert f'/kang/assets/lesson-scenes-v22/{p}' in html.text, n
+        expected = '/kang/assets/lesson-scenes-v23/lesson-001.svg' if n == 1 else f'/kang/assets/lesson-scenes-v22/{p}'
+        assert expected in html.text, n
         assert html.text.index('class="rk-opening-illustration"') < html.text.index('<div class="rk-read">'), n
         assert '/kang/lesson-illustration-v21.css?v=20261114v21' in html.text, n
         assert '기존 7단계 교육 원고와 공식 법령 출처 보기' in html.text, n
     assert len(hashes) == 60, 'all 60 editorial illustrations must differ'
+    cinematic = client.get('/kang/assets/lesson-scenes-v23/lesson-001.svg')
+    assert cinematic.status_code == 200
+    assert cinematic.headers['content-type'].startswith('image/svg+xml')
+    assert 'data:image/webp;base64,' in cinematic.text
+    assert 'lesson-scenes-v23/lesson-001.svg' in (ROOT / 'kang_blog' / 'story-photo-v14.js').read_text(encoding='utf-8')
     detail = client.get('/kang/lesson-v6.html?id=1')
     assert detail.status_code == 200
     assert '/kang/lesson-story-v11.js?v=' in detail.text
