@@ -130,7 +130,7 @@ def main() -> None:
             art.wait_for(state="visible", timeout=20_000)
             art.evaluate("(img) => img.decode().catch(() => null)")
             item = art.evaluate("(img) => ({width: img.naturalWidth, src: img.currentSrc})")
-            assert item["width"] > 0 and f"/story-{n:03d}.svg" in item["src"], (n, item)
+            assert item["width"] > 0 and f"/lesson-scenes-v22/lesson-{n:03d}.svg" in item["src"], (n, item)
         context.close()
         browser.close()
     (OUT / "results.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
