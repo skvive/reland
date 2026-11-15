@@ -1141,10 +1141,11 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
         )
         # One topic-specific illustrated opening per original lesson.
         # Inject outside .rk-read: shortfiction-v14 replaces that container on load.
+        illustration_path = ('lesson-scenes-v22/lesson-' if int(item_id) <= 10 else 'lesson-stories/story-') + item_id + '.svg'
         illustration = (
             '<figure class="rk-opening-illustration" '
             f'data-story-art-id="{int(item_id)}">'
-            f'<img src="/kang/assets/lesson-stories/story-{item_id}.svg" '
+            f'<img src="/kang/assets/{illustration_path}" '
             f'data-lesson-media-id="{int(item_id)}" '
             f'alt="제{int(item_id)}강 교육용 상황 삽화" '
             'loading="lazy" decoding="async" width="1600" height="900">'
