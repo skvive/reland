@@ -50,8 +50,8 @@ def test_both_map_providers_fit_all_visible_markers():
     assert 'fitGoogleDistrictViewport(map,items,zoom)' in js
     assert 'map.fitBounds(bounds,{top:42,bottom:42,left:36,right:36})' in js
     assert 'map.fitBounds(points,{padding:[32,32],maxZoom:zoom,animate:false})' in js
-    assert 'region===\\'전국\\'?7:10' in js
-    assert 'region===\\'서울\\'' in js
+    assert "region==='전국'?7:10" in js
+    assert "region==='서울'" in js
     assert "region==='서울특별시'" not in js
 
 def test_map_assets_are_cache_busted_and_live_shell_loads(client):
