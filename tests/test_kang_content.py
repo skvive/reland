@@ -221,7 +221,7 @@ def test_sixty_unique_story_illustrations_above_opening_prose():
         html = client.get(f'/kang/lectures/lesson-{n:03d}.html')
         assert html.status_code == 200, n
         assert html.text.count('class="rk-opening-illustration"') == 1, n
-        expected = f'/kang/assets/lesson-scenes-v23/lesson-{n:03d}.svg' if n <= 11 else f'/kang/assets/lesson-scenes-v22/{p}'
+        expected = f'/kang/assets/lesson-scenes-v24/lesson-012.svg' if n == 12 else (f'/kang/assets/lesson-scenes-v23/lesson-{n:03d}.svg' if n <= 11 else f'/kang/assets/lesson-scenes-v22/{p}')
         assert expected in html.text, n
         assert html.text.index('class="rk-opening-illustration"') < html.text.index('<div class="rk-read">'), n
         assert '/kang/lesson-illustration-v21.css?v=20261114v21' in html.text, n

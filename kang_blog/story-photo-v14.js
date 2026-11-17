@@ -6,7 +6,7 @@
  const prefix='/kang/assets/';
  const fmt=id=>String(id).padStart(3,'0');
  const originals=Object.freeze(Object.fromEntries(Array.from({length:60},(_,i)=>[i+1,prefix+'lessons/lesson-'+fmt(i+1)+'.webp'])));
- const illustrations=id=>id<=11?prefix+'lesson-scenes-v23/lesson-'+fmt(id)+'.svg':prefix+'lesson-scenes-v22/lesson-'+fmt(id)+'.svg';
+ const illustrations=id=>id===12?prefix+'lesson-scenes-v24/lesson-012.svg':(id<=11?prefix+'lesson-scenes-v23/lesson-'+fmt(id)+'.svg':prefix+'lesson-scenes-v22/lesson-'+fmt(id)+'.svg');
  const previousIllustration=id=>prefix+'lesson-scenes-v22/lesson-'+fmt(id)+'.svg';
  const originalIllustration=id=>prefix+'lesson-stories/story-'+fmt(id)+'.svg';
  const category=id=>prefix+'kang-clean-category-'+String(Math.ceil(id/6)).padStart(2,'0')+'-v8.webp';
@@ -37,7 +37,7 @@
    }
    const id=resolvedId(img);
    if(!id)return;
-   const choices=id<=11?[originals[id],illustrations(id),previousIllustration(id),originalIllustration(id),category(id),fallbackImage]:[originals[id],illustrations(id),originalIllustration(id),category(id),fallbackImage];
+   const choices=id<=11||id===12?[originals[id],illustrations(id),previousIllustration(id),originalIllustration(id),category(id),fallbackImage]:[originals[id],illustrations(id),originalIllustration(id),category(id),fallbackImage];
    const current=img.getAttribute('src')||'';
    const index=choices.findIndex(s=>s===current||s===current.split('?')[0]);
    if(index===choices.length-1){img.dataset.mediaExhausted='1';img.style.background='#e6eee9';return;}
