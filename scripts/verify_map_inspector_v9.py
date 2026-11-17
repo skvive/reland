@@ -22,11 +22,23 @@ with sync_playwright() as pw:
         page.on("pageerror",lambda ex:errors.append(str(ex)))
         response=page.goto(URL+"/map",wait_until="domcontentloaded",timeout=60_000)
         assert response and response.status==200,("map HTTP",width)
-        first=page.locator(".map-results .re-open-detail").first
-        first.wait_for(state="visible",timeout=30_000)
-        first.click()
+        choices=page.locator(".map-results .re-open-detail")
+        choices.first.wait_for(state="visible",timeout=30_000)
         dossier=page.locator("#map-project-detail .map-dossier")
-        dossier.wait_for(state="visible",timeout=25_000)
+        picked=None
+        # A regional *demo hub* can sort ahead of actual public-data dossiers.
+        # Verify an actual project with six publicly missing fields, not the demo.
+        for i in range(min(choices.count(),40)):
+            button=choices.nth(i)
+            button.click()
+            dossier.wait_for(state="visible",timeout=25_000)
+            page.wait_for_timeout(120)
+            title=dossier.inner_text()
+            missing=page.locator("#map-project-detail .map-unknown-facts li").count()
+            if ("시연용 지역" not in title and "실제 사업 아님" not in title and missing>=6):
+                picked=i
+                break
+        assert picked is not None,(width,"no real sparse project among first 40 results")
         assert "공공정보" in dossier.inner_text(),width
         assert page.locator(".map-official-link").count()>=5,width
         for item in page.locator(".map-official-link").all():
@@ -44,9 +56,11 @@ with sync_playwright() as pw:
         selected=page.locator(".map-results .re-open-detail[aria-pressed='true']")
         assert selected.count()==1,width
         assert "?id=" in page.url or "&id=" in page.url,(width,page.url)
-        if page.locator(".map-results .re-open-detail").count()>1:
-            second=page.locator(".map-results .re-open-detail").nth(1)
-            second.click()
+        if choices.count()>1:
+            other=choices.nth(0 if picked!=0 else 1)
+            other.click()
+            assert page.locator(".map-results .re-open-detail[aria-pressed='true']").count()==1,width
+            choices.nth(picked).click()
             assert page.locator(".map-results .re-open-detail[aria-pressed='true']").count()==1,width
         box=page.locator("#map-project-detail").bounding_box()
         assert box and box["x"]>=-3 and box["x"]+box["width"]<=width+3,(width,box)
