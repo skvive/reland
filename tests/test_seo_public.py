@@ -115,3 +115,22 @@ def test_district_metadata_disambiguates_province(client):
     pk=insert_project()
     text=client.get('/district-info/'+str(pk)).text
     assert '<title>가야4 재개발사업 추진단계 (부산광역시 부산진구) | 리랜드</title>' in text
+
+
+def test_seoul_kogl4_geometry_source_is_reference_only(client):
+    page=client.get('/regions/seoul')
+    assert page.status_code==200
+    assert '서울시 정비사업 공식 공간정보 원본' in page.text
+    assert 'https://data.seoul.go.kr/dataList/OA-22712/F/1/datasetView.do' in page.text
+    assert '공공누리 제4유형' in page.text
+    sources=client.get('/api/map/secondary-sources')
+    assert sources.status_code==200
+    entries=sources.json()['spatial_sources']
+    assert len(entries)==1
+    e=entries[0]
+    assert '제4유형' in e['copyright_label']
+    assert e['confirmed_use']=='공식 원문 페이지 하이퍼링크'
+    assert 'SHP 파일 서버 복제' in e['not_enabled']
+    audit=client.get('/api/map/public-status').json()
+    assert audit['verified_geometry_count']==0
+

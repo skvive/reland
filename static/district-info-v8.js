@@ -29,6 +29,7 @@
       ];
       if(province.includes('부산'))sites.splice(1,0,['부산시 정비사업별 정보공개','https://dynamice.busan.go.kr/view.do?no=279','부산시 공식 구역별 대표지번·추진단계·공개자료']);
       if(province.includes('서울'))sites.splice(1,0,['서울시 서울플랜+ 정비사업 현황','https://data.seoul.go.kr/dataList/OA-23112/S/1/datasetView.do','도시계획사업 정비사업 통계·원문 안내']);
+      if(province.includes('서울'))sites.splice(1,0,['서울시 정비사업 SHP 공간정보 원본','https://data.seoul.go.kr/dataList/OA-22712/F/1/datasetView.do','공공누리 제4유형: 출처표시·상업적 이용금지·변경금지. 실제 지도 경계로 재배포하지 않음']);
       if(province.includes('인천'))sites.splice(1,0,['인천시 정비사업 정보공개','https://renewal.incheon.go.kr/','인천시 정비사업 현황·공개자료 조회']);
       if(province.includes('서울'))sites.splice(1,0,['서울시 정비사업 정보몽땅','https://cleanup.seoul.go.kr/','서울시 사업장·공개자료 조회']);
       $('governmentLinks').innerHTML=sites.map(([name,url,description])=>'<a class="district-site-link" href="'+safeUrl(url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+esc(name)+'</strong><small>'+esc(description)+'</small></span><b aria-hidden="true">↗</b></a>').join('');

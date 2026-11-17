@@ -94,5 +94,31 @@
       "representative_parcel": "사하구 감천1동 202 일원",
       "source_url": "https://dynamice.busan.go.kr/home/BARA_0000000000170/main.do"
     }
+  ],
+  "spatial_sources": [
+    {
+      "source_name": "서울시 도시계획사업 현황(서울플랜+) 공간정보",
+      "dataset_url": "https://data.seoul.go.kr/dataList/OA-22712/F/1/datasetView.do",
+      "region": "서울특별시",
+      "data_format": "SHP",
+      "copyright_label": "공공누리 제4유형 (출처표시, 상업적 이용금지, 변경금지)",
+      "reuse_status": "별도 이용허락/비상업성 판단 및 변환허가 확인 전",
+      "confirmed_use": "공식 원문 페이지 하이퍼링크",
+      "not_enabled": [
+        "변환 GeoJSON 공개",
+        "좌표계 재투영",
+        "변경된 파일 재배포",
+        "SHP 파일 서버 복제",
+        "법적 확정 경계 지도표시"
+      ],
+      "permission_questions": [
+        "공익 목적 리랜드 운영형태가 비상업 조건에 부합하는지",
+        "SHP→WGS84 GeoJSON 변환 및 인터랙티브 지도 렌더링 허용 여부",
+        "변환 파일 호스팅·재배포 범위",
+        "인용 표기 및 갱신·수정 허용 범위"
+      ],
+      "verified_at": "2026-11-17",
+      "display_status": "공식 공간정보 원본만 연결 (직접 지도 레이어 미등록)"
+    }
   ]
 }

@@ -165,6 +165,8 @@ def region_html(slug,snapshot,items):
     body+='<section class="seo-panel"><h2>'+e(region)+' 사업별 공공정보</h2><table class="seo-table"><thead><tr><th>시·군·구 · 구역명</th><th>사업유형</th><th>추진단계</th></tr></thead><tbody>'
     body+=''.join('<tr><td><a href="/district-info/'+str(row['id'])+'">'+e(row['city'])+' '+e(row['name'])+'</a></td><td>'+e(row['kind'])+'</td><td>'+e(row['stage'])+'</td></tr>' for row in rows)
     body+='</tbody></table><p><a href="/map?region='+quote(region)+'">'+e(region)+' 전체 구역 지도에서 검색하기</a></p></section>'
+    if slug=='seoul':
+        body+='<section class="seo-panel"><h2>서울시 정비사업 공식 공간정보 원본</h2><p>서울시 서울플랜+ 정비사업 SHP 공간자료는 공공누리 제4유형(출처표시·상업적 이용금지·변경금지)으로 표시되어 있습니다. 리랜드가 공익 목적 사이트라는 사실만으로 모든 이용조건이 자동 면제되는 것은 아니며, 법정 구역경계 좌표로 재가공·재배포하기 전에 별도 이용허락을 확인해야 합니다.</p><p><a href="https://data.seoul.go.kr/dataList/OA-22712/F/1/datasetView.do" target="_blank" rel="noopener noreferrer">서울시 SHP 공식 원본 페이지 열기</a></p><p>현재 리랜드 지도에 표시되는 대표점은 공식 정비구역 경계가 아닙니다.</p></section>'
     if slug=='incheon':
         body+='<section class="seo-panel"><h2>인천시 최신 공식자료 168건</h2><p>인천광역시 2026-10-31 자료에는 구역별 면적·대표 소재지·업데이트된 추진단계가 포함됩니다. 전국 기준 자료와 명칭이 다른 기록은 임의 매칭하지 않습니다.</p><p><a href="/regions/incheon-official">인천시 최신 정비사업 전체 168건 보기</a></p></section>'
     body+='<p class="source">원본: <a href="'+SOURCE+'" target="_blank" rel="noopener noreferrer">국토교통부 전국 도시정비사업 통합 데이터</a> · 기준일 2026-05-18. 공간 좌표는 정확한 필지 경계를 의미하지 않습니다.</p>'

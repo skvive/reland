@@ -725,7 +725,8 @@ def _incheon_exact_records(project):
 def public_secondary_sources():
     c=_municipal_public_catalog()
     incheon=_incheon_public_snapshot()
-    return {'sources':c['sources'], 'matched_example_records':len(c['records']),
+    return {'sources':c['sources'], 'spatial_sources':c.get('spatial_sources',[]),
+            'matched_example_records':len(c['records']),
             'verified_on':c['verified_on'],
             'incheon_20261031':{'verified':incheon['verified'],'source_rows':incheon['source_rows'],
                  'source_url':INCH_SOURCE_URL,'source_asof':INCH_SOURCE_ASOF,
