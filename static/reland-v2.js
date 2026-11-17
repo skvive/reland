@@ -5,9 +5,9 @@
   const FEATURED_PUBLIC_VIDEOS=[{"video_id":"iCdL2XaXmpo","title":"현금청산자의 정비사업 정보공개 청구","creator":"법무법인 센트로","category":"도시정비 실무 · 2025"},{"video_id":"B4ztywXFWjU","title":"재개발·재건축 정비사업 일몰제 핵심 이해","creator":"법무법인 센트로","category":"정비사업 절차"},{"video_id":"TsLDwYrDpfA","title":"내 토지가 여러 필지라면? 보상금 평가 방식","creator":"법무법인 센트로","category":"감정평가·보상"},{"video_id":"N7WabZ41tsw","title":"투기과열지구 조합원 자격 승계와 2025 판례","creator":"법무법인 센트로","category":"조합원 자격"},{"video_id":"Mgl5dunkW8M","title":"재건축 현금청산금 평가시기의 쟁점","creator":"법무법인 센트로","category":"현금청산"},{"video_id":"w7hPdTuvjMk","title":"토지 수용과 근저당권자의 대응","creator":"법무법인 센트로","category":"수용·보상"},{"video_id":"mA1TvquRMT8","title":"현금청산자 이행제공 방법 Part.1","creator":"법무법인 센트로","category":"법률 실무"},{"video_id":"hmLoj9XH00w","title":"현금청산자 이행제공 방법 Part.2","creator":"법무법인 센트로","category":"법률 실무"}];
   const VIDEO_TOPICS = [
     {title:'재개발 첫걸음',desc:'정비구역 지정부터 사업시행까지',query:'재개발 정비사업 절차 강의',cover:'/static/assets/reland-home-city-v2.webp'},
-    {title:'조합설립과 총회',desc:'조합원 권리와 의사결정 구조',query:'재개발 조합 설립 총회 정비사업 설명',cover:'/static/assets/legal-office-source.webp'},
-    {title:'관리처분·분담금',desc:'평가, 분양신청, 사업비 이해',query:'재개발 관리처분 분담금 설명 강의',cover:'/kang/assets/lessons/lesson-001.webp'},
-    {title:'이주·보상과 분쟁',desc:'보상 절차와 주의할 법률 쟁점',query:'재개발 이주 보상 절차 강의',cover:'/kang/assets/lessons/lesson-055.webp'}
+    {title:'조합설립과 총회',desc:'조합원 권리와 의사결정 구조',query:'재개발 조합 설립 총회 정비사업 설명',cover:'/static/assets/reland-youtube-02-association-assembly-20261117.jpg'},
+    {title:'관리처분·분담금',desc:'평가, 분양신청, 사업비 이해',query:'재개발 관리처분 분담금 설명 강의',cover:'/static/assets/reland-youtube-03-management-review-20261117.jpg'},
+    {title:'이주·보상과 분쟁',desc:'보상 절차와 주의할 법률 쟁점',query:'재개발 이주 보상 절차 강의',cover:'/static/assets/reland-youtube-04-relocation-consultation-20261117.jpg'}
   ];
   function youtubeSearchHref(query){return 'https://www.youtube.com/results?search_query='+encodeURIComponent(query)}
   function youtubeCard(video){
