@@ -593,6 +593,20 @@ def map_public_status():
         'source_url':OFFICIAL_MOLIT_URL,'source_asof':'2026-05-18',
         'notice':'공공데이터의 지역 대표점은 정비구역 실제 좌표·경계가 아닙니다.'}
 
+
+def _verified_public_notice_record(d):
+    """Return only source-checked local notices for an exact province/city/district key."""
+    try:
+        records = json.loads((ROOT/'data'/'public_notices_verified.json').read_text(encoding='utf-8')).get('records', [])
+    except (OSError, ValueError, AttributeError):
+        return {}
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if (all(_clean_field(record.get(k,'')) == _clean_field(d.get(k,'')) for k in ('province','city','name'))):
+            return record
+    return {}
+
 @app.get('/api/districts/{district_id}/public')
 def public_district_profile(district_id:int):
     with db() as c:
@@ -615,6 +629,7 @@ def public_district_profile(district_id:int):
                 return str(val).strip()
         return str(d.get(column) or '').strip()
     demo=bool(d['demo'])
+    official=_verified_public_notice_record(d) if not demo else {}
     values=[
       {'key':'province','label':'시·도','value':field('province','시도')},
       {'key':'city','label':'시·군·구','value':field('city','시군구')},
@@ -635,7 +650,11 @@ def public_district_profile(district_id:int):
       'message':('시연용 지역 허브로, 실제 정비사업이 아닙니다.' if demo else
           '국토교통부 공개자료의 기준일 기준 참고정보입니다. 사업시행자는 연락처나 법률대리인이 아니며, 현재 상태·권리관계는 관할 지자체의 최신 공고로 확인하세요.'),
       'official_api_available':bool(MOLIT_SERVICE_KEY),
-      'official_api_checked':bool(match)}
+      'official_api_checked':bool(match),
+      'official_notices':official.get('notices',[]),
+      'official_parcel_address':official.get('parcel_address',''),
+      'official_portal_stage':official.get('portal_stage',{}),
+      'official_notice_verified_at':official.get('verified_on','')}
 
 @app.get('/district-info/{district_id}')
 def standalone_district_profile(district_id:int):

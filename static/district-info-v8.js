@@ -27,8 +27,20 @@
         ['정부24 건축물대장','https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=15000000098','건축물 기본자료 확인'],
         ['국가법령정보센터','https://www.law.go.kr/법령/도시및주거환경정비법','적용 법률과 시행일 대조']
       ];
+      if(province.includes('인천'))sites.splice(1,0,['인천시 정비사업 정보공개','https://renewal.incheon.go.kr/','인천시 정비사업 현황·공개자료 조회']);
       if(province.includes('서울'))sites.splice(1,0,['서울시 정비사업 정보몽땅','https://cleanup.seoul.go.kr/','서울시 사업장·공개자료 조회']);
       $('governmentLinks').innerHTML=sites.map(([name,url,description])=>'<a class="district-site-link" href="'+safeUrl(url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+esc(name)+'</strong><small>'+esc(description)+'</small></span><b aria-hidden="true">↗</b></a>').join('');
+      const confirmed=Array.isArray(d.official_notices)?d.official_notices:[];
+      if(confirmed.length){
+        const card=document.createElement('section');
+        card.className='card district-sites';
+        card.innerHTML='<div class="section-head"><span>06 / VERIFIED NOTICES</span><h2>추가 확인된 공식 고시·공고</h2><p>전국 7개 기본 항목과 별도입니다. 고시일·고시번호를 원문과 대조하세요.</p></div>'+
+          (d.official_parcel_address?'<p>고시문 소재지: '+esc(d.official_parcel_address)+'</p>':'')+
+          (d.official_portal_stage?.value?'<p>인천시 포털 표기 단계: '+esc(d.official_portal_stage.value)+' (국토부 단계와 별도)</p>':'')+
+          '<div class="district-site-grid">'+confirmed.map(n=>'<a class="district-site-link" href="'+safeUrl(n.source_url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+esc(n.title)+'</strong><small>'+esc(n.notice_number)+' · '+esc(n.notice_date)+' · '+esc(n.authority)+'</small></span><b aria-hidden="true">↗</b></a>').join('')+'</div>'+
+          '<p>출처 확인일: '+esc(d.official_notice_verified_at||'미제공')+' · 확인되지 않은 정보는 추정하지 않습니다.</p>';
+        document.querySelector('.district-sites')?.insertAdjacentElement('beforebegin',card);
+      }
       const loc=d.location||{};
       $('locationNotice').textContent=loc.verified_boundary?'검증 등록된 경계 정보가 존재합니다. 원본과 최신 고시를 다시 확인하세요.':'지도 마커는 시·도 또는 행정구역 대표점일 수 있으며 실제 구역의 필지·경계를 의미하지 않습니다.';
       const districtQuery=(d.values||[]).filter(x=>['province','city','name'].includes(x.key)).map(x=>x.value).join(' ');

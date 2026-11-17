@@ -152,6 +152,7 @@ const DISTRICT_OFFICIAL_URLS=Object.freeze([
 ]);
 function districtGovernmentLinks(d){
  const resources=[...DISTRICT_OFFICIAL_URLS];
+ if(String(d.province||'').includes('인천'))resources.splice(1,0,{label:'인천시 정비사업 정보공개',url:'https://renewal.incheon.go.kr/',description:'인천시 정비사업 현황·사업장별 공개자료'});
  if(String(d.province||'').includes('서울'))resources.splice(1,0,{
   label:'서울시 정비사업 정보몽땅',url:'https://cleanup.seoul.go.kr/',description:'서울 사업장·추진정보·공개자료 검색'
  });
@@ -167,11 +168,17 @@ function resetMapDistrictDetail(){
 function districtDossierHTML(d){
  const rows=Object.fromEntries((d.values||[]).filter(x=>x&&typeof x.key==='string').map(x=>[x.key,x.value||'']));
  const val=k=>E(rows[k]||'자료 미제공');
- const missing=['사업비·총사업비','조합원 수','사업지 확정 경계·면적','인가·고시번호 및 일자','분양·이주·착공 일정','추가분담금'].map(label=>'<li>'+E(label)+' <strong>원문 별도 확인</strong></li>').join('');
+ const missing=['사업비·총사업비','조합원 수','사업지 확정 경계·면적','후속 인가(사업시행·관리처분) 고시번호 및 일자','분양·이주·착공 일정','추가분담금'].map(label=>'<li>'+E(label)+' <strong>원문 별도 확인</strong></li>').join('');
  const status=d.demo?'시연용 지역 · 실제 사업 아님':d.source?.live_confirmed?'공공 API 원문 대조됨':'기존 공공자료 반영 · 최신 대조 미완료';
  const area=[rows.province,rows.city].filter(Boolean).join(' · ');
  const stage=rows.stage||'단계 미제공';
  const matching=STAGES.findIndex(x=>x===stage||stage.includes(x.replace('·','')));
+ const confirmed=Array.isArray(d.official_notices)?d.official_notices:[];
+ const noticeSection=confirmed.length?'<div class="map-dossier-section"><h3>06 · 추가 확인된 공식 고시·공고</h3>'+
+  (d.official_parcel_address?'<p class="map-data-caption">고시문 소재지: '+E(d.official_parcel_address)+'</p>':'')+
+  (d.official_portal_stage?.value?'<p class="map-data-caption">지자체 포털 표기 단계: <strong>'+E(d.official_portal_stage.value)+'</strong> (국토부 추진단계와 별도 표기)</p>':'')+
+  '<div class="map-government-links">'+confirmed.map(n=>'<a class="map-official-link" href="'+A(n.source_url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+E(n.title)+'</strong><small>'+E(n.notice_number)+' · '+E(n.notice_date)+' · '+E(n.authority)+'</small></span><b aria-hidden="true">↗</b></a>').join('')+'</div>'+
+  '<p class="map-data-caption">원문 확인일: '+E(d.official_notice_verified_at||'미제공')+' · 사업비·분담금·경계면적은 원문 확인 없이 표시하지 않습니다.</p></div>':'';
  return '<div class="map-dossier" data-selected-district="'+Number(d.id)+'">'+
   '<div class="map-dossier-title"><span>RE:LAND / DISTRICT PROFILE</span><button class="map-dossier-close" type="button" data-action="map-project-close" aria-label="상세 패널 닫기">×</button><h2>'+E(d.name||rows.name||'사업명 미제공')+'</h2><p>'+E(area)+' · '+val('kind')+'</p><div class="map-dossier-status">'+E(status)+'</div></div>'+
   '<div class="map-dossier-section"><h3>01 · 확인된 공공정보</h3><dl class="map-facts">'+
@@ -183,6 +190,7 @@ function districtDossierHTML(d){
   '<div class="map-dossier-section"><h3>04 · 사업지 위치 정확도</h3><p class="map-data-caption">'+(d.location?.verified_boundary?'검증 등록된 폴리곤이 있습니다. 최신 고시도면과 비교하세요.':'현재 지도 핀은 행정구역 대표점일 수 있습니다. 실제 필지·사업 구역 경계를 나타내지 않습니다.')+'</p></div>'+
   '<div class="map-dossier-section"><h3>05 · 정부 공공정보 바로가기</h3><p class="map-data-caption">기관 사이트가 새 창에서 열립니다. 사업명 <strong>'+E(d.name||rows.name)+'</strong>을 검색하고 최신 고시·첨부도면을 대조하세요.</p>'+
   '<div class="map-government-links">'+districtGovernmentLinks({province:rows.province})+'</div></div>'+
+  noticeSection+
   '<div class="map-dossier-footer"><a href="/district-info/'+Number(d.id)+'" target="_blank" rel="noopener noreferrer">전체 공공정보 새 창 ↗</a><button type="button" data-action="map-project-copy" data-id="'+Number(d.id)+'">구역명 복사</button></div>'+
   '<p class="map-data-warning">'+E(d.message||'자료 기준일 이후 내용은 관할기관에서 확인하세요.')+'</p></div>';
 }
