@@ -6,6 +6,20 @@ const STATE={user:null,config:null,stats:null,districts:[],communities:[],news:[
 const main=document.querySelector('#main');
 const HOST='/api';
 const REGIONS=['전국','서울','경기','인천','부산','대구','대전','광주','울산','세종','강원','충북','충남','전북','전남','경북','경남','제주'];
+
+const MAP_REGION_ALIASES=Object.freeze({
+ '서울특별시':'서울','경기도':'경기','인천광역시':'인천',
+ '부산광역시':'부산','대구광역시':'대구','대전광역시':'대전',
+ '광주광역시':'광주','울산광역시':'울산','세종특별자치시':'세종',
+ '강원특별자치도':'강원','강원도':'강원',
+ '충청북도':'충북','충청남도':'충남',
+ '전북특별자치도':'전북','전라북도':'전북','전라남도':'전남',
+ '경상북도':'경북','경상남도':'경남','제주특별자치도':'제주'
+});
+function normalizedMapRegion(value){
+ const name=String(value||'전국').trim();
+ return REGIONS.includes(name)?name:(MAP_REGION_ALIASES[name]||'전국');
+}
 const STAGES=['정비구역 지정','추진위원회','조합설립인가','사업시행인가','관리처분인가','이주·철거','착공','준공·이전고시'];
 let searchTimer=null;
 async function api(endpoint,options={}){
@@ -24,7 +38,7 @@ function tip(message){const x=document.querySelector('#toast');x.textContent=mes
 function formatDate(value){if(!value)return '날짜 미확인';let date=new Date(value);if(Number.isNaN(+date))return E(value.slice(0,25));return date.toLocaleDateString('ko-KR',{year:'numeric',month:'short',day:'numeric'})}
 function compact(value){return new Intl.NumberFormat('ko-KR').format(value||0)}
 function nav(page){return '/'+(page==='home'?'':page)}
-function go(path){if(path===location.pathname){render();return}history.pushState({},'',path);render();scrollTo({top:0,behavior:'instant'})}
+function go(path){if(path===location.pathname+location.search){render();return}history.pushState({},'',path);render();scrollTo({top:0,behavior:'instant'})}
 function headerPage(title,subtitle,kicker='RE:LAND SERVICE',dark=false){return `<section class="page-top ${dark?'dark':''}"><div class="shell"><div class="eyebrow">${E(kicker)}</div><h1>${title}</h1><p>${subtitle}</p></div></section>`}
 function empty(icon,title,subtitle,cta=''){return `<div class="empty"><div class="empty-icon">${icon}</div><strong>${title}</strong><p>${subtitle}</p>${cta}</div>`}
 function stripHTML(text){return String(text??'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').slice(0,500)}
@@ -122,7 +136,37 @@ function addDistrictMarkersToGoogleMap(map,items){
   marker.addListener('click',()=>{info.open({map,anchor:marker});if(group.length===1&&document.getElementById('map-project-detail'))showMapDistrictDetail(d.id).catch(console.warn);});
  }
 }
-async function showDistrictMap(items,elementId,zoom=7,center=[36.2,127.75]){const elem=document.getElementById(elementId);if(!elem)return;if(STATE.config?.google_maps_browser_key){try{await loadGoogleMaps();if(mapReady()){elem.innerHTML='<div class="google-map" id="gmap-'+elementId+'"></div><div class="map-top-label">● Google Maps · 정확한 경계 아님 · 지역 기준점</div>';const map=new google.maps.Map(document.getElementById('gmap-'+elementId),{center:{lat:center[0],lng:center[1]},zoom,streetViewControl:false,mapTypeControl:false,fullscreenControl:true});STATE.googleMap=map;STATE.map=map;addDistrictMarkersToGoogleMap(map,items);return}}catch(err){console.warn('Google Maps unavailable, using OpenStreetMap.',err)}}leafletMap(items,elementId,zoom,center)}
+function districtMarkerCoordinates(items){
+ return groupedDistricts(items).map(group=>[Number(group[0].lat),Number(group[0].lon)])
+  .filter(pair=>pair.every(Number.isFinite)&&pair[0]>=-90&&pair[0]<=90&&pair[1]>=-180&&pair[1]<=180);
+}
+function fitGoogleDistrictViewport(map,items,maxZoom=7){
+ const points=districtMarkerCoordinates(items);
+ if(points.length===1){
+  map.setCenter({lat:points[0][0],lng:points[0][1]});
+  map.setZoom(10);
+ }else if(points.length>1){
+  const bounds=new google.maps.LatLngBounds();
+  for(const point of points)bounds.extend({lat:point[0],lng:point[1]});
+  map.fitBounds(bounds,{top:42,bottom:42,left:36,right:36});
+  google.maps.event.addListenerOnce(map,'idle',()=>{if(map.getZoom()>maxZoom)map.setZoom(maxZoom)});
+ }
+}
+async function showDistrictMap(items,elementId,zoom=7,center=[36.2,127.75]){
+ const elem=document.getElementById(elementId);if(!elem)return;
+ if(STATE.config?.google_maps_browser_key){
+  try{await loadGoogleMaps();if(mapReady()){
+   elem.innerHTML='<div class="google-map" id="gmap-'+elementId+'"></div><div class="map-top-label">● Google Maps · 정확한 경계 아님 · 지역 기준점</div>';
+   const map=new google.maps.Map(document.getElementById('gmap-'+elementId),{
+    center:{lat:center[0],lng:center[1]},zoom,streetViewControl:false,mapTypeControl:false,fullscreenControl:true
+   });
+   STATE.googleMap=map;STATE.map=map;addDistrictMarkersToGoogleMap(map,items);
+   fitGoogleDistrictViewport(map,items,zoom);
+   return;
+  }}catch(err){console.warn('Google Maps unavailable, using OpenStreetMap.',err)}
+ }
+ leafletMap(items,elementId,zoom,center);
+}
 function leafletMap(items,elementId,zoom=7,center=[36.2,127.75]){
  const elem=document.getElementById(elementId);if(!elem)return;
  if(!window.L){mapFallback(items,elementId);return}
@@ -136,7 +180,13 @@ function leafletMap(items,elementId,zoom=7,center=[36.2,127.75]){
   marker.bindPopup(mapProjectPopup(group),{maxWidth:350,minWidth:240});
   if(group.length===1)marker.on('click',()=>{if(document.getElementById('map-project-detail'))showMapDistrictDetail(d.id).catch(console.warn)});
  }
- setTimeout(()=>{if(STATE.map===map)map.invalidateSize()},150);
+ setTimeout(()=>{
+  if(STATE.map!==map)return;
+  map.invalidateSize();
+  const points=districtMarkerCoordinates(items);
+  if(points.length>1)map.fitBounds(points,{padding:[32,32],maxZoom:zoom,animate:false});
+  else if(points.length===1)map.setView(points[0],10,{animate:false});
+ },150);
 }
 
 // The national 2026-05-18 public dataset contains only seven business fields.
@@ -260,15 +310,23 @@ async function showMapDistrictDetail(districtId,options={}){
 function mapResultRow(d){
  return '<button type="button" class="result-row re-open-detail" data-action="map-project-select" data-id="'+Number(d.id)+'" aria-label="'+E(d.name)+' 사업정보 오른쪽에서 보기"><div class="result-meta"><span class="pill '+(d.demo?'orange':'navy')+'">'+(d.demo?'시연 지역':E(d.kind))+'</span><small>'+E(d.province)+'</small></div><h4>'+E(d.name)+'</h4><small>'+(d.demo?'실제 구역 데이터 아님':E(d.stage))+' · '+(d.precision==='boundary_polygon'?'검증 경계':d.precision==='exact'?'좌표':'행정구역 대표점')+(Number(d.official_same_name_record_count)>1?' · 원본 동명이구역 '+Number(d.official_same_name_record_count)+'건':'')+' · 오른쪽 상세 →</small></button>';
 }
-async function mapPage(){let params=new URLSearchParams(location.search);let query=params.get('q')||'',region=params.get('region')||'전국',kind=params.get('kind')||'전체',stage=params.get('stage')||'전체';let data=await api('/districts?'+new URLSearchParams({q:query,region,kind,stage,limit:'2000'}));STATE.districts=data.items;
+async function mapPage(){let params=new URLSearchParams(location.search);let query=params.get('q')||'',region=normalizedMapRegion(params.get('region')),kind=params.get('kind')||'전체',stage=params.get('stage')||'전체';let data=await api('/districts?'+new URLSearchParams({q:query,region,kind,stage,limit:'2000'}));STATE.districts=data.items;
  const audit=await api('/map/public-status').catch(()=>null);
- const seoulGeometryNotice=(region==='서울특별시')?
+ const seoulGeometryNotice=(region==='서울')?
  '<aside class="map-data-caption" style="margin:10px 0 18px;padding:12px 16px;border:1px solid #dcd4bd;border-radius:12px;background:#fffaf0"><strong>서울시 정비구역 공간정보 안내</strong> · 공식 SHP는 <a href="https://data.seoul.go.kr/dataList/OA-22712/F/1/datasetView.do" target="_blank" rel="noopener noreferrer">서울시 원본 페이지</a>에서 열람할 수 있습니다. 공공누리 제4유형(출처표시·상업적 이용금지·변경금지)이므로 파일 변환·복제·재배포 허가 확인 전까지 이 지도에서 정비구역 경계로 표시하지 않습니다.</aside>':'';
  const auditHtml=audit?.snapshot_verified?
   '<div class="map-data-caption" role="status" style="padding:12px 16px;border:1px solid #d4dfd8;border-radius:12px;margin-bottom:16px;background:#f7faf8"><strong>국토교통부 2026-05-18 공식 CSV</strong> 원본 '+Number(audit.snapshot_source_rows).toLocaleString('ko-KR')+'행 · 구역명 기준 '+Number(audit.snapshot_unique_keys).toLocaleString('ko-KR')+'개 · 동명이구역 '+Number(audit.snapshot_same_name_groups)+'개 그룹 · 운영 지도 '+Number(audit.official_rows_imported).toLocaleString('ko-KR')+'개. 위치 핀은 대부분 시·도 대표점이며 실제 구역 경계를 의미하지 않습니다. <a href="https://www.data.go.kr/data/15160169/fileData.do" target="_blank" rel="noopener noreferrer">공식 원본 ↗</a></div>':
   '<div class="map-data-warning" role="status">공식 원본 스냅샷을 확인할 수 없습니다. 기존 지도 데이터의 출처와 기준일을 확인하세요.</div>';
  main.innerHTML=headerPage('우리 동네 정비사업 지도','지도로 지역별 변화를 발견하세요. 위치가 확인되지 않은 데이터는 시군구 대표점으로 표시됩니다.','REDEVELOPMENT ATLAS')+`<div class="shell page-body">${auditHtml}${seoulGeometryNotice}<form class="filters" id="map-filter"><input class="filter-input" name="q" value="${E(query)}" aria-label="구역명 또는 지역명" placeholder="⌕  지역명 / 구역명 검색"><select class="filter-select" name="region" aria-label="지역 선택">${REGIONS.map(x=>`<option ${region===x?'selected':''}>${x}</option>`).join('')}</select><select class="filter-select" name="kind" aria-label="사업유형"><option>전체</option>${['재개발사업','재건축사업','주거환경개선사업','지역 안내'].map(x=>`<option ${kind===x?'selected':''}>${x}</option>`).join('')}</select><select class="filter-select" name="stage" aria-label="추진단계"><option>전체</option>${STAGES.map(x=>`<option ${stage===x?'selected':''}>${x}</option>`).join('')}</select><button class="btn btn-primary" type="submit">검색하기</button></form><div class="map-page-layout"><div id="full-map" class="full-map" aria-label="전국 정비사업 지도"></div><aside class="map-inspector" aria-label="선택한 사업의 공공정보"><section id="map-project-detail" class="map-project-detail" tabindex="-1" aria-live="polite"><div class="map-inspector-empty"><span>01 / PROJECT INTELLIGENCE</span><h2>지도에서 사업지를 선택하세요</h2><p>선택한 재개발·재건축 사업의 단계, 사업시행자, 공급 규모, 공개 기준일과 정부 원문 확인 링크가 여기에 표시됩니다.</p><small>● 지도 핀 또는 아래 사업명을 눌러 상세정보를 확인하세요.</small></div></section><details class="map-results-fold" open><summary>검색 결과 ${compact(data.items.length)}건 <span>공식 데이터 ${compact(data.verified_data_rows)}건 · 선택하기</span></summary><div class="map-results">${data.items.length?data.items.slice(0,100).map(mapResultRow).join(''):empty('🔍','검색 결과가 없어요','검색어 또는 필터를 변경해 보세요.')}</div></details></aside></div><div class="notice warn">⚑ 지도에 표시된 시연용 지역 허브는 재개발 확정 지역이 아닙니다. 공공데이터 원본에도 위경도·경계가 없어 좌표 검증 없이 정확한 구역 경계로 표시하지 않습니다. <a class="inline-link" href="/sources" data-nav="sources">데이터 출처·연동 안내 ↗</a></div></div>`;
- await showDistrictMap(data.items,'full-map',region==='서울'?10:7,region==='서울'?[37.5665,126.978]:[36.25,127.75]);
+ await showDistrictMap(data.items,'full-map',region==='전국'?7:10,[36.25,127.75]);
+ const appliedFilters=Boolean(query.trim()||region!=='전국'||kind!=='전체'||stage!=='전체');
+ const viewportBadge=document.createElement('div');
+ viewportBadge.className='map-viewport-badge';
+ viewportBadge.setAttribute('role','status');
+ viewportBadge.innerHTML='<strong>'+(region==='전국'?'전국 17개 시·도':E(region)+' 지역')+'</strong>'+
+  (appliedFilters?'<a href="/map" data-nav="map" aria-label="지역 및 검색 필터를 모두 초기화하고 전국 지도로 돌아가기">↶ 전국 보기</a>':
+   '<span>전국 정비사업 지도</span>');
+ document.getElementById('full-map')?.appendChild(viewportBadge);
  const initialId=Number(params.get('id'));if(Number.isSafeInteger(initialId)&&data.items.some(x=>x.id===initialId))showMapDistrictDetail(initialId,{scroll:false}).catch(console.warn);
  // Spatial shapes are drawn only when independently reviewed WGS84 GeoJSON exists.
  try {const boundaries=await api('/map/boundaries?limit=1000');

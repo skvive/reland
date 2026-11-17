@@ -26,3 +26,25 @@
 /* Production banner rendering: avoid a negative z-index pseudo-element layer. */
 .hero{background:linear-gradient(100deg,rgba(7,38,37,.89) 0%,rgba(7,38,37,.65) 43%,rgba(7,38,37,.18) 100%),url('/static/assets/reland-hero-city.webp') center 48%/cover no-repeat #173631}
 .hero::before{display:none}
+
+/* 2026-11-17 national map restoration: visible region status and filter reset */
+.map-viewport-badge{
+ position:absolute;z-index:1100;top:15px;right:15px;max-width:calc(100% - 30px);
+ display:flex;gap:9px;align-items:center;flex-wrap:wrap;
+ background:#fff;color:#234838;border:1px solid #d4e2d7;
+ border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.4;
+ box-shadow:0 5px 16px rgba(15,45,32,.18)
+}
+.map-viewport-badge strong{font-weight:850}
+.map-viewport-badge span{font-size:10px;color:#597367}
+.map-viewport-badge a{
+ padding:7px 11px;border-radius:8px;background:#16483a;color:#fff;
+ font-weight:800;text-decoration:none;white-space:nowrap
+}
+.map-viewport-badge a:focus-visible{outline:3px solid #e5b34e;outline-offset:2px}
+@media(max-width:690px){
+ .map-viewport-badge{top:10px;right:10px;gap:7px;padding:7px 9px;font-size:11px}
+ .map-viewport-badge a{padding:7px 9px}
+ .full-map .map-top-label{top:auto;bottom:21px;left:11px;right:11px;
+   max-width:calc(100% - 22px);padding:7px 10px;font-size:10px;line-height:1.45}
+}

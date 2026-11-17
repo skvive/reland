@@ -169,7 +169,7 @@ def test_map_inspector_detail_and_official_government_links(client):
     index = client.get('/')
     assert index.status_code == 200
     assert '/static/map-project-detail-v9.css?v=20261117v10' in index.text
-    assert '/static/app.js?v=20261117geom13' in index.text
+    assert '/static/app.js?v=20261117map14' in index.text
     assert client.get('/static/map-project-detail-v9.css').status_code == 200
     source=(static/'app.js').read_text(encoding='utf-8')
     assert 'data-action="map-project-select"' in source
