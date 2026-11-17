@@ -163,7 +163,7 @@ def region_html(slug,snapshot,items):
           '<strong>'+str(len(rows))+'개</strong>입니다. 동명이구역의 서로 다른 기록은 구역별 상세에서 구분합니다.</p>')
     body+='<section class="seo-panel"><h2>추진단계별 분포</h2><p>'+stage_info+'</p><p>개별 사업의 오늘 날짜 기준 단계가 아니라 공식 원본 기준일의 현황입니다.</p></section>'
     body+='<section class="seo-panel"><h2>'+e(region)+' 사업별 공공정보</h2><table class="seo-table"><thead><tr><th>시·군·구 · 구역명</th><th>사업유형</th><th>추진단계</th></tr></thead><tbody>'
-    body+=''.join('<tr><td><a href="/district-info/'+str(row['id'])+'">'+e(row['city'])+' '+e(row['name'])+'</a></td><td>'+e(row['kind'])+'</td><td>'+e(row['stage'])+'</td></tr>' for row in rows[:60])
+    body+=''.join('<tr><td><a href="/district-info/'+str(row['id'])+'">'+e(row['city'])+' '+e(row['name'])+'</a></td><td>'+e(row['kind'])+'</td><td>'+e(row['stage'])+'</td></tr>' for row in rows)
     body+='</tbody></table><p><a href="/map?region='+quote(region)+'">'+e(region)+' 전체 구역 지도에서 검색하기</a></p></section>'
     body+='<p class="source">원본: <a href="'+SOURCE+'" target="_blank" rel="noopener noreferrer">국토교통부 전국 도시정비사업 통합 데이터</a> · 기준일 2026-05-18. 공간 좌표는 정확한 필지 경계를 의미하지 않습니다.</p>'
     return shell(heading+' | 리랜드',description,'/regions/'+slug,heading,body,kind="CollectionPage")
@@ -177,7 +177,7 @@ def district_html(template, data):
     specific_kind=('재건축사업' if '재건축' in published_kind else
                    '재개발사업' if '재개발' in published_kind else
                    '주거환경개선사업' if '주거환경' in published_kind else '정비사업')
-    title=data['name']+' '+specific_kind+' 추진단계 ('+values.get('city','')+') | 리랜드'
+    title=data['name']+' '+specific_kind+' 추진단계 ('+values.get('province','')+' '+values.get('city','')+') | 리랜드'
     desc=(values.get('province','')+' '+values.get('city','')+' '+data['name']+
           ' 정비사업 '+values.get('stage','')+'·'+values.get('kind','')+
           '·공급 예정 '+(values.get('households') or '미제공')+'세대. 국토부 원본 기준일 2026-05-18.')

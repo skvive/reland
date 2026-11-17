@@ -91,3 +91,27 @@ def test_crawlable_spa_map_has_unique_title_links(client):
     assert '전국 재개발·재건축 지도' in res.text
     assert 'https://reland.lexid.site/map' in res.text
     assert '/insights/contribution' in res.text
+
+
+def test_regional_crawlable_links_include_all_districts(client):
+    """Every indexed district URL has an internal entry point; not just first 60."""
+    with site.db() as conn:
+        for idx in range(1,64):
+            conn.execute(
+                """INSERT INTO districts
+                (name,province,city,stage,kind,operator,households,precision,source_url,source_date,demo)
+                VALUES (?, '부산광역시','사하구','2)추진위구성','1)재개발(주택정비)',
+                '1)조합','0','province_center',
+                'https://www.data.go.kr/data/15160169/fileData.do','2026-05-18',0)""",
+                ('시험구역'+str(idx),)
+            )
+        last = conn.execute("SELECT id FROM districts WHERE name='시험구역63'").fetchone()[0]
+    response=client.get('/regions/busan')
+    assert response.status_code==200
+    assert '/district-info/'+str(last)+'"' in response.text
+    assert response.text.count('href="/district-info/')==63
+
+def test_district_metadata_disambiguates_province(client):
+    pk=insert_project()
+    text=client.get('/district-info/'+str(pk)).text
+    assert '<title>가야4 재개발사업 추진단계 (부산광역시 부산진구) | 리랜드</title>' in text
