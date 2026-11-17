@@ -12,7 +12,7 @@
       $('loading').hidden=true;$('record').hidden=false;
       $('projectName').textContent=d.name || '미등록 사업';
       $('projectArea').textContent=(d.values||[]).filter(x=>['province','city'].includes(x.key)).map(x=>x.value).join(' · ');
-      $('dataStatus').textContent=d.demo?'시연용 지역 · 공식 사업 아님':d.source?.live_confirmed?'공공 API 대조 완료':'공공자료 기준일 표시';
+      $('dataStatus').textContent=d.demo?'시연용 지역 · 공식 사업 아님':d.source?.live_confirmed?'공공 API 대조 완료':d.source?.snapshot_verified?'국토부 CSV SHA256 검증':'공공자료 기준일 표시';
       $('recordNotice').textContent=d.message||'원문 최신 자료를 확인하세요.';
       $('facts').innerHTML=(d.values||[]).map(x=>'<div><dt>'+esc(x.label)+'</dt><dd'+(!x.value?' class="missing"':'')+'>'+esc(x.value||'자료 미제공')+'</dd></div>').join('');
       $('sourceMethod').textContent='확인 방식: '+(d.source?.method||'자료 상태 미확인');
@@ -40,6 +40,15 @@
           '<div class="district-site-grid">'+confirmed.map(n=>'<a class="district-site-link" href="'+safeUrl(n.source_url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+esc(n.title)+'</strong><small>'+esc(n.notice_number)+' · '+esc(n.notice_date)+' · '+esc(n.authority)+'</small></span><b aria-hidden="true">↗</b></a>').join('')+'</div>'+
           '<p>출처 확인일: '+esc(d.official_notice_verified_at||'미제공')+' · 확인되지 않은 정보는 추정하지 않습니다.</p>';
         document.querySelector('.district-sites')?.insertAdjacentElement('beforebegin',card);
+      }
+      const officialVariants=Array.isArray(d.official_source_variants)?d.official_source_variants:[];
+      if(officialVariants.length>1){
+        const card=document.createElement('section');
+        card.className='card district-sites';
+        card.innerHTML='<div class="section-head"><span>PUBLIC SOURCE RECORDS</span><h2>국토부 원본 동명이구역 '+officialVariants.length+'건</h2><p>'+esc(d.official_same_name_warning||'동일 구역명으로 다른 공공데이터 기록이 존재합니다.')+'</p></div>'+
+          '<div class="district-site-grid">'+officialVariants.map((r,i)=>'<div class="district-site-link" style="display:block"><span><strong>공식 기록 '+(i+1)+' (CSV '+Number(r.csv_line)+'행)</strong><small>사업유형: '+esc(r.kind)+' / 단계: '+esc(r.stage)+' / 시행자: '+esc(r.operator)+' / 예정 '+esc(r.households||'미제공')+'세대</small></span></div>').join('')+'</div>'+
+          '<p>출처: 국토교통부 2026-05-18 CSV · 원본 행을 임의로 통합하거나 현재 단계로 추정하지 않습니다.</p>';
+        document.querySelector('.district-more')?.insertAdjacentElement('beforebegin',card);
       }
       const loc=d.location||{};
       $('locationNotice').textContent=loc.verified_boundary?'검증 등록된 경계 정보가 존재합니다. 원본과 최신 고시를 다시 확인하세요.':'지도 마커는 시·도 또는 행정구역 대표점일 수 있으며 실제 구역의 필지·경계를 의미하지 않습니다.';

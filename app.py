@@ -3,7 +3,10 @@ Run: python app.py  (or uvicorn app:app --host 127.0.0.1 --port 8000)
 Public data imports are opt-in and are never confused with demo regional hubs.
 """
 from __future__ import annotations
+import csv
+import gzip
 import hashlib
+import io
 import hmac
 import json
 import os
@@ -19,6 +22,7 @@ from collections import defaultdict, deque
 from contextlib import contextmanager
 from db_engine import open_db, table_has_column, USE_POSTGRES
 from datetime import datetime, timezone
+from functools import lru_cache
 from email.message import EmailMessage
 from pathlib import Path
 
@@ -541,6 +545,8 @@ def districts(q:str='',region:str='',kind:str='',stage:str='',limit:int=2000):
     with db() as c:
         items=[dict(r) for r in c.execute(sql,args).fetchall()]
         total=c.execute('SELECT COUNT(*) FROM districts WHERE demo=0').fetchone()[0]
+    for item in items:
+        item['official_same_name_record_count'] = len(_molit_snapshot_variants(item)) if not item['demo'] else 0
     return {'items':items,'verified_data_rows':total,'shown':len(items),
             'message':'시연용 지역 허브는 실제 정비구역 또는 경계를 뜻하지 않습니다.'}
 
@@ -582,16 +588,77 @@ def _molit_api_items():
         _MOLIT_MEMORY['error']=type(ex).__name__
     return _MOLIT_MEMORY['data']
 
+
+# Read-only, hash-pinned MOLIT public CSV snapshot (unrestricted public-data license).
+# The original data has 1,566 rows but only 1,547 distinct (province, city, zone)
+# keys: 17 identical-name groups represent 19 ADDITIONAL, differing source records.
+MOLIT_SNAPSHOT_GZ = ROOT / 'data' / 'molit_urban_renewal_official_20260518.csv.gz'
+MOLIT_SNAPSHOT_SHA256 = '0fa3fbd498fbb45502e0d47190a6b9800ca56055639b0c76e10ca9f224815eb6'
+MOLIT_SNAPSHOT_HEADERS = ['시도', '시군구', '구역명칭', '현 사업추진단계',
+                          '사업유형', '사업시행자', '공급 예정 세대수']
+
+@lru_cache(maxsize=1)
+def _molit_official_snapshot():
+    """Never merge distinct official rows by name alone; don't guess geometry."""
+    empty = {'verified': False, 'source_rows': 0, 'unique_keys': 0,
+             'shared_name_groups': 0, 'additional_same_name_records': 0,
+             'by_key': {}, 'regions': {}, 'error': ''}
+    try:
+        raw = gzip.decompress(MOLIT_SNAPSHOT_GZ.read_bytes())
+        if hashlib.sha256(raw).hexdigest() != MOLIT_SNAPSHOT_SHA256:
+            raise ValueError('snapshot_sha256_mismatch')
+        reader = csv.DictReader(io.StringIO(raw.decode('cp949')))
+        if reader.fieldnames != MOLIT_SNAPSHOT_HEADERS:
+            raise ValueError('snapshot_columns_mismatch')
+        by_key, regions = {}, {}
+        for ordinal, item in enumerate(reader, start=2):
+            r = {k: str(item.get(k) or '').strip() for k in MOLIT_SNAPSHOT_HEADERS}
+            key = tuple(_clean_field(r[k]) for k in ('시도', '시군구', '구역명칭'))
+            if not all(key):
+                raise ValueError('snapshot_missing_zone_key')
+            r['_official_csv_line'] = ordinal
+            by_key.setdefault(key, []).append(r)
+            regions[r['시도']] = regions.get(r['시도'], 0) + 1
+        total = sum(len(records) for records in by_key.values())
+        if total != 1566 or len(by_key) != 1547:
+            raise ValueError('snapshot_row_count_unexpected')
+        collisions = [records for records in by_key.values() if len(records) > 1]
+        return {'verified': True, 'source_rows': total, 'unique_keys': len(by_key),
+                'shared_name_groups': len(collisions),
+                'additional_same_name_records': sum(len(records)-1 for records in collisions),
+                'by_key': by_key, 'regions': regions, 'error': ''}
+    except (OSError, ValueError, UnicodeError, EOFError) as exc:
+        return {**empty, 'error': type(exc).__name__ + ': ' + str(exc)[:100]}
+
+def _molit_snapshot_variants(record):
+    key = tuple(_clean_field(record.get(k)) for k in ('province', 'city', 'name'))
+    return _molit_official_snapshot()['by_key'].get(key, [])
+
 @app.get('/api/map/public-status')
 def map_public_status():
     with db() as c:
         verified=c.execute('SELECT COUNT(*) FROM districts WHERE demo=0').fetchone()[0]
         demo=c.execute('SELECT COUNT(*) FROM districts WHERE demo=1').fetchone()[0]
+    snapshot = _molit_official_snapshot()
+    with db() as c:
+        precision_rows = c.execute('SELECT precision,COUNT(*) AS n FROM districts WHERE demo=0 GROUP BY precision').fetchall()
+        exact_boundaries = c.execute('SELECT COUNT(*) FROM district_geometries').fetchone()[0]
     return {'official_rows_imported':verified,'demo_region_hubs':demo,
         'google_maps_configured':bool(GOOGLE_MAPS_BROWSER_KEY),
         'molit_api_configured':bool(MOLIT_SERVICE_KEY),
         'source_url':OFFICIAL_MOLIT_URL,'source_asof':'2026-05-18',
-        'notice':'공공데이터의 지역 대표점은 정비구역 실제 좌표·경계가 아닙니다.'}
+        'source_sha256':MOLIT_SNAPSHOT_SHA256 if snapshot['verified'] else '',
+        'snapshot_verified':snapshot['verified'],
+        'snapshot_source_rows':snapshot['source_rows'],
+        'snapshot_unique_keys':snapshot['unique_keys'],
+        'snapshot_same_name_groups':snapshot['shared_name_groups'],
+        'snapshot_additional_same_name_records':snapshot['additional_same_name_records'],
+        'snapshot_regions':snapshot['regions'],
+        'snapshot_error':snapshot['error'],
+        'db_unique_key_count_matches_snapshot':snapshot['verified'] and verified==snapshot['unique_keys'],
+        'verified_geometry_count':exact_boundaries,
+        'marker_precision_counts':{str(r['precision']):int(r['n']) for r in precision_rows},
+        'notice':'공식 CSV에 동일 구역명이나 서로 다른 사업유형·세대수가 있는 17개 그룹이 있습니다. 한 개의 지도를 근거로 같은 사업으로 단정하지 않습니다. 시도 중심점은 확정 구역 경계가 아닙니다.'}
 
 
 def _verified_public_notice_record(d):
@@ -629,6 +696,7 @@ def public_district_profile(district_id:int):
                 return str(val).strip()
         return str(d.get(column) or '').strip()
     demo=bool(d['demo'])
+    variants = _molit_snapshot_variants(d) if not demo else []
     official=_verified_public_notice_record(d) if not demo else {}
     values=[
       {'key':'province','label':'시·도','value':field('province','시도')},
@@ -644,13 +712,25 @@ def public_district_profile(district_id:int):
           'url':d.get('source_url') or OFFICIAL_MOLIT_URL,
           'snapshot_date':d.get('source_date') or ('2026-05-18' if not demo else ''),
           'live_confirmed':bool(match),
-          'method':'공공데이터 API 원문 대조' if match else ('시연용 지역 허브' if demo else '기존 공식 데이터 가져오기 자료')},
+          'snapshot_verified':bool(variants) and _molit_official_snapshot()['verified'],
+          'snapshot_source_record_count':len(variants),
+          'method':'공공데이터 API 원문 대조' if match else ('시연용 지역 허브' if demo else '공식 CSV 원본 SHA256 검증 (2026-05-18)' if variants else '기존 공식 데이터 가져오기 자료')},
       'location':{'latitude':d.get('lat'),'longitude':d.get('lon'),
           'precision':d.get('precision'),'verified_boundary':d.get('precision')=='boundary_polygon'},
       'message':('시연용 지역 허브로, 실제 정비사업이 아닙니다.' if demo else
           '국토교통부 공개자료의 기준일 기준 참고정보입니다. 사업시행자는 연락처나 법률대리인이 아니며, 현재 상태·권리관계는 관할 지자체의 최신 공고로 확인하세요.'),
       'official_api_available':bool(MOLIT_SERVICE_KEY),
       'official_api_checked':bool(match),
+      'official_source_variants':[{
+        'csv_line':r['_official_csv_line'],
+        'stage':r['현 사업추진단계'],
+        'kind':r['사업유형'],
+        'operator':r['사업시행자'],
+        'households':r['공급 예정 세대수'],
+        'source_url':OFFICIAL_MOLIT_URL,
+        'source_date':'2026-05-18'
+      } for r in variants],
+      'official_same_name_warning':('동일 구역명과 행정구역에 서로 다른 '+str(len(variants))+'건의 국토부 원본 레코드가 있습니다. 단일 사업의 중복으로 단정하지 않습니다.' if len(variants)>1 else ''),
       'official_notices':official.get('notices',[]),
       'official_parcel_address':official.get('parcel_address',''),
       'official_portal_stage':official.get('portal_stage',{}),
