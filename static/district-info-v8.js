@@ -62,6 +62,18 @@
           '<div class="district-site-grid"><a class="district-site-link" href="'+safeUrl(municipal.source_url)+'" target="_blank" rel="noopener noreferrer"><span><strong>부산시 공식 사업장 페이지</strong><small>원문 기준 단계·주요 추진경과·공개자료 확인</small></span><b aria-hidden="true">↗</b></a></div>';
         document.querySelector('.district-more')?.insertAdjacentElement('afterend',source);
       }
+      const incheon=Array.isArray(d.incheon_official_records)?d.incheon_official_records:[];
+      if(incheon.length){
+        const section=document.createElement('section');
+        section.className='card district-sites';
+        section.innerHTML='<div class="section-head"><span>INCHEON / MUNICIPAL OPEN DATA</span><h2>인천시 2026-10-31 공식 정비사업 자료</h2><p>국토부 2026-05-18 기본 자료와 별도입니다. 면적은 인천시 원본 수치이며 대표 소재지는 지도 좌표나 법정 정비구역 경계가 아닙니다.</p></div>'+
+          '<div class="project-record-grid">'+incheon.map((r,i)=>
+            '<article class="project-official-record"><div class="project-official-top"><b>인천시 원본 '+(i+1)+'</b><span>정확 매칭</span></div>'+
+            '<dl>'+[['사업유형',r.kind],['인천시 추진단계',r.stage],['구역 면적(㎡)',r.area_square_meters],['대표 소재지',r.address]]
+            .map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value||'자료 미제공')+'</dd></div>').join('')+'</dl></article>').join('')+'</div>'+
+          '<p class="source-policy-note"><a href="https://www.data.go.kr/data/15055212/fileData.do" target="_blank" rel="noopener noreferrer">인천시 공식 데이터 원문</a> · 법적 인허가는 개별 고시를 확인하세요.</p>';
+        document.querySelector('.district-more')?.insertAdjacentElement('afterend',section);
+      }
       const unknown=[
         ['총사업비·예상 공사비','국토부 기본 CSV에 없는 항목'],
         ['조합원 수·권리관계','사업별 원본 미확보'],

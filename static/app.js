@@ -199,6 +199,17 @@ function districtDossierHTML(d){
    '<div class="map-source-records">'+sourceRecords+'</div>':
    '<p class="map-source-caution">사업명과 행정구역이 일치하는 공식 CSV 원본을 찾지 못했습니다. 기존 DB 정보만 표시합니다.</p>');
  const municipalPanel=municipal.source_url?'<div class="map-info-subhead"><b>지자체 공식 포털 추가자료</b><span>국토부 원본과 구분</span></div><p class="map-data-caption">부산시 표시 단계: <strong>'+E(municipal.portal_stage||'미제공')+'</strong>'+ (municipal.representative_parcel?' · 포털 대표지번: '+E(municipal.representative_parcel):'')+'</p>'+ (municipal.milestone?.date?'<p class="map-data-caption">포털 추진경과: '+E(municipal.milestone.name)+' '+E(municipal.milestone.date)+' (법적 고시번호는 미확인)</p>':'')+'<a class="map-official-link" target="_blank" rel="noopener noreferrer" href="'+A(municipal.source_url)+'"><span><strong>부산시 사업별 공식 포털 열기</strong><small>관할 기관 자료 · 현재 효력은 고시문 재확인</small></span><b aria-hidden="true">↗</b></a>':'';
+ const incheon=Array.isArray(d.incheon_official_records)?d.incheon_official_records:[];
+ const incheonPanel=incheon.length?
+  '<div class="map-info-subhead"><b>인천시 최신 공식 원본 · 2026-10-31</b><span>'+incheon.length+'건 · 정확매칭</span></div>'+
+  '<p class="map-data-caption">아래 인천시 기록은 국토부 2026-05-18 기본 자료와 별도이며, 위치 문자열은 지도 좌표·법정 경계가 아닙니다.</p>'+
+  '<div class="map-source-records">'+incheon.map((r,i)=>
+    '<article class="map-source-record"><div class="map-source-record-top"><b>인천시 원본 '+(i+1)+'</b><span>공개자료</span></div><dl>'+
+    [['구역명',r.name],['사업유형',r.kind],['인천시 표시 단계',r.stage],
+     ['구역 면적(㎡)',r.area_square_meters],['대표 소재지',r.address]]
+    .map(([name,value])=>'<div><dt>'+E(name)+'</dt><dd>'+E(value||'자료 미제공')+'</dd></div>').join('')+
+    '</dl></article>').join('')+'</div>'+
+  '<p class="map-data-caption"><a href="https://www.data.go.kr/data/15055212/fileData.do" target="_blank" rel="noopener noreferrer">인천시 2026-10-31 공식 원본 ↗</a> · 인허가의 현재 효력은 고시문으로 재확인</p>':'';
  const docCount=notices.length;
  return '<div class="map-dossier" data-selected-district="'+Number(d.id)+'">'+
   '<div class="map-dossier-title"><span>RE:LAND / DISTRICT PROFILE</span><button class="map-dossier-close" type="button" data-action="map-project-close" aria-label="상세 패널 닫기">×</button><h2>'+E(d.name||rows.name||'사업명 미제공')+'</h2><p>'+E(area)+' · '+val('kind')+'</p><div class="map-dossier-status">'+E(status)+'</div></div>'+
@@ -208,7 +219,7 @@ function districtDossierHTML(d){
   '<div class="map-dossier-section"><h3>02 · 추진단계 확인</h3><p class="map-data-caption">공개자료 표시: <strong>'+E(stage)+'</strong>. 해당 단계만 강조하며, 아래 순서는 학습용입니다. 일정은 확정된 것으로 표시하지 않습니다.</p>'+
   '<ol class="map-stage-track">'+STAGES.map((s,i)=>'<li class="'+(matching===i?'current':'')+'">'+E(s)+'</li>').join('')+'</ol></div>'+
   '<div class="map-dossier-section"><h3>03 · 이 사업의 공식 기록과 핵심 문서</h3>'+
-  sourceSection+municipalPanel+
+  sourceSection+municipalPanel+incheonPanel+
   '<div class="map-info-subhead"><b>사업별 고시·공고 원문</b><span>'+docCount+'건 확인</span></div>'+
   (d.official_parcel_address?'<p class="map-data-caption">확인된 고시문 소재지: <strong>'+E(d.official_parcel_address)+'</strong> · 정비구역 경계 검증과 다릅니다.</p>':'')+
   (d.official_portal_stage?.value?'<p class="map-data-caption">지자체 포털 단계: <strong>'+E(d.official_portal_stage.value)+'</strong> (국토부 표기와 별도)</p>':'')+

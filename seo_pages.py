@@ -165,8 +165,44 @@ def region_html(slug,snapshot,items):
     body+='<section class="seo-panel"><h2>'+e(region)+' 사업별 공공정보</h2><table class="seo-table"><thead><tr><th>시·군·구 · 구역명</th><th>사업유형</th><th>추진단계</th></tr></thead><tbody>'
     body+=''.join('<tr><td><a href="/district-info/'+str(row['id'])+'">'+e(row['city'])+' '+e(row['name'])+'</a></td><td>'+e(row['kind'])+'</td><td>'+e(row['stage'])+'</td></tr>' for row in rows)
     body+='</tbody></table><p><a href="/map?region='+quote(region)+'">'+e(region)+' 전체 구역 지도에서 검색하기</a></p></section>'
+    if slug=='incheon':
+        body+='<section class="seo-panel"><h2>인천시 최신 공식자료 168건</h2><p>인천광역시 2026-10-31 자료에는 구역별 면적·대표 소재지·업데이트된 추진단계가 포함됩니다. 전국 기준 자료와 명칭이 다른 기록은 임의 매칭하지 않습니다.</p><p><a href="/regions/incheon-official">인천시 최신 정비사업 전체 168건 보기</a></p></section>'
     body+='<p class="source">원본: <a href="'+SOURCE+'" target="_blank" rel="noopener noreferrer">국토교통부 전국 도시정비사업 통합 데이터</a> · 기준일 2026-05-18. 공간 좌표는 정확한 필지 경계를 의미하지 않습니다.</p>'
     return shell(heading+' | 리랜드',description,'/regions/'+slug,heading,body,kind="CollectionPage")
+
+
+def incheon_official_html(snapshot,exact_directory):
+    """List 168 official municipal source records, including unmatched new municipality names."""
+    if not snapshot.get('verified'):return None
+    title='인천광역시 재개발·재건축 정비사업 2026년 최신 공공정보 168건 | 리랜드'
+    description=('인천시 2026-10-31 정비사업 공식 원본 168건의 구역명, 위치, '
+                 '면적(㎡), 사업유형과 추진단계를 확인하세요. 전국 지도와 정확히 매칭된 사업만 연결합니다.')
+    records=sorted(snapshot['records'],key=lambda r:(r['city'],r['name'],r['source_row']))
+    linked=0
+    body=('<p class="seo-lead">인천광역시에서 제공하는 2026년 10월 31일 기준 정비사업 공개 원본 '
+          '<strong>168개 기록</strong>입니다. 2026년 5월 18일 기준 국토교통부 전국 자료와 '
+          '행정구역 명칭 및 자료 갱신일이 달라 일부 사업은 자동 연결되지 않습니다.</p>'
+          '<section class="seo-panel"><h2>인천시 자료의 의미와 한계</h2>'
+          '<p>위치는 구역의 대표 소재지 문자열이며 정확한 정비구역 경계 또는 지도 좌표가 아닙니다. '
+          '면적은 인천시 공식 원본의 제곱미터(㎡) 값입니다. 사업시행인가·관리처분 등 법적 효력은 '
+          '반드시 해당 시점의 고시 원문을 별도로 확인하세요.</p>'
+          '<p><a href="/regions/incheon">국토부 전국 기준 인천 현황 보기</a></p></section>')
+    body+='<section class="seo-panel"><h2>인천시 구역별 공식 공개자료</h2>'
+    body+='<table class="seo-table"><thead><tr><th>구·구역명</th><th>사업유형</th><th>인천시 추진단계</th><th>면적(㎡)</th><th>대표 소재지</th></tr></thead><tbody>'
+    for r in records:
+        key=(''.join(r['city'].split()).lower(),''.join(r['name'].split()).lower())
+        pid=exact_directory.get(key)
+        linked+=bool(pid)
+        name=e(r['city']+' '+r['name'])
+        if pid:name='<a href="/district-info/'+str(int(pid))+'">'+name+'</a>'
+        body+='<tr><td>'+name+'</td><td>'+e(r['kind'])+'</td><td>'+e(r['stage'])+'</td><td>'+e(r['area_square_meters'] or '미제공')+'</td><td>'+e(r['address'])+'</td></tr>'
+    body+='</tbody></table><p>전국 지도와 정확히 매칭된 원본 기록: '+str(linked)+'건. '
+    body+='미매칭 사업은 구 명칭 변경·신규 사업·구역명 차이 가능성이 있어 이름만으로 추측 연결하지 않습니다.</p></section>'
+    body+='<p class="source">원본 제공기관: 인천광역시 · 기준일 2026-10-31 · '
+    body+='<a href="https://www.data.go.kr/data/15055212/fileData.do" target="_blank" rel="noopener noreferrer">인천광역시 도시 및 주거환경 정비사업 추진현황 원문</a>. '
+    body+='자료 수집 및 무결성 확인일: 2026-11-17.</p>'
+    return shell(title,description,'/regions/incheon-official',
+                 '인천시 재개발·재건축 168건 공식 현황',body,kind='CollectionPage')
 
 def district_html(template, data):
     """Pre-render actual project data inside the existing progressive-enhancement page."""
@@ -204,6 +240,20 @@ def district_html(template, data):
     links=''.join('<a class="district-site-link" href="'+e(n.get('source_url',''))+'" target="_blank" rel="noopener noreferrer">'
       '<span><strong>'+e(n.get('title','고시'))+'</strong><small>'+e(n.get('notice_number',''))+' · '+e(n.get('notice_date',''))+'</small></span></a>' for n in notices)
     if not notices:links='<p>이 사업과 정확히 매칭된 개별 고시번호·날짜는 아직 확인되지 않았습니다. 관할 지자체 원문에서 확인하세요.</p>'
+    incheon=data.get('incheon_official_records') or []
+    if incheon:
+        links+='<section class="project-official-record"><h3>인천시 2026-10-31 정비사업 추가 공공정보</h3>'
+        links+='<p>국토교통부 2026-05-18 기본 기록과 별도 확인된 인천시 공식 원본입니다.</p>'
+        for rec in incheon:
+            links+='<dl>'
+            for label,key in [('인천시 구역명','name'),('인천시 구','city'),('인천시 사업유형','kind'),
+                              ('인천시 표기 단계','stage'),('인천시 구역 면적(㎡)','area_square_meters'),
+                              ('대표 소재지','address')]:
+                links+='<div><dt>'+e(label)+'</dt><dd>'+e(rec.get(key) or '자료 미제공')+'</dd></div>'
+            links+='</dl>'
+        links+='<p>사업지 위치 문자열은 정확한 정비구역 경계 또는 대표 좌표가 아닙니다. '
+        links+='<a target="_blank" rel="noopener noreferrer" href="https://www.data.go.kr/data/15055212/fileData.do">'
+        links+='인천시 공식 원본 확인</a></p></section>'
     municipal=data.get('municipal_reference') or {}
     if municipal.get('source_url'):
         links+='<section class="project-official-record"><h3>부산시 정비사업 포털 추가자료</h3>'

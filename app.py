@@ -36,7 +36,7 @@ from pydantic import BaseModel, Field
 from neon_auth_jwt import validate_neon_token
 from community_builder import init_community_builder_schema, register_community_builder
 from theme_boards import init_theme_board_schema, register_theme_board_routes, THEME_BY_SLUG
-from seo_pages import TOPICS as SEO_TOPICS, REGIONS as SEO_REGIONS, topic_html, region_html, district_html, links as seo_links, BASE as SEO_BASE
+from seo_pages import TOPICS as SEO_TOPICS, REGIONS as SEO_REGIONS, topic_html, region_html, district_html, incheon_official_html, links as seo_links, BASE as SEO_BASE
 
 ROOT = Path(__file__).resolve().parent
 # Vercel Python runtime may not register WebP; make browser image responses explicit.
@@ -423,6 +423,7 @@ def site_sitemap():
     static_pages=['/', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
     dynamic_pages=['/insights/'+slug for slug in SEO_TOPICS]
     dynamic_pages+=['/regions/'+slug for slug in SEO_REGIONS]
+    dynamic_pages+=['/regions/incheon-official']
     with db() as c:
         ids=[int(r[0]) for r in c.execute('SELECT id FROM districts WHERE demo=0 ORDER BY id').fetchall()]
     dynamic_pages+=['/district-info/'+str(i) for i in ids]
@@ -670,11 +671,65 @@ def _municipal_verified_record(d):
             return record
     return {}
 
+
+INCH_SOURCE_URL = 'https://www.data.go.kr/data/15055212/fileData.do'
+INCH_SOURCE_ASOF = '2026-10-31'
+INCH_RAW_SHA256 = '83ba7ddf9932cd429fba1278009a5a273ece0f7a32a9790e0834d2bb8615db17'
+INCH_SOURCE_PATH = ROOT / 'data' / 'incheon_renewal_official_20261031.json.gz'
+
+@lru_cache(maxsize=1)
+def _incheon_public_snapshot():
+    """SHA-pinned 168-row Incheon municipal snapshot, keyed ONLY by exact city + district.
+    Municipality boundaries/names changed after the national 2026-05-18 snapshot.
+    Never join by district name alone or infer official polygons.
+    """
+    empty={'verified':False,'source_rows':0,'distinct_keys':0,'by_key':{},'records':[], 'error':''}
+    try:
+        raw=gzip.decompress(INCH_SOURCE_PATH.read_bytes())
+        if hashlib.sha256(raw).hexdigest()!=INCH_RAW_SHA256:
+            raise ValueError('incheon_sha256_mismatch')
+        items=json.loads(raw.decode('utf-8'))
+        if not isinstance(items,list) or len(items)!=168:
+            raise ValueError('incheon_unexpected_row_count')
+        records,by_key=[],{}
+        for ordinal,item in enumerate(items,start=1):
+            if not isinstance(item,dict):raise ValueError('incheon_invalid_source_row')
+            row={str(k).strip():str(v).strip() for k,v in item.items()}
+            fields=('구역명','구명','사업유형','진행단계','위치','면적(제곱미터)')
+            if any(k not in row for k in fields):raise ValueError('incheon_missing_column')
+            name,city=row['구역명'],row['구명']
+            if not name or not city:raise ValueError('incheon_missing_project_key')
+            area=row['면적(제곱미터)']
+            if area and (not re.fullmatch(r'\d+(?:\.\d+)?',area) or float(area)<0):
+                raise ValueError('incheon_invalid_area')
+            r={'source_row':ordinal,'name':name,'city':city,
+               'kind':row['사업유형'],'stage':row['진행단계'],
+               'address':row['위치'],'area_square_meters':area,
+               'source_url':INCH_SOURCE_URL,'source_asof':INCH_SOURCE_ASOF}
+            records.append(r)
+            by_key.setdefault((_clean_field(city),_clean_field(name)),[]).append(r)
+        return {'verified':True,'source_rows':len(records),
+                'distinct_keys':len(by_key),'by_key':by_key,'records':records,'error':''}
+    except (OSError,ValueError,UnicodeError,EOFError,TypeError) as exc:
+        return {**empty,'error':type(exc).__name__+': '+str(exc)[:110]}
+
+def _incheon_exact_records(project):
+    if _clean_field(project.get('province',''))!=_clean_field('인천광역시'):
+        return []
+    snapshot=_incheon_public_snapshot()
+    if not snapshot['verified']:return []
+    return snapshot['by_key'].get((_clean_field(project.get('city')),
+                                   _clean_field(project.get('name'))),[])
+
 @app.get('/api/map/secondary-sources')
 def public_secondary_sources():
     c=_municipal_public_catalog()
+    incheon=_incheon_public_snapshot()
     return {'sources':c['sources'], 'matched_example_records':len(c['records']),
             'verified_on':c['verified_on'],
+            'incheon_20261031':{'verified':incheon['verified'],'source_rows':incheon['source_rows'],
+                 'source_url':INCH_SOURCE_URL,'source_asof':INCH_SOURCE_ASOF,
+                 'exact_key_only':True,'error':incheon['error']},
             'note':'지자체 포털 기준 자료입니다. 법적 효력을 가진 개별 고시·정확한 필지경계로 취급하지 않습니다.'}
 
 @app.get('/api/map/public-status')
@@ -683,10 +738,20 @@ def map_public_status():
         verified=c.execute('SELECT COUNT(*) FROM districts WHERE demo=0').fetchone()[0]
         demo=c.execute('SELECT COUNT(*) FROM districts WHERE demo=1').fetchone()[0]
     snapshot = _molit_official_snapshot()
+    incheon = _incheon_public_snapshot()
     with db() as c:
         precision_rows = c.execute('SELECT precision,COUNT(*) AS n FROM districts WHERE demo=0 GROUP BY precision').fetchall()
         exact_boundaries = c.execute('SELECT COUNT(*) FROM district_geometries').fetchone()[0]
-    return {'official_rows_imported':verified,'demo_region_hubs':demo,
+        incheon_db=[dict(r) for r in c.execute("SELECT province,city,name FROM districts WHERE demo=0 AND province='인천광역시'").fetchall()]
+    incheon_count=sum(bool(_incheon_exact_records(p)) for p in incheon_db)
+    return {'incheon_source_verified':incheon['verified'],
+        'incheon_source_rows':incheon['source_rows'],
+        'incheon_exact_matched_districts':incheon_count,
+        'incheon_national_districts':len(incheon_db),
+        'incheon_source_asof':INCH_SOURCE_ASOF,
+        'incheon_source_url':INCH_SOURCE_URL,
+        'incheon_snapshot_error':incheon['error'],
+        'official_rows_imported':verified,'demo_region_hubs':demo,
         'google_maps_configured':bool(GOOGLE_MAPS_BROWSER_KEY),
         'molit_api_configured':bool(MOLIT_SERVICE_KEY),
         'source_url':OFFICIAL_MOLIT_URL,'source_asof':'2026-05-18',
@@ -742,6 +807,7 @@ def public_district_profile(district_id:int):
     variants = _molit_snapshot_variants(d) if not demo else []
     official=_verified_public_notice_record(d) if not demo else {}
     municipal=_municipal_verified_record(d) if not demo else {}
+    incheon_rows=_incheon_exact_records(d) if not demo else []
     values=[
       {'key':'province','label':'시·도','value':field('province','시도')},
       {'key':'city','label':'시·군·구','value':field('city','시군구')},
@@ -779,7 +845,8 @@ def public_district_profile(district_id:int):
       'official_parcel_address':official.get('parcel_address',''),
       'official_portal_stage':official.get('portal_stage',{}),
       'official_notice_verified_at':official.get('verified_on',''),
-      'municipal_reference':municipal}
+      'municipal_reference':municipal,
+      'incheon_official_records':incheon_rows}
 
 @app.get('/district-info/{district_id}',response_class=HTMLResponse)
 def standalone_district_profile(district_id:int):
@@ -1413,6 +1480,18 @@ register_theme_board_routes(app, ROOT, db)
 def seo_insight(slug:str):
     html=topic_html(slug)
     if html is None:raise HTTPException(404,'등록된 재개발 주제를 찾을 수 없습니다.')
+    return HTMLResponse(html,headers={'Cache-Control':'public, max-age=3600'})
+
+
+@app.get('/regions/incheon-official',response_class=HTMLResponse,include_in_schema=False)
+def incheon_official_region():
+    snapshot=_incheon_public_snapshot()
+    if not snapshot['verified']:raise HTTPException(503,'인천시 공식 원본 무결성 검증에 실패했습니다.')
+    with db() as c:
+        existing=[dict(row) for row in c.execute(
+          "SELECT id,province,city,name FROM districts WHERE demo=0 AND province='인천광역시'").fetchall()]
+    directory={(_clean_field(x['city']),_clean_field(x['name'])):x['id'] for x in existing}
+    html=incheon_official_html(snapshot,directory)
     return HTMLResponse(html,headers={'Cache-Control':'public, max-age=3600'})
 
 @app.get('/regions/{slug}',response_class=HTMLResponse,include_in_schema=False)
