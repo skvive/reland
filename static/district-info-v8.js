@@ -27,6 +27,8 @@
         ['정부24 건축물대장','https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=15000000098','건축물 기본자료 확인'],
         ['국가법령정보센터','https://www.law.go.kr/법령/도시및주거환경정비법','적용 법률과 시행일 대조']
       ];
+      if(province.includes('부산'))sites.splice(1,0,['부산시 정비사업별 정보공개','https://dynamice.busan.go.kr/view.do?no=279','부산시 공식 구역별 대표지번·추진단계·공개자료']);
+      if(province.includes('서울'))sites.splice(1,0,['서울시 서울플랜+ 정비사업 현황','https://data.seoul.go.kr/dataList/OA-23112/S/1/datasetView.do','도시계획사업 정비사업 통계·원문 안내']);
       if(province.includes('인천'))sites.splice(1,0,['인천시 정비사업 정보공개','https://renewal.incheon.go.kr/','인천시 정비사업 현황·공개자료 조회']);
       if(province.includes('서울'))sites.splice(1,0,['서울시 정비사업 정보몽땅','https://cleanup.seoul.go.kr/','서울시 사업장·공개자료 조회']);
       $('governmentLinks').innerHTML=sites.map(([name,url,description])=>'<a class="district-site-link" href="'+safeUrl(url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+esc(name)+'</strong><small>'+esc(description)+'</small></span><b aria-hidden="true">↗</b></a>').join('');
@@ -49,6 +51,17 @@
         (d.official_portal_stage?.value?'<p class="project-location-note">지자체 포털 표기 단계: <strong>'+esc(d.official_portal_stage.value)+'</strong> (국토부 단계와 별도)</p>':'')+
         (confirmed.length?'<div class="district-site-grid">'+confirmed.map(n=>'<a class="district-site-link" href="'+safeUrl(n.source_url)+'" target="_blank" rel="noopener noreferrer"><span><strong>'+esc(n.title||'공식 고시·공고')+'</strong><small>'+esc(n.notice_number||'고시번호 미제공')+' · '+esc(n.notice_date||'일자 미제공')+' · '+esc(n.authority||'관할기관')+'</small></span><b aria-hidden="true">↗</b></a>').join('')+'</div><p class="source-policy-note">확인 기준일: '+esc(d.official_notice_verified_at||'미제공')+'</p>':
          '<p class="project-empty">이 사업지와 정확히 매칭해 검증한 고시·공고는 아직 없습니다. 인가번호·고시일은 임의로 만들지 않습니다. 아래 관할기관 링크에서 원문을 확인하세요.</p>');
+      const municipal=d.municipal_reference&&typeof d.municipal_reference==='object'?d.municipal_reference:{};
+      if(municipal.source_url){
+        const source=document.createElement('section');
+        source.className='card district-sites';
+        source.innerHTML='<div class="section-head"><span>BUSAN / MUNICIPAL PUBLIC RECORD</span><h2>부산시 정비사업 포털 추가자료</h2><p>국토부 2026-05-18 원본과 별도로 조회된 지자체 포털 자료입니다. 최신 법적 인가 효력을 의미하지 않습니다.</p></div>'+
+          '<p class="project-location-note">포털 표시 단계: <strong>'+esc(municipal.portal_stage||'미기재')+'</strong></p>'+
+          (municipal.representative_parcel?'<p class="project-location-note">대표지번: '+esc(municipal.representative_parcel)+' (확정 정비구역 경계가 아님)</p>':'')+
+          (municipal.milestone?.date?'<p class="project-location-note">포털 추진경과 '+esc(municipal.milestone.name)+': '+esc(municipal.milestone.date)+' · 고시번호 미확인</p>':'')+
+          '<div class="district-site-grid"><a class="district-site-link" href="'+safeUrl(municipal.source_url)+'" target="_blank" rel="noopener noreferrer"><span><strong>부산시 공식 사업장 페이지</strong><small>원문 기준 단계·주요 추진경과·공개자료 확인</small></span><b aria-hidden="true">↗</b></a></div>';
+        document.querySelector('.district-more')?.insertAdjacentElement('afterend',source);
+      }
       const unknown=[
         ['총사업비·예상 공사비','국토부 기본 CSV에 없는 항목'],
         ['조합원 수·권리관계','사업별 원본 미확보'],

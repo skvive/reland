@@ -152,6 +152,8 @@ const DISTRICT_OFFICIAL_URLS=Object.freeze([
 ]);
 function districtGovernmentLinks(d){
  const resources=[...DISTRICT_OFFICIAL_URLS];
+ if(String(d.province||'').includes('부산'))resources.splice(1,0,{label:'부산시 정비사업 통합홈페이지',url:'https://dynamice.busan.go.kr/view.do?no=279',description:'정비사업별 대표지번·추진단계·공개자료 확인'});
+ if(String(d.province||'').includes('서울'))resources.splice(1,0,{label:'서울시 서울플랜+ 정비사업 자료',url:'https://data.seoul.go.kr/dataList/OA-23112/S/1/datasetView.do',description:'2026년 서울시 공공 통계 출처·면적·추진단계 자료 안내'});
  if(String(d.province||'').includes('인천'))resources.splice(1,0,{label:'인천시 정비사업 정보공개',url:'https://renewal.incheon.go.kr/',description:'인천시 정비사업 현황·사업장별 공개자료'});
  if(String(d.province||'').includes('서울'))resources.splice(1,0,{
   label:'서울시 정비사업 정보몽땅',url:'https://cleanup.seoul.go.kr/',description:'서울 사업장·추진정보·공개자료 검색'
@@ -174,6 +176,7 @@ function districtDossierHTML(d){
  const matching=stageMatchers.findIndex(re=>re.test(core));
  const variants=Array.isArray(d.official_source_variants)?d.official_source_variants:[];
  const notices=Array.isArray(d.official_notices)?d.official_notices:[];
+ const municipal=d.municipal_reference&&typeof d.municipal_reference==='object'?d.municipal_reference:{};
  const sourceVerified=!!d.source?.snapshot_verified;
  const status=d.demo?'시연용 지역 · 실제 사업 아님':d.source?.live_confirmed?'공공 API 원문 대조됨':sourceVerified?'국토부 공식 CSV 원본 검증 · 2026-05-18 기준':'기존 공공자료 반영 · 최신 대조 미완료';
  const area=[rows.province,rows.city].filter(Boolean).join(' · ');
@@ -195,6 +198,7 @@ function districtDossierHTML(d){
    (variants.length>1?'<p class="map-source-caution">'+E(d.official_same_name_warning||'동일 구역명으로 여러 원본이 확인됐습니다. 실제 동일 사업 여부는 미확인입니다.')+'</p>':'')+
    '<div class="map-source-records">'+sourceRecords+'</div>':
    '<p class="map-source-caution">사업명과 행정구역이 일치하는 공식 CSV 원본을 찾지 못했습니다. 기존 DB 정보만 표시합니다.</p>');
+ const municipalPanel=municipal.source_url?'<div class="map-info-subhead"><b>지자체 공식 포털 추가자료</b><span>국토부 원본과 구분</span></div><p class="map-data-caption">부산시 표시 단계: <strong>'+E(municipal.portal_stage||'미제공')+'</strong>'+ (municipal.representative_parcel?' · 포털 대표지번: '+E(municipal.representative_parcel):'')+'</p>'+ (municipal.milestone?.date?'<p class="map-data-caption">포털 추진경과: '+E(municipal.milestone.name)+' '+E(municipal.milestone.date)+' (법적 고시번호는 미확인)</p>':'')+'<a class="map-official-link" target="_blank" rel="noopener noreferrer" href="'+A(municipal.source_url)+'"><span><strong>부산시 사업별 공식 포털 열기</strong><small>관할 기관 자료 · 현재 효력은 고시문 재확인</small></span><b aria-hidden="true">↗</b></a>':'';
  const docCount=notices.length;
  return '<div class="map-dossier" data-selected-district="'+Number(d.id)+'">'+
   '<div class="map-dossier-title"><span>RE:LAND / DISTRICT PROFILE</span><button class="map-dossier-close" type="button" data-action="map-project-close" aria-label="상세 패널 닫기">×</button><h2>'+E(d.name||rows.name||'사업명 미제공')+'</h2><p>'+E(area)+' · '+val('kind')+'</p><div class="map-dossier-status">'+E(status)+'</div></div>'+
@@ -204,7 +208,7 @@ function districtDossierHTML(d){
   '<div class="map-dossier-section"><h3>02 · 추진단계 확인</h3><p class="map-data-caption">공개자료 표시: <strong>'+E(stage)+'</strong>. 해당 단계만 강조하며, 아래 순서는 학습용입니다. 일정은 확정된 것으로 표시하지 않습니다.</p>'+
   '<ol class="map-stage-track">'+STAGES.map((s,i)=>'<li class="'+(matching===i?'current':'')+'">'+E(s)+'</li>').join('')+'</ol></div>'+
   '<div class="map-dossier-section"><h3>03 · 이 사업의 공식 기록과 핵심 문서</h3>'+
-  sourceSection+
+  sourceSection+municipalPanel+
   '<div class="map-info-subhead"><b>사업별 고시·공고 원문</b><span>'+docCount+'건 확인</span></div>'+
   (d.official_parcel_address?'<p class="map-data-caption">확인된 고시문 소재지: <strong>'+E(d.official_parcel_address)+'</strong> · 정비구역 경계 검증과 다릅니다.</p>':'')+
   (d.official_portal_stage?.value?'<p class="map-data-caption">지자체 포털 단계: <strong>'+E(d.official_portal_stage.value)+'</strong> (국토부 표기와 별도)</p>':'')+

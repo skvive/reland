@@ -36,6 +36,7 @@ from pydantic import BaseModel, Field
 from neon_auth_jwt import validate_neon_token
 from community_builder import init_community_builder_schema, register_community_builder
 from theme_boards import init_theme_board_schema, register_theme_board_routes, THEME_BY_SLUG
+from seo_pages import TOPICS as SEO_TOPICS, REGIONS as SEO_REGIONS, topic_html, region_html, district_html, links as seo_links, BASE as SEO_BASE
 
 ROOT = Path(__file__).resolve().parent
 # Vercel Python runtime may not register WebP; make browser image responses explicit.
@@ -414,7 +415,24 @@ def _health_payload():
 def site_robots(): return FileResponse(ROOT/'static'/'robots.txt', media_type='text/plain; charset=utf-8')
 
 @app.get('/sitemap.xml',include_in_schema=False)
-def site_sitemap(): return FileResponse(ROOT/'static'/'sitemap.xml',media_type='application/xml')
+def site_sitemap():
+    """Curated landing pages + indexed official district profiles (no demo or user data)."""
+    namespace='http://www.sitemaps.org/schemas/sitemap/0.9'
+    ET.register_namespace('',namespace)
+    root=ET.Element('{'+namespace+'}urlset')
+    static_pages=['/', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
+    dynamic_pages=['/insights/'+slug for slug in SEO_TOPICS]
+    dynamic_pages+=['/regions/'+slug for slug in SEO_REGIONS]
+    with db() as c:
+        ids=[int(r[0]) for r in c.execute('SELECT id FROM districts WHERE demo=0 ORDER BY id').fetchall()]
+    dynamic_pages+=['/district-info/'+str(i) for i in ids]
+    for path in static_pages+dynamic_pages:
+        node=ET.SubElement(root,'{'+namespace+'}url')
+        ET.SubElement(node,'{'+namespace+'}loc').text='https://reland.lexid.site'+path
+        if path.startswith(('/insights/','/regions/','/district-info/')):
+            ET.SubElement(node,'{'+namespace+'}lastmod').text='2026-11-17'
+    xml=b'<?xml version="1.0" encoding="UTF-8"?>\n'+ET.tostring(root,encoding='utf-8')
+    return Response(content=xml,media_type='application/xml',headers={'Cache-Control':'public, max-age=3600'})
 
 @app.get('/feed.xml', include_in_schema=False)
 def site_feed():
@@ -634,6 +652,31 @@ def _molit_snapshot_variants(record):
     key = tuple(_clean_field(record.get(k)) for k in ('province', 'city', 'name'))
     return _molit_official_snapshot()['by_key'].get(key, [])
 
+
+@lru_cache(maxsize=1)
+def _municipal_public_catalog():
+    """Official municipal source directory; fields are never a substitute for legal notices."""
+    try:
+        doc=json.loads((ROOT/'data'/'municipal_public_sources_20261117.json').read_text(encoding='utf-8'))
+        if doc.get('schema_version')!='1.0':raise ValueError('unexpected_source_schema')
+        return doc
+    except (OSError,ValueError,TypeError):
+        return {'sources':[], 'records':[], 'verified_on':''}
+
+def _municipal_verified_record(d):
+    for record in _municipal_public_catalog()['records']:
+        if all(_clean_field(record.get(field)) == _clean_field(d.get(field))
+               for field in ('province','city','name')):
+            return record
+    return {}
+
+@app.get('/api/map/secondary-sources')
+def public_secondary_sources():
+    c=_municipal_public_catalog()
+    return {'sources':c['sources'], 'matched_example_records':len(c['records']),
+            'verified_on':c['verified_on'],
+            'note':'지자체 포털 기준 자료입니다. 법적 효력을 가진 개별 고시·정확한 필지경계로 취급하지 않습니다.'}
+
 @app.get('/api/map/public-status')
 def map_public_status():
     with db() as c:
@@ -698,6 +741,7 @@ def public_district_profile(district_id:int):
     demo=bool(d['demo'])
     variants = _molit_snapshot_variants(d) if not demo else []
     official=_verified_public_notice_record(d) if not demo else {}
+    municipal=_municipal_verified_record(d) if not demo else {}
     values=[
       {'key':'province','label':'시·도','value':field('province','시도')},
       {'key':'city','label':'시·군·구','value':field('city','시군구')},
@@ -734,13 +778,18 @@ def public_district_profile(district_id:int):
       'official_notices':official.get('notices',[]),
       'official_parcel_address':official.get('parcel_address',''),
       'official_portal_stage':official.get('portal_stage',{}),
-      'official_notice_verified_at':official.get('verified_on','')}
+      'official_notice_verified_at':official.get('verified_on',''),
+      'municipal_reference':municipal}
 
-@app.get('/district-info/{district_id}')
+@app.get('/district-info/{district_id}',response_class=HTMLResponse)
 def standalone_district_profile(district_id:int):
-    if district_id<1:
-        raise HTTPException(404,'잘못된 사업 번호입니다.')
-    return FileResponse(ROOT/'static'/'district-info-v8.html',media_type='text/html')
+    if district_id<1:raise HTTPException(404,'잘못된 사업 번호입니다.')
+    data=public_district_profile(district_id)
+    template=(ROOT/'static'/'district-info-v8.html').read_text(encoding='utf-8')
+    if data['demo']:
+        return HTMLResponse(template,headers={'Cache-Control':'public, max-age=180'})
+    html=district_html(template,data)
+    return HTMLResponse(html,headers={'Cache-Control':'public, max-age=900'})
 
 @app.get('/api/districts/{district_id}')
 def district_detail(district_id:int):
@@ -1360,13 +1409,31 @@ def claim_theme_board_operator(request:Request):
 register_community_builder(app, ROOT, db, require_user, validate_blog, throttle, utcnow)
 register_theme_board_routes(app, ROOT, db)
 
+@app.get('/insights/{slug}',response_class=HTMLResponse,include_in_schema=False)
+def seo_insight(slug:str):
+    html=topic_html(slug)
+    if html is None:raise HTTPException(404,'등록된 재개발 주제를 찾을 수 없습니다.')
+    return HTMLResponse(html,headers={'Cache-Control':'public, max-age=3600'})
+
+@app.get('/regions/{slug}',response_class=HTMLResponse,include_in_schema=False)
+def seo_region(slug:str):
+    if slug not in SEO_REGIONS:raise HTTPException(404,'등록된 지역이 아닙니다.')
+    snapshot=_molit_official_snapshot()
+    with db() as c:
+        items=[dict(r) for r in c.execute(
+            'SELECT id,name,province,city,stage,kind,demo FROM districts WHERE demo=0 AND province=? ORDER BY city,name,id',
+            (SEO_REGIONS[slug],)).fetchall()]
+    html=region_html(slug,snapshot,items)
+    if html is None:raise HTTPException(503,'공식 원본 검증에 실패했습니다.')
+    return HTMLResponse(html,headers={'Cache-Control':'public, max-age=3600'})
+
 @app.get('/{full_path:path}',include_in_schema=False)
 def spa_fallback(full_path:str):
     if full_path.startswith(('api/','static/')) or '.' in full_path:
         raise HTTPException(404,'Not found')
     # Per-route SEO head for SPA navigation: only curated public pages are indexable.
     from html import escape as esc
-    public_pages={"map":["재개발 지도 | RE:LAND 리랜드","전국 재개발·재건축 구역정보와 사업 진행단계를 지도로 확인하세요."],"community":["동네사랑방 | RE:LAND 리랜드","Google Blogger와 연결되는 주민 커뮤니티와 동네 소식을 만나보세요."],"news":["재개발 뉴스룸 | RE:LAND 리랜드","전국 도시정비사업과 재건축 관련 뉴스·정책 정보를 원문 출처와 함께 확인하세요."],"guide":["재개발 절차와 법률 가이드 | RE:LAND","정비구역 지정부터 관리처분·착공·준공까지 재개발 기본 절차를 알아보세요."],"columns":["재개발 법률 저널 | RE:LAND 리랜드","법령 원문을 함께 읽는 재개발·정비사업 실무 교육 저널입니다. 전문가 개별 감수 전 원고가 포함됩니다."],"directory":["전문가 디렉터리 | RE:LAND","도시정비 분야 전문가의 공개 프로필과 정보를 확인하세요."],"youtube":["재개발 YouTube 영상관 | RE:LAND","재개발·재건축 실무 영상과 법률 해설 콘텐츠를 주제별로 찾아보세요."],"experts":["정비사업 상담 접수 | RE:LAND","정비사업 관련 공개 안내와 상담 접수 절차를 확인하세요."],"sources":["정비사업 공공데이터 출처 | RE:LAND","공공 원본의 출처와 위치 정밀도, 구역별 데이터 사용 범위를 안내합니다."],"partners":["리랜드 파트너십 안내 | RE:LAND","도시정비 정보 커뮤니티의 콘텐츠 및 제휴 안내입니다."],"privacy":["개인정보 처리 안내 | RE:LAND","리랜드 서비스의 개인정보 처리 및 계정 사용 정책을 확인하세요."]}
+    public_pages={"map":["전국 재개발·재건축 지도 | 리랜드","국토부 원본 기준 전국 1,547개 정비사업 구역명·추진단계·사업유형을 조회하고 출처를 확인하세요."],"community":["동네사랑방 | RE:LAND 리랜드","Google Blogger와 연결되는 주민 커뮤니티와 동네 소식을 만나보세요."],"news":["재개발 뉴스룸 | RE:LAND 리랜드","전국 도시정비사업과 재건축 관련 뉴스·정책 정보를 원문 출처와 함께 확인하세요."],"guide":["재개발 절차와 법률 가이드 | RE:LAND","정비구역 지정부터 관리처분·착공·준공까지 재개발 기본 절차를 알아보세요."],"columns":["재개발 법률 저널 | RE:LAND 리랜드","법령 원문을 함께 읽는 재개발·정비사업 실무 교육 저널입니다. 전문가 개별 감수 전 원고가 포함됩니다."],"directory":["전문가 디렉터리 | RE:LAND","도시정비 분야 전문가의 공개 프로필과 정보를 확인하세요."],"youtube":["재개발 YouTube 영상관 | RE:LAND","재개발·재건축 실무 영상과 법률 해설 콘텐츠를 주제별로 찾아보세요."],"experts":["정비사업 상담 접수 | RE:LAND","정비사업 관련 공개 안내와 상담 접수 절차를 확인하세요."],"sources":["정비사업 공공데이터 출처 | RE:LAND","공공 원본의 출처와 위치 정밀도, 구역별 데이터 사용 범위를 안내합니다."],"partners":["리랜드 파트너십 안내 | RE:LAND","도시정비 정보 커뮤니티의 콘텐츠 및 제휴 안내입니다."],"privacy":["개인정보 처리 안내 | RE:LAND","리랜드 서비스의 개인정보 처리 및 계정 사용 정책을 확인하세요."]}
     slug=full_path.strip('/')
     raw=(ROOT/'static'/'index.html').read_text(encoding='utf-8')
     if slug in public_pages:
@@ -1382,6 +1449,15 @@ def spa_fallback(full_path:str):
     else:
         raw=raw.replace('content="index,follow,max-image-preview:large"','content="noindex,follow"',1)
         raw=raw.replace('<link rel="canonical" href="https://reland.lexid.site/">','',1)
+    if slug in ('map','guide','sources'):
+        info=('<section aria-label="공식 정비사업 정보 안내" style="max-width:900px;margin:24px auto;padding:16px 24px;'
+              'background:#f5f8f4;border:1px solid #dce8dc;border-radius:12px">'
+              '<h2>전국 재개발·재건축 공식정보</h2>'
+              '<p>국토교통부 2026-05-18 기준 전국 정비사업 원본 1,566행, 구역명 기준 1,547개 항목을 확인할 수 있습니다. '
+              '사업지별 추진단계·사업시행자·세대 수와 자료 출처를 확인하세요. '
+              '지도 대표점은 실제 정비구역 경계가 아닙니다.</p>'+seo_links()+
+              '</section>')
+        raw=raw.replace('</main>',info+'</main>',1)
     return HTMLResponse(raw)
 
 if __name__=='__main__':
