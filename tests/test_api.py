@@ -168,8 +168,8 @@ def test_map_inspector_detail_and_official_government_links(client):
     static = Path(__file__).resolve().parents[1] / 'static'
     index = client.get('/')
     assert index.status_code == 200
-    assert '/static/map-project-detail-v9.css?v=20261114v9' in index.text
-    assert '/static/app.js?v=20261114v9' in index.text
+    assert '/static/map-project-detail-v9.css?v=20261117v10' in index.text
+    assert '/static/app.js?v=20261117v10' in index.text
     assert client.get('/static/map-project-detail-v9.css').status_code == 200
     source=(static/'app.js').read_text(encoding='utf-8')
     assert 'data-action="map-project-select"' in source
@@ -193,6 +193,6 @@ def test_map_inspector_detail_and_official_government_links(client):
     html=client.get(f"/district-info/{rows[0]['id']}")
     assert html.status_code == 200
     assert 'id="governmentLinks"' in html.text
-    assert '사업별 추가 확인 항목' in html.text
+    assert '사업별 공식 기록 · 추가 문서 확인' in html.text
     assert '정부 사이트에서 원문 조회' in html.text
     assert 'target="_blank"' in (static/'district-info-v8.js').read_text(encoding='utf-8')
