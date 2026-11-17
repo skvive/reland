@@ -11,3 +11,27 @@
 .district-site-link b{font-size:20px;color:#2b7f5c}
 .district-site-link:hover,.district-site-link:focus-visible{background:#e1f1e7;outline:2px solid #57a77f;outline-offset:1px}
 @media(max-width:600px){.district-more-list,.district-site-grid{grid-template-columns:1fr}.district-sites,.district-more{padding:20px 17px}}
+
+/* v10 / verified project records and per-field evidence status */
+.project-section-title{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:27px 0 12px}
+.project-section-title:first-of-type{margin-top:12px}
+.project-section-title h3{color:#1c5340;font-size:16px;line-height:1.4;font-weight:850;margin:0}
+.project-section-title span{font-size:12px;font-weight:700;color:#617e6b;background:#edf6ee;border-radius:20px;padding:4px 11px}
+.project-record-grid{display:grid;gap:12px}
+.project-official-record{background:#f3f8f3;border:1px solid #dae7de;border-radius:14px;padding:19px 18px}
+.project-official-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.project-official-top b{font-size:14px;color:#205842}
+.project-official-top span{background:#e2eee5;color:#376650;font-size:12px;padding:5px 10px;border-radius:20px;white-space:nowrap}
+.project-official-record dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:0}
+.project-official-record dl>div{border-top:1px solid #dce8df;padding-top:10px;min-width:0}
+.project-official-record dt{font-size:12px;color:#6c7f70}
+.project-official-record dd{margin:4px 0 0;font-size:14px;font-weight:760;line-height:1.6;color:#1c4231;overflow-wrap:anywhere}
+.project-match-warning{border-left:4px solid #be965e;border-radius:9px;background:#fff8ef;padding:14px 16px;font-size:13px;color:#6c5539}
+.project-location-note{font-size:13px;background:#eff8f0;border-radius:9px;padding:11px 13px;line-height:1.7;color:#355d46}
+.project-empty{background:#f6f8f6;border:1px solid #e3ebe4;padding:18px;border-radius:11px;color:#607667;font-size:13px;line-height:1.75}
+.source-policy-note{font-size:12px;line-height:1.7;color:#738576;margin:16px 0 0}
+.district-more-list li{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 10px}
+.district-more-list li b{font-size:13px;color:#214f3c}
+.district-more-list li span{font-size:10px;padding:2px 7px;border:1px solid #d9d0ba;border-radius:20px;color:#82653e;background:#fff9ec}
+.district-more-list li small{width:100%;font-size:11px;color:#76887b}
+@media(max-width:600px){.project-official-record{padding:14px}.project-official-record dl{grid-template-columns:1fr 1fr;gap:9px}.project-official-record dt{font-size:11px}.project-official-record dd{font-size:12px}.project-section-title h3{font-size:14px}}

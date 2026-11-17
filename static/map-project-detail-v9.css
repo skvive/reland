@@ -69,3 +69,25 @@
  .map-results-fold>summary{display:block}
  .map-results-fold>summary span{display:block;margin-top:4px}
 }
+
+/* v10 — Per-project provenance and document status; no fabricated figures. */
+.map-info-subhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+.map-info-subhead b{color:#1b4939;font-size:12px;font-weight:850;line-height:1.4}
+.map-info-subhead span{font-size:10px;color:#758577}
+.map-source-records{display:grid;gap:9px}
+.map-source-record{background:#f4f8f4;border:1px solid #d7e6dc;border-radius:11px;padding:13px 13px 11px;min-width:0}
+.map-source-record-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:11px;align-items:center}
+.map-source-record-top b{font-size:11px;color:#1b5a43}
+.map-source-record-top span{color:#557b66;font-size:10px;white-space:nowrap;background:#e6f0e7;padding:4px 7px;border-radius:14px}
+.map-source-record dl{display:grid;grid-template-columns:1fr;gap:6px;margin:0}
+.map-source-record dl>div{display:grid;grid-template-columns:105px minmax(0,1fr);gap:8px;padding:4px 0;border-bottom:1px solid #dfe9e0}
+.map-source-record dl>div:last-child{border-bottom:0}
+.map-source-record dt{color:#5e7668;font-size:11px}
+.map-source-record dd{margin:0;color:#244737;font-size:11px;font-weight:750;overflow-wrap:anywhere}
+.map-source-caution{border-left:3px solid #c69b64;background:#fff7ed;color:#745737;border-radius:5px;padding:10px 12px;font-size:11px;line-height:1.7;margin:12px 0}
+.map-document-status{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.map-document-status li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:5px 12px;padding:10px 11px;border:1px solid #e4ebe4;border-radius:8px;background:#fafcf9}
+.map-document-status strong{font-weight:700;font-size:11px;color:#244534}
+.map-document-status span{font-size:10px;color:#847b65;line-height:1.5}
+.map-dossier-section .map-data-caption a{color:#145a41;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:520px){.map-source-record dl>div{grid-template-columns:95px minmax(0,1fr)}.map-document-status li{padding:9px 10px}}

@@ -32,3 +32,35 @@ def test_snapshot_does_not_invent_zone_geometry():
     for row in sample:
         assert 'latitude' not in row and 'longitude' not in row
         assert '사업비' not in row
+
+
+def test_public_details_preserve_source_variants_and_real_notice_only(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    monkeypatch.setattr(site, 'DB_PATH', tmp_path / 'district_info.sqlite')
+    monkeypatch.setattr(site, 'DEMO_MODE', True)
+    site.init_db()
+    with site.db() as db:
+        db.execute("""INSERT INTO districts
+          (name, province, city, stage, kind, operator, households, precision,
+           source_url, source_date, demo)
+          VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)""",
+          ('대연3', '부산광역시', '남구', '7)착공', '1)재개발(주택정비)',
+           '1)조합', '4488', 'province_center',
+           'https://www.data.go.kr/data/15160169/fileData.do', '2026-05-18'))
+        pk=db.execute("SELECT id FROM districts WHERE name=? AND city=?",
+                      ('대연3','남구')).fetchone()[0]
+    with TestClient(site.app) as client:
+        result=client.get(f'/api/districts/{pk}/public')
+        assert result.status_code == 200
+        item=result.json()
+        assert item['source']['snapshot_verified']
+        assert len(item['official_source_variants']) == 3
+        assert {rec['kind'] for rec in item['official_source_variants']} == {
+            '3)재건축(공동주택)', '5)주거환경개선', '1)재개발(주택정비)'}
+        assert item['official_notices'] == []
+        assert item['official_parcel_address'] == ''
+        page=client.get(f'/district-info/{pk}')
+        assert page.status_code == 200
+        for marker in ('id="projectRecordStatus"', 'id="projectNotices"',
+                       'id="projectMissing"', '20261117v10'):
+            assert marker in page.text
