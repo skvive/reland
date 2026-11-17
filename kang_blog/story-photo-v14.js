@@ -14,7 +14,7 @@
  const fallbackImage=defaultSvg();
  window.KANG_STORY_PHOTO_V14=originals;
  window.KANG_STORY_PHOTO_CAPTIONS_V14=Object.freeze(Object.fromEntries(Array.from({length:60},(_,i)=>[i+1,'재개발 강의 '+(i+1)+'강 교육용 에디토리얼 이미지 (실제 사업장 사진 아님)'])));
- window.KANG_MEDIA_V16=Object.freeze({get:id=>originals[id]||null,poster:id=>illustrations(id)});
+ window.KANG_MEDIA_V16=Object.freeze({get:id=>id===14?illustrations(id):(originals[id]||null),poster:id=>illustrations(id)});
  const routeId=()=>{
    const exact=location.pathname.match(/\/kang\/lectures\/lesson-(\d{3})\.html$/);
    return exact?Number(exact[1]):Number(new URLSearchParams(location.search).get('id'));
@@ -55,10 +55,11 @@
    const onStandalone=location.pathname.match(/\/kang\/lectures\/lesson-(\d{3})\.html$/);
    if(onStandalone){
      const id=Number(onStandalone[1]),img=document.querySelector('.rk-story > img');
-     if(img&&originals[id]&&img.dataset.brandHero!=='1'){
+     const preferred=id===14?illustrations(id):originals[id];
+     if(img&&preferred&&img.dataset.brandHero!=='1'){
        img.dataset.lessonMediaId=String(id);
        img.alt=window.KANG_STORY_PHOTO_CAPTIONS_V14[id];
-       if(img.getAttribute('src')!==originals[id])img.src=originals[id];
+       if(img.getAttribute('src')!==preferred)img.src=preferred;
      }
    }
    document.querySelectorAll('.card-visual img, #lectureImage, #storySceneImage, .rk-brand-banner img, .rk-story > img, .modal-hero, #lessonDiagram').forEach(img=>{
