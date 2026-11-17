@@ -16,23 +16,42 @@ def client(tmp_path,monkeypatch):
     with TestClient(site.app) as web:yield web
 
 def test_map_nationwide_data_not_replaced_by_seoul(client):
+    # A clean test DB intentionally contains no operating-site rows. Seed three
+    # example provinces and verify filtering without touching production data.
+    fixtures=[
+        ('서울특별시','강남구','서울 검사구역',37.5665,126.9780),
+        ('부산광역시','부산진구','부산 검사구역',35.1796,129.0756),
+        ('제주특별자치도','제주시','제주 검사구역',33.4996,126.5312),
+    ]
+    with site.db() as conn:
+        for province,city,name,lat,lon in fixtures:
+            conn.execute("""INSERT INTO districts
+                (name,province,city,stage,kind,operator,households,
+                 lat,lon,precision,source_url,source_date,demo)
+                VALUES (?, ?, ?, '추진위원회','재개발','조합',100,
+                    ?, ?, 'province_center',
+                    'https://www.data.go.kr/data/15160169/fileData.do',
+                    '2026-05-18',0)""",
+                (name,province,city,lat,lon))
     all_areas=client.get('/api/districts?region=전국&limit=2000')
     assert all_areas.status_code==200
     body=all_areas.json()
     districts=[x for x in body['items'] if not x['demo']]
-    assert body['verified_data_rows']==1547
-    assert len(districts)==1547
-    assert len({x['province'] for x in districts})==17
-    capitals=client.get('/api/districts?region=서울특별시&limit=2000').json()['items']
-    assert capitals and len(capitals)<len(districts)
-    assert len({x['province'] for x in capitals})==1
-    assert {x['province'] for x in capitals}=={'서울특별시'}
+    assert body['verified_data_rows']==3
+    assert len(districts)==3
+    assert len({x['province'] for x in districts})==3
+    seoul=client.get('/api/districts?region=서울특별시&limit=2000').json()['items']
+    assert len(seoul)==1
+    assert seoul[0]['province']=='서울특별시'
     coords={(round(float(d['lat']),3),round(float(d['lon']),3)) for d in districts}
-    assert len(coords)==17
+    assert len(coords)==3
     assert min(x for x,y in coords)<34
     assert max(x for x,y in coords)>37
     assert min(y for x,y in coords)<127
     assert max(y for x,y in coords)>129
+    assert site._molit_official_snapshot()['verified'] is True
+    assert len(site._molit_official_snapshot()['regions'])==17
+
 
 def test_clearing_filter_uses_full_query_string_not_pathname_only():
     js=(ROOT/'static'/'app.js').read_text(encoding='utf-8')
