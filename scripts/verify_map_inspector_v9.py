@@ -34,7 +34,12 @@ with sync_playwright() as pw:
             assert item.get_attribute("rel")=="noopener noreferrer",width
             assert (item.get_attribute("href") or "").startswith("https://"),width
         assert page.locator("#map-project-detail .map-facts dd").count()==7,width
-        assert page.locator("#map-project-detail .map-unknown-facts li").count()>=6,width
+        unknown_count=page.locator("#map-project-detail .map-unknown-facts li").count()
+        if unknown_count < 6:
+            print("MAP QA missing field count", width, unknown_count, "selected URL", page.url, flush=True)
+            print("MAP QA selected dossier excerpt", dossier.inner_text()[:1200], flush=True)
+            page.screenshot(path=str(OUT/f"map-inspector-v9-failure-{width}.png"), full_page=True)
+        assert unknown_count>=6,(width,unknown_count)
         assert page.locator("#map-project-detail .map-stage-track li").count()==8,width
         selected=page.locator(".map-results .re-open-detail[aria-pressed='true']")
         assert selected.count()==1,width
