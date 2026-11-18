@@ -43,5 +43,5 @@ def test_standalone_and_modern_lessons_use_new_scenes() -> None:
     assert "lesson-scenes-v22/lesson-" in photo
     assert "originalIllustration" in photo
     assert "lesson-scenes-v22/lesson-" in server
-    assert "story-photo-v14.js?v=20261118v30" in html
-    assert "lesson-story-v11.js?v=20261118v30" in html
+    assert "story-photo-v14.js?v=20261118v31" in html
+    assert "lesson-story-v11.js?v=20261118v31" in html
