@@ -61,7 +61,7 @@ def inspect(page, lesson_id: int, width: int, standalone: bool = False) -> dict:
     opening_art.scroll_into_view_if_needed()
     opening_art.evaluate("(img) => img.decode().catch(() => null)")
     art_data = opening_art.evaluate("(img) => ({ok: img.complete && img.naturalWidth > 0, src: img.currentSrc})")
-    expected_art = "/kang/assets/lesson-scenes-v26/lesson-014.svg" if lesson_id == 14 else ("/kang/assets/lesson-scenes-v25/lesson-013.svg" if lesson_id == 13 else ("/kang/assets/lesson-scenes-v24/lesson-012.svg" if lesson_id == 12 else (f"/kang/assets/lesson-scenes-v23/lesson-{lesson_id:03d}.svg" if lesson_id <= 11 else f"/kang/assets/lesson-scenes-v22/lesson-{lesson_id:03d}.svg")))
+    expected_art = "/kang/assets/lesson-scenes-v27/lesson-015.svg" if lesson_id == 15 else ("/kang/assets/lesson-scenes-v26/lesson-014.svg" if lesson_id == 14 else ("/kang/assets/lesson-scenes-v25/lesson-013.svg" if lesson_id == 13 else ("/kang/assets/lesson-scenes-v24/lesson-012.svg" if lesson_id == 12 else (f"/kang/assets/lesson-scenes-v23/lesson-{lesson_id:03d}.svg" if lesson_id <= 11 else f"/kang/assets/lesson-scenes-v22/lesson-{lesson_id:03d}.svg"))))
     assert art_data["ok"] and expected_art in art_data["src"], (
         route, width, "illustration not rendered", art_data)
     art_box = page.locator(".rk-opening-illustration" if standalone else ".story-opening-art").bounding_box()
@@ -130,7 +130,7 @@ def main() -> None:
             art.wait_for(state="visible", timeout=20_000)
             art.evaluate("(img) => img.decode().catch(() => null)")
             item = art.evaluate("(img) => ({width: img.naturalWidth, src: img.currentSrc})")
-            expected = "/lesson-scenes-v26/lesson-014.svg" if n == 14 else ("/lesson-scenes-v25/lesson-013.svg" if n == 13 else ("/lesson-scenes-v24/lesson-012.svg" if n == 12 else (f"/lesson-scenes-v23/lesson-{n:03d}.svg" if n <= 11 else f"/lesson-scenes-v22/lesson-{n:03d}.svg")))
+            expected = "/lesson-scenes-v27/lesson-015.svg" if n == 15 else ("/lesson-scenes-v26/lesson-014.svg" if n == 14 else ("/lesson-scenes-v25/lesson-013.svg" if n == 13 else ("/lesson-scenes-v24/lesson-012.svg" if n == 12 else (f"/lesson-scenes-v23/lesson-{n:03d}.svg" if n <= 11 else f"/lesson-scenes-v22/lesson-{n:03d}.svg"))))
             assert item["width"] > 0 and expected in item["src"], (n, item)
         context.close()
         browser.close()

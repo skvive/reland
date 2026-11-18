@@ -1358,6 +1358,8 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
         # One topic-specific illustrated opening per original lesson.
         # Inject outside .rk-read: shortfiction-v14 replaces that container on load.
         illustration_path = ('lesson-scenes-v26/lesson-' if int(item_id) == 14 else ('lesson-scenes-v25/lesson-' if int(item_id) == 13 else ('lesson-scenes-v24/lesson-' if int(item_id) == 12 else ('lesson-scenes-v23/lesson-' if int(item_id) <= 11 else 'lesson-scenes-v22/lesson-')))) + item_id + '.svg'
+        if int(item_id) == 15:
+            illustration_path = 'lesson-scenes-v27/lesson-015.svg'
         illustration = (
             '<figure class="rk-opening-illustration" '
             f'data-story-art-id="{int(item_id)}">'
@@ -1377,7 +1379,7 @@ def _kang_document_with_contact(folder: str, kind: str, item_id: str):
         html = html.replace(
             '</article>',
             '<script defer src="/kang/longform-v12.js?v=20261112v12"></script>'
-            '<script defer src="/kang/story-photo-v14.js?v=20261117v29"></script>'
+            '<script defer src="/kang/story-photo-v14.js?v=20261118v30"></script>'
             '<script defer src="/kang/shortfiction-v14.js?v=20261112v15"></script>'
             '<link rel="stylesheet" href="/kang/shortfiction-v14.css?v=20261112v14">'
             '</article>',
