@@ -271,10 +271,10 @@ function districtDossierHTML(d){
   '<p class="map-data-caption"><a href="'+A(draft.source_url)+'" target="_blank" rel="noopener noreferrer">2025년 공람안 PDF 원문 ↗</a> · '+E(draft.source_note||'확정 고시 재확인 필요')+'</p>':'';
  const quickIncheon=incheon.length===1?
   '<div class="map-info-subhead"><b>인천시 추가 확인정보</b><span>2026-10-31 기준</span></div>'+
-  '<dl class="map-facts">'+
+  '<article class="map-source-record"><dl>'+
    [['인천시 표시 단계',incheon[0].stage],['인천시 등록 구역면적',incheon[0].area_square_meters?incheon[0].area_square_meters+'㎡':'자료 미제공'],['대표 소재지',incheon[0].address||'자료 미제공']]
    .map(([label,value])=>'<div><dt>'+E(label)+'</dt><dd>'+E(value)+'</dd></div>').join('')+
-  '</dl><p class="map-data-caption">인천시 월간 공공데이터 원본에 정확히 일치하는 1개 기록입니다. 사업지 경계·건축물 면적을 뜻하지 않습니다.</p>':
+  '</dl></article><p class="map-data-caption">인천시 월간 공공데이터 원본에 정확히 일치하는 1개 기록입니다. 사업지 경계·건축물 면적을 뜻하지 않습니다.</p>':
   incheon.length>1?'<p class="map-source-caution">인천시 동일 구역명 기록이 '+incheon.length+'건입니다. 개별 기록을 합산하거나 하나의 사업으로 단정하지 않습니다.</p>':'';
  const quickNotice=notices.length?
   '<p class="map-data-caption">공식 고시 '+notices.length+'건 연결됨 · 최근 확인 고시: '+E(notices[0].notice_number||'번호 미제공')+' ('+E(notices[0].notice_date||'일자 미제공')+')</p>':'';
