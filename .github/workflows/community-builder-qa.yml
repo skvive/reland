@@ -23,6 +23,9 @@ on:
       - "static/district-info-v8.js"
       - "static/district-info-v8.css"
       - "tests/test_api.py"
+      - "tests/test_incheon_public_snapshot.py"
+      - "tests/test_public_data_snapshot.py"
+      - "data/public_notices_verified.json"
       - "scripts/verify_map_inspector_v9.py"
       - "kang_blog/assets/lessons/**"
       - "kang_blog/assets/lesson-stories/**"
@@ -93,7 +96,7 @@ jobs:
       - run: node --check kang_blog/blog.js && node --check kang_blog/lesson-v6.js && node --check kang_blog/story-photo-v14.js
       - run: node --check kang_blog/lesson-story-v11.js
       - run: node scripts/verify_kang_brand_v17.cjs
-      - run: python -m pytest -q tests/test_community_builder.py tests/test_theme_boards.py tests/test_theme_images.py tests/test_api.py tests/test_kang_content.py
+      - run: python -m pytest -q tests/test_community_builder.py tests/test_theme_boards.py tests/test_theme_images.py tests/test_api.py tests/test_kang_content.py tests/test_incheon_public_snapshot.py tests/test_public_data_snapshot.py
 
   mobile-visual:
     name: Kang brand / mobile Chromium 320–768px
