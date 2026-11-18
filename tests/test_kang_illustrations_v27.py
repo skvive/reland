@@ -40,5 +40,5 @@ def test_only_15_selects_new_route():
     assert "id===15?" in story and "lesson-scenes-v27/lesson-015.svg" in story
     assert "id===15?" in loader and "previousIllustration" in loader
     assert "int(item_id) == 15" in server and "lesson-scenes-v27/lesson-015.svg" in server
-    assert "story-photo-v14.js?v=20261118v30" in html
-    assert "lesson-story-v11.js?v=20261118v30" in html
+    assert "story-photo-v14.js?v=20261118v31" in html
+    assert "lesson-story-v11.js?v=20261118v31" in html
