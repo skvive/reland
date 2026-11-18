@@ -84,3 +84,41 @@ def test_public_map_source_audit_proves_168_records(client):
     sources=client.get('/api/map/secondary-sources').json()
     assert sources['incheon_20261031']['verified'] is True
     assert sources['incheon_20261031']['source_rows']==168
+
+
+def test_gyesan_notice_draft_provenance_and_missing_households(client):
+    official=site._verified_public_notice_record({
+        'province':'인천광역시','city':'계양구','name':'계산극동아파트'
+    })
+    assert len(official['notices'])==2
+    assert official['notices'][0]['notice_number']=='인천광역시 고시 제2026-33호'
+    draft=official['historical_draft']
+    assert draft['notice_number']=='인천광역시 계양구 공고 제2025-300호'
+    assert draft['notice_date']=='2025-02-28'
+    assert '확정' in draft['status']
+    assert any(v['value']=='35,797.3㎡' for v in draft['values'])
+    with site.db() as c:
+        c.execute("""INSERT INTO districts
+          (name,province,city,stage,kind,operator,households,precision,source_url,source_date,demo)
+          VALUES ('계산극동아파트','인천광역시','계양구','3)추진위구성','3)재건축(공동주택)','1)조합','0','province_center',
+             'https://www.data.go.kr/data/15160169/fileData.do','2026-05-18',0)""")
+        district_id=c.execute("SELECT id FROM districts WHERE name='계산극동아파트'").fetchone()[0]
+    response=client.get(f'/api/districts/{district_id}/public')
+    assert response.status_code==200
+    profile=response.json()
+    assert profile['households_data_quality']=='unreported_zero'
+    assert profile['historical_draft']['notice_date']=='2025-02-28'
+    assert profile['official_parcel_address']=='인천광역시 계양구 계산동 899번지 일원'
+    assert profile['location']['verified_boundary'] is False
+    assert profile['official_notices'][0]['notice_date']=='2026-02-02'
+    assert profile['official_portal_stage']['value']=='정비구역지정'
+    for row in profile['incheon_official_records']:
+        assert row['source_asof']=='2026-10-31'
+
+
+def test_gyesan_map_client_does_not_misstate_zero_or_draft():
+    source=(Path(__file__).resolve().parents[1]/'static'/'app.js').read_text(encoding='utf-8')
+    assert '미확인 (원자료 0)' in source
+    assert '2025년 정비계획 공람안' in source
+    assert '확정 고시와 수치를 대조하기 전까지' in source
+    assert 'map-source-record' in source
