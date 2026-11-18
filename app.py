@@ -842,6 +842,8 @@ def public_district_profile(district_id:int):
         'source_date':'2026-05-18'
       } for r in variants],
       'official_same_name_warning':('동일 구역명과 행정구역에 서로 다른 '+str(len(variants))+'건의 국토부 원본 레코드가 있습니다. 단일 사업의 중복으로 단정하지 않습니다.' if len(variants)>1 else ''),
+      'households_data_quality':('unreported_zero' if str(field('households','공급 예정 세대수')).strip() in ('','0') else 'reported'),
+      'historical_draft':official.get('historical_draft',{}),
       'official_notices':official.get('notices',[]),
       'official_parcel_address':official.get('parcel_address',''),
       'official_portal_stage':official.get('portal_stage',{}),

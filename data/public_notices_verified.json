@@ -28,7 +28,41 @@
           "authority": "인천광역시 계양구",
           "source_url": "https://www.eum.go.kr/web/gs/gv/gvGosiDet.jsp?chrgorg=&enddt=&geul_yn=&gihyung_yn=&gosino=&mobile_yn=&pageNo=631&prj_cat_cd=&prj_nm=&selSggCd=&select2=&select_3=&seq=622183&silsi_yn=Y&startdt=&zonenm="
         }
-      ]
+      ],
+      "historical_draft": {
+        "document_type": "극동아파트 재건축사업 정비계획 및 정비구역지정 결정(안) 공람·공고",
+        "status": "2025년 공람안 · 최종 확정 계획이 아님",
+        "notice_number": "인천광역시 계양구 공고 제2025-300호",
+        "notice_date": "2025-02-28",
+        "source_url": "https://files-scs.pstatic.net/2025/10/23/ANycGJoalt/%EA%B7%B9%EB%8F%99%EC%95%84%ED%8C%8C%ED%8A%B8%20%EA%B3%B5%EB%9E%8C%EA%B3%B5%EA%B3%A0%28%EC%95%88%29.pdf",
+        "source_note": "계양구청 작성 공람공고 PDF의 외부 파일 링크. 2026-02-02 확정 고시와 개별 수치 대조 전",
+        "values": [
+          {
+            "label": "정비구역 면적(공람안)",
+            "value": "35,797.3㎡"
+          },
+          {
+            "label": "공동주택 획지(공람안)",
+            "value": "33,563.6㎡"
+          },
+          {
+            "label": "정비기반시설·도로(공람안)",
+            "value": "2,233.7㎡"
+          },
+          {
+            "label": "건폐율(공람안)",
+            "value": "25% 이하"
+          },
+          {
+            "label": "계획 용적률(공람안)",
+            "value": "250% 이하"
+          },
+          {
+            "label": "건축 높이(공람안)",
+            "value": "70m·23층 이하"
+          }
+        ]
+      }
     }
   ]
 }
