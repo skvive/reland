@@ -1,0 +1,20 @@
+/* RE:LAND photographic study navigation cards · 2026-11-21 */
+.course-meta{margin-top:24px;margin-bottom:10px;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.course-meta .rk-photo-link{position:relative;isolation:isolate;display:flex;align-items:flex-end;min-height:196px;overflow:hidden;box-sizing:border-box;padding:18px;border:1px solid rgba(208,223,215,.8);border-radius:17px;background:#0d352e;color:#fff;text-decoration:none;box-shadow:0 7px 20px rgba(14,52,41,.12);transition:transform .18s ease,box-shadow .18s ease}
+.course-meta .rk-photo-link img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:saturate(.92);transition:transform .35s ease}
+.course-meta .rk-photo-link:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(5,32,26,.95) 0%,rgba(5,32,26,.67) 42%,rgba(5,32,26,.04) 100%);}
+.course-meta .rk-photo-link:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(13,46,34,.22)}
+.course-meta .rk-photo-link:hover img{transform:scale(1.055)}
+.course-meta .rk-photo-link:focus-visible{outline:3px solid #e2bd75;outline-offset:3px}
+.course-meta .rk-photo-body{position:relative;display:flex;min-width:0;flex-direction:column;gap:6px;width:100%;text-shadow:0 2px 5px rgba(0,0,0,.15)}
+.course-meta .rk-photo-body small{display:block;font-size:10px;font-weight:800;letter-spacing:.085em;color:#e7c994;margin:0}
+.course-meta .rk-photo-body strong{display:block;color:white;font-size:clamp(15px,1.55vw,21px);line-height:1.38;word-break:keep-all;overflow-wrap:anywhere}
+.course-meta .rk-photo-body>span{display:block;font-size:12px;font-weight:600;line-height:1.6;color:#e8f4ea}
+.course-meta .rk-photo-body b{font-size:14px;font-weight:700;margin-left:2px}
+.rk-photo-note{max-width:1240px;margin:0 auto 24px;padding:0 22px;color:#677c70;font-size:12px;line-height:1.65}
+#rk-reader-guide,#rk-reader-quiz,#learning,#rk-episode-index{scroll-margin-top:18px}
+@media(max-width:900px){.course-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.course-meta .rk-photo-link{min-height:198px}.course-meta .rk-photo-body strong{font-size:20px}}
+@media(max-width:520px){.course-meta{padding:0 14px;gap:9px;margin-top:16px}.course-meta .rk-photo-link{min-height:173px;border-radius:12px;padding:12px}.course-meta .rk-photo-body{gap:4px}.course-meta .rk-photo-body strong{font-size:16px}.course-meta .rk-photo-body>span{font-size:11px}.course-meta .rk-photo-body small{font-size:9px}.rk-photo-note{font-size:11px;padding:0 14px;margin-bottom:16px}}
+@media(max-width:345px){.course-meta .rk-photo-link{padding:10px;min-height:157px}.course-meta .rk-photo-body strong{font-size:14px}.course-meta .rk-photo-body>span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.course-meta .rk-photo-link,.course-meta .rk-photo-link img{transition:none}}
+@media print{.course-meta,.rk-photo-note{display:none!important}}

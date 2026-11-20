@@ -37,7 +37,7 @@
   counter.textContent='전체 '+list.length+'강 · '+count+'개 표시';empty.hidden=count!==0;
  };
  search.addEventListener('input',filter);cat.addEventListener('change',filter);filter();panel.appendChild(details);meta.after(tools,panel);
- full.addEventListener('click',()=>{details.open=true});
+ full.addEventListener('click',()=>{details.open=true});document.querySelectorAll('[data-rk-open-index]').forEach(node=>node.addEventListener('click',()=>{details.open=true}));
  const aside=document.querySelector('.course-side .side-block');if(aside){const nav=$('a','','60강 회차 목차');nav.href='#rk-episode-index';nav.addEventListener('click',()=>details.open=true);aside.prepend(nav)}
  const dictionary={
  '추정분담금':'처음 계획을 세울 때 예상한 부담금입니다. 확정 청구금액은 아닙니다.',
@@ -87,7 +87,7 @@
  (themes[lesson.category]||['고시','증거','도면']).forEach(t=>{if(!terms.includes(t))terms.push(t)});
  if(id===1)terms=['추정분담금','확정분담금','감정평가','사업비'];
  terms=terms.slice(0,5);
- const guide=$('section','rk-reader-guide');guide.appendChild($('span','rk-reader-overline','제'+id+'강 · 중학생도 이해하는 핵심 교재'));
+ const guide=$('section','rk-reader-guide');guide.id='rk-reader-guide';guide.appendChild($('span','rk-reader-overline','제'+id+'강 · 중학생도 이해하는 핵심 교재'));
  guide.appendChild($('h2','','오늘 무엇을 배우나요?'));
  guide.appendChild($('p','rk-reader-answer',id===1?'처음 안내받은 예상 금액과 다음 통지서 금액이 달라질 때, 날짜와 면적, 사업비를 비교하는 방법을 배웁니다.':lesson.summary));
  const three=$('div','rk-reader-triples');
@@ -96,7 +96,7 @@
  const cards=$('div','rk-reader-terms');terms.forEach(t=>{const card=$('article');card.appendChild($('strong','',t));card.appendChild($('p','',dictionary[t]));cards.appendChild(card)});guide.appendChild(cards);
  guide.appendChild($('p','rk-reader-warning','오해하지 마세요: '+(lesson.pitfall||'실제 판단은 공식 원문을 확인해야 합니다.')+' 개별 사건의 법률·투자 조언이 아닙니다.'));
  guide.appendChild($('h3','','읽고 확인하기'));
- const questions=$('ol','rk-reader-quiz');
+ const questions=$('ol','rk-reader-quiz');questions.id='rk-reader-quiz';
  (id===1?['예상 분담금이 그대로 최종 금액일까요?','서로 다른 통지서를 비교할 때 반드시 확인할 3가지는?','금액 차이만으로 위법이라고 할 수 있을까요?']:
  ['이번 강의에서 가장 중요한 개념은 무엇인가요?','예시 상황에서 어떤 자료를 먼저 확인하나요?','어떤 판단을 서둘러 단정하면 안 되나요?']).forEach(q=>questions.appendChild($('li','',q)));
  guide.appendChild(questions);scene.after(guide);
