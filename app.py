@@ -405,6 +405,12 @@ async def security_headers(request: Request, call_next):
     )
     return response
 
+@app.get('/books', include_in_schema=False)
+@app.get('/books/', include_in_schema=False)
+def book_introduction():
+    """RE:LAND original trilogy: book introduction and verified draft covers."""
+    return FileResponse(ROOT/'static'/'books.html',media_type='text/html; charset=utf-8',headers={'Cache-Control':'public, max-age=300'})
+
 @app.get('/')
 def home(): return FileResponse(ROOT/'static'/'index.html')
 
@@ -420,7 +426,7 @@ def site_sitemap():
     namespace='http://www.sitemaps.org/schemas/sitemap/0.9'
     ET.register_namespace('',namespace)
     root=ET.Element('{'+namespace+'}urlset')
-    static_pages=['/', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
+    static_pages=['/', '/books', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
     dynamic_pages=['/insights/'+slug for slug in SEO_TOPICS]
     dynamic_pages+=['/regions/'+slug for slug in SEO_REGIONS]
     dynamic_pages+=['/regions/incheon-official']
