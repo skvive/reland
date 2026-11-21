@@ -405,6 +405,12 @@ async def security_headers(request: Request, call_next):
     )
     return response
 
+@app.get('/rights-analysis', include_in_schema=False)
+@app.get('/rights-analysis/', include_in_schema=False)
+def rights_analysis_course():
+    """LEXID real-estate rights analysis 24-lecture curriculum and material index."""
+    return FileResponse(ROOT/'static'/'rights-analysis.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+
 @app.get('/books', include_in_schema=False)
 @app.get('/books/', include_in_schema=False)
 def book_introduction():
@@ -426,7 +432,7 @@ def site_sitemap():
     namespace='http://www.sitemaps.org/schemas/sitemap/0.9'
     ET.register_namespace('',namespace)
     root=ET.Element('{'+namespace+'}urlset')
-    static_pages=['/', '/books', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
+    static_pages=['/', '/books', '/rights-analysis', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
     dynamic_pages=['/insights/'+slug for slug in SEO_TOPICS]
     dynamic_pages+=['/regions/'+slug for slug in SEO_REGIONS]
     dynamic_pages+=['/regions/incheon-official']
