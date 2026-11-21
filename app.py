@@ -411,6 +411,25 @@ def rights_analysis_course():
     """LEXID real-estate rights analysis 24-lecture curriculum and material index."""
     return FileResponse(ROOT/'static'/'rights-analysis.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
 
+@app.get('/rights-analysis/lesson-{lesson_id}', include_in_schema=False)
+def rights_analysis_lesson(lesson_id: int):
+    """Read a LEXID rights-analysis lesson in HTML without PDF links."""
+    if not 1 <= lesson_id <= 24:
+        raise HTTPException(status_code=404, detail='강의를 찾을 수 없습니다.')
+    return FileResponse(ROOT / 'static' / 'rights-analysis' / f'lesson-{lesson_id:02d}.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+
+@app.get('/rights-analysis/workbook', include_in_schema=False)
+def rights_analysis_workbook():
+    return FileResponse(ROOT / 'static' / 'rights-analysis' / 'workbook.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+
+@app.get('/rights-analysis/instructor', include_in_schema=False)
+def rights_analysis_instructor():
+    return FileResponse(ROOT / 'static' / 'rights-analysis' / 'instructor.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+
+@app.get('/rights-analysis/slides', include_in_schema=False)
+def rights_analysis_slides():
+    return FileResponse(ROOT / 'static' / 'rights-analysis' / 'slides.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+
 @app.get('/books', include_in_schema=False)
 @app.get('/books/', include_in_schema=False)
 def book_introduction():
@@ -433,6 +452,8 @@ def site_sitemap():
     ET.register_namespace('',namespace)
     root=ET.Element('{'+namespace+'}urlset')
     static_pages=['/', '/books', '/rights-analysis', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
+    static_pages += ['/rights-analysis/slides','/rights-analysis/workbook','/rights-analysis/instructor']
+    static_pages += [f'/rights-analysis/lesson-{n:02d}' for n in range(1,25)]
     dynamic_pages=['/insights/'+slug for slug in SEO_TOPICS]
     dynamic_pages+=['/regions/'+slug for slug in SEO_REGIONS]
     dynamic_pages+=['/regions/incheon-official']

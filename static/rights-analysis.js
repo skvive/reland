@@ -1,6 +1,5 @@
 'use strict';
-/** The 24 titles/order/page starts are verified against LEXID v1.4 556-page source PDF. */
-const COURSE_PDF = 'https://drive.google.com/file/d/10z_Hub42N03pO_oVRweJF-NGOK6-moF-/view';
+/** Lecture list follows the LEXID 24-lesson edition. */
 const LESSONS = [
  [1,'권리분석의 역할과 판단 순서','소유·점유·채권·공법 제한을 구분해 분석 순서를 익힙니다.','물건 표시·등기사항증명서·건축물대장','권리·서류 확인표'],
  [2,'물권과 채권의 기초','물권과 채권의 차이, 권리의 상대방과 공시 방법을 학습합니다.','등기기록·계약서·권리자 정보','권리 유형 구분표'],
@@ -28,7 +27,6 @@ const LESSONS = [
  [24,'종합 사례연습과 모의평가','가상 부동산의 권리·배당·투자 위험을 종합 검토합니다.','모의사례 및 앞선 실습 자료','최종 모의평가 결과표']
 ];
 const names={1:'PART 01 · 권리의 기초',2:'PART 02 · 임대차와 경매 기초',3:'PART 03 · 경매·공법',4:'PART 04 · 투자·보고서 실전'};
-const pageOf=(n)=>5+(n-1)*23;
 const esc=(str)=>String(str).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const stage=(n)=>Math.ceil(n/6);
 const list=document.getElementById('courseList');
@@ -40,8 +38,8 @@ function render(){
   const q=(search.value||'').normalize('NFKC').trim().toLocaleLowerCase('ko');
   const matches=LESSONS.filter(x=>(selected==='all'||stage(x[0])===Number(selected))&&(!q||[x[1],x[2],x[3],x[4],String(x[0])].join(' ').normalize('NFKC').toLocaleLowerCase('ko').includes(q)));
   list.innerHTML=matches.map(([num,title,desc,docs,result])=>{
-    const page=pageOf(num), tag=names[stage(num)];
-    return `<details class="course-card" id="lesson-${String(num).padStart(2,'0')}"><summary aria-label="${esc(num+'강 '+title+' 상세 학습 내용')}"><span class="course-no">${String(num).padStart(2,'0')}</span><span class="course-main"><small>${esc(tag)}</small><strong>${esc(title)}</strong></span><span class="course-chevron" aria-hidden="true">+</span></summary><div class="course-body"><p>${esc(desc)}</p><dl><dt>확인 자료</dt><dd>${esc(docs)}</dd><dt>학습 결과</dt><dd>${esc(result)}</dd><dt>원본 교재</dt><dd>v1.4 PDF ${page}쪽부터 (약 23쪽)</dd></dl><a class="lesson-link" target="_blank" rel="noopener noreferrer" href="${COURSE_PDF}#page=${page}">이 강의의 교재 페이지 열기 ↗</a></div></details>`;
+    const tag=names[stage(num)];
+    return `<details class="course-card" id="lesson-${String(num).padStart(2,'0')}"><summary aria-label="${esc(num+'강 '+title+' 상세 학습 내용')}"><span class="course-no">${String(num).padStart(2,'0')}</span><span class="course-main"><small>${esc(tag)}</small><strong>${esc(title)}</strong></span><span class="course-chevron" aria-hidden="true">+</span></summary><div class="course-body"><p>${esc(desc)}</p><dl><dt>확인 자료</dt><dd>${esc(docs)}</dd><dt>학습 결과</dt><dd>${esc(result)}</dd><dt>학습 방법</dt><dd>온라인 강의별 교재를 새 창에서 읽습니다.</dd></dl><a class="lesson-link" target="_blank" rel="noopener noreferrer" href="/rights-analysis/lesson-${String(num).padStart(2,'0')}">이 강의 학습하기 (새 창) ↗</a></div></details>`;
   }).join('');
   empty.hidden=matches.length!==0;
 }
