@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#133a35">
+<title>내 리랜드 | 마이페이지</title><meta name="description" content="리랜드 회원 정보와 강의 학습 진도, 저장한 글 및 관심 지역을 관리합니다.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/mypage.css?v=20261122a"><script defer src="/static/mypage.js?v=20261122a"></script>
+</head><body>
+<a class="skip" href="#main">본문으로 이동</a>
+<header class="top"><div class="shell top-inner"><a href="/" class="brand" aria-label="리랜드 홈">RE<span>:</span>LAND<small>도시의 내일을 잇다</small></a><nav aria-label="주요 메뉴"><a href="/">홈</a><a href="/map">재개발 지도</a><a href="/rights-analysis">권리분석사 1급</a><a href="/books">도서·책</a></nav><a class="nav-me" href="/mypage" aria-current="page">마이페이지</a></div></header>
+<main id="main"><section class="banner"><div class="shell banner-inner"><div><span class="overline">RE:LAND MEMBER</span><h1>내 리랜드</h1><p>읽고, 배우고, 관심 있는 동네를 기록하는 나만의 공간.</p></div><img src="/static/assets/rights-course/rights-course-mentor.webp" alt="리랜드 권리분석 강의 소개 이미지" width="399" height="410" loading="lazy"></div></section>
+<div class="shell app-shell">
+<section id="loading" class="welcome-state" role="status">회원 정보를 확인하고 있습니다.</section>
+<section id="signedOut" class="welcome-state hidden"><h2>Google 계정으로 시작하세요</h2><p>로그인 후 학습 진도와 저장한 강의, 관심 지역이 여기에 표시됩니다.</p><a class="primary" id="loginLink" href="/?login=1&next=/mypage">Google 로그인</a><p class="hint">리랜드에서는 기존 Google·Neon Auth 계정을 그대로 사용합니다.</p></section>
+<div id="dashboard" class="hidden">
+  <section class="hello"><div class="member-identity"><div id="avatar" class="avatar" aria-hidden="true">R</div><div><span class="eyebrow">MY ACCOUNT</span><h2 id="memberName">안녕하세요.</h2><p id="memberEmail"></p></div></div><div class="hello-actions"><a href="/profile" class="outline">기존 커뮤니티 활동 보기</a><button type="button" class="outline" id="logoutButton">로그아웃</button></div></section>
+  <section class="metrics" aria-label="활동 요약"><div><small>학습 완료</small><strong id="completedCount">0<span>/24강</span></strong></div><div><small>학습 중</small><strong id="startedCount">0<span>강</span></strong></div><div><small>저장한 강의</small><strong id="savedCount">0<span>강</span></strong></div><div><small>관심 정비구역</small><strong id="watchCount">0<span>곳</span></strong></div></section>
+  <div class="two-column">
+  <section class="panel learning" aria-labelledby="learningHead"><div class="panel-head"><div><span class="eyebrow">LEARNING</span><h2 id="learningHead">부동산권리분석사 1급</h2></div><a href="/rights-analysis" class="small-link">전체 강의 보기</a></div><div class="progress-track" aria-label="학습 완료 진도"><div id="progressBar" class="progress-fill" style="width:0%"></div></div><p id="progressText" class="subtle">0강 완료 · 전체 24강</p><div id="continueArea" class="continue-area"></div><div class="lesson-tabs" role="group" aria-label="강의 필터"><button type="button" data-filter="all" class="selected">전체 24강</button><button type="button" data-filter="saved">저장한 강의</button><button type="button" data-filter="in_progress">학습 중</button></div><div id="lessons" class="lessons"></div></section>
+  <div class="sidepanels"><section class="panel" aria-labelledby="interestHead"><div class="panel-head"><div><span class="eyebrow">NEIGHBORHOOD</span><h2 id="interestHead">관심 지역</h2></div><a href="/map" class="small-link">지도 보기</a></div><div id="watchedAreas" class="rows"></div></section>
+  <section class="panel" aria-labelledby="articleHead"><div class="panel-head"><div><span class="eyebrow">LIBRARY</span><h2 id="articleHead">저장한 게시글</h2></div><a href="/community" class="small-link">동네사랑방</a></div><div id="savedArticles" class="rows"></div></section>
+  <section class="panel" aria-labelledby="myPostHead"><div class="panel-head"><div><span class="eyebrow">ACTIVITY</span><h2 id="myPostHead">내가 작성한 글</h2></div><a href="/profile" class="small-link">활동 전체</a></div><div id="myPosts" class="rows"></div></section>
+  <section class="panel" aria-labelledby="consultHead"><div class="panel-head"><div><span class="eyebrow">CONSULTATION</span><h2 id="consultHead">상담 접수 내역</h2></div><a href="/experts" class="small-link">상담 안내</a></div><div id="consultations" class="rows"></div></section></div></div>
+  <section class="panel settings" aria-labelledby="settingsHead"><div class="panel-head"><div><span class="eyebrow">PROFILE</span><h2 id="settingsHead">회원 정보 관리</h2></div><a href="/privacy" class="small-link">개인정보 안내</a></div><form id="profileForm"><div class="field"><label for="nickname">닉네임</label><input id="nickname" name="nickname" minlength="2" maxlength="32" autocomplete="nickname" required></div><div class="field"><label for="bio">소개</label><textarea id="bio" name="bio" maxlength="180" rows="3" placeholder="나를 소개하는 한두 문장"></textarea></div><div class="field"><label for="blog_url">Google 블로그</label><input id="blog_url" name="blog_url" type="url" maxlength="250" placeholder="https://example.blogspot.com/"></div><button type="submit" class="primary">변경사항 저장</button></form><p class="subtle account-note">로그인은 기존 계정과 연결됩니다. 회원 탈퇴 및 게시글 관리는 <a href="/profile">기존 계정 관리</a>에서 할 수 있습니다.</p></section>
+</div>
+<p class="status-line" id="status" role="status" aria-live="polite"></p>
+</div></main><footer class="footer"><div class="shell"><b>RE:LAND</b><p>회원별 활동과 학습 내역은 로그인한 본인에게만 표시됩니다.</p><small>© 2026 RE:LAND · LEXID</small></div></footer>
+</body></html>

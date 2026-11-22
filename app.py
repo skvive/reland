@@ -34,6 +34,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from neon_auth_jwt import validate_neon_token
+from member_portal import init_member_schema, register_member_portal
 from community_builder import init_community_builder_schema, register_community_builder
 from theme_boards import init_theme_board_schema, register_theme_board_routes, THEME_BY_SLUG
 from seo_pages import TOPICS as SEO_TOPICS, REGIONS as SEO_REGIONS, topic_html, region_html, district_html, incheon_official_html, links as seo_links, BASE as SEO_BASE
@@ -226,6 +227,7 @@ def init_db():
     init_studio_db(db)
 
 init_db()
+init_member_schema(db)
 
 class LoginToken(BaseModel):
     credential: str = Field(min_length=100,max_length=8000)
@@ -382,6 +384,9 @@ def validate_blog(url):
 
 @app.middleware('http')
 async def security_headers(request: Request, call_next):
+    # Prevent unauthenticated bypass via the FastAPI static mount.
+    if re.fullmatch(r'/static/rights-analysis/(?:lesson-\d{2}|workbook|instructor|slides)\.html',request.url.path):
+        return Response('Not found',status_code=404)
     if request.url.path.startswith('/api/') and request.method in ('POST','PUT','PATCH','DELETE'):
         origin=request.headers.get('origin')
         if origin:
@@ -392,6 +397,10 @@ async def security_headers(request: Request, call_next):
             if origin_parsed.scheme+'://'+origin_parsed.netloc != target:
                 return Response('다른 출처의 쓰기 요청은 차단됩니다.',status_code=403)
     response=await call_next(request)
+    if request.url.path.startswith(('/api/member/','/api/auth/','/rights-analysis/lesson-')) or request.url.path in ('/mypage','/rights-analysis/workbook','/rights-analysis/instructor','/rights-analysis/slides'):
+        response.headers['Cache-Control']='private, no-store'
+        response.headers['Pragma']='no-cache'
+        response.headers['X-Robots-Tag']='noindex, noarchive'
     response.headers['X-Content-Type-Options']='nosniff'
     response.headers['Referrer-Policy']='strict-origin-when-cross-origin'
     response.headers['X-Frame-Options']='DENY'
@@ -405,6 +414,8 @@ async def security_headers(request: Request, call_next):
     )
     return response
 
+register_member_portal(app, db, require_user, utcnow, ROOT)
+
 @app.get('/rights-analysis', include_in_schema=False)
 @app.get('/rights-analysis/', include_in_schema=False)
 def rights_analysis_course():
@@ -412,23 +423,43 @@ def rights_analysis_course():
     return FileResponse(ROOT/'static'/'rights-analysis.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
 
 @app.get('/rights-analysis/lesson-{lesson_id}', include_in_schema=False)
-def rights_analysis_lesson(lesson_id: int):
-    """Read a LEXID rights-analysis lesson in HTML without PDF links."""
+def rights_analysis_lesson(lesson_id: int, request: Request):
+    """Authenticated online reading; never expose a downloadable source URL."""
     if not 1 <= lesson_id <= 24:
         raise HTTPException(status_code=404, detail='강의를 찾을 수 없습니다.')
-    return FileResponse(ROOT / 'static' / 'rights-analysis' / f'lesson-{lesson_id:02d}.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+    if not get_user(request):
+        return Response(status_code=303,headers={'Location':f'/mypage?next=/rights-analysis/lesson-{lesson_id:02d}'})
+    lesson_html=(ROOT / 'static' / 'rights-analysis' / f'lesson-{lesson_id:02d}.html').read_text(encoding='utf-8')
+    tools='<script defer src="/static/member-lesson-tools.js?v=20261122"></script><script defer src="/static/copyright-guard.js?v=20261122"></script>'
+    return HTMLResponse(lesson_html.replace('</head>',tools+'</head>',1),
+       headers={'Cache-Control':'private, no-store','X-Robots-Tag':'noindex, noarchive'})
 
 @app.get('/rights-analysis/workbook', include_in_schema=False)
-def rights_analysis_workbook():
-    return FileResponse(ROOT / 'static' / 'rights-analysis' / 'workbook.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+def rights_analysis_workbook(request: Request):
+    if not get_user(request):
+        return Response(status_code=303,headers={'Location':'/mypage?next=/rights-analysis/workbook'})
+    lesson_html=(ROOT / 'static' / 'rights-analysis' / 'workbook.html').read_text(encoding='utf-8')
+    tools='<script defer src="/static/copyright-guard.js?v=20261122"></script>'
+    return HTMLResponse(lesson_html.replace('</head>',tools+'</head>',1),
+       headers={'Cache-Control':'private, no-store','X-Robots-Tag':'noindex, noarchive'})
 
 @app.get('/rights-analysis/instructor', include_in_schema=False)
-def rights_analysis_instructor():
-    return FileResponse(ROOT / 'static' / 'rights-analysis' / 'instructor.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+def rights_analysis_instructor(request: Request):
+    if not get_user(request):
+        return Response(status_code=303,headers={'Location':'/mypage?next=/rights-analysis/instructor'})
+    lesson_html=(ROOT / 'static' / 'rights-analysis' / 'instructor.html').read_text(encoding='utf-8')
+    tools='<script defer src="/static/copyright-guard.js?v=20261122"></script>'
+    return HTMLResponse(lesson_html.replace('</head>',tools+'</head>',1),
+       headers={'Cache-Control':'private, no-store','X-Robots-Tag':'noindex, noarchive'})
 
 @app.get('/rights-analysis/slides', include_in_schema=False)
-def rights_analysis_slides():
-    return FileResponse(ROOT / 'static' / 'rights-analysis' / 'slides.html', media_type='text/html; charset=utf-8', headers={'Cache-Control':'public, max-age=300'})
+def rights_analysis_slides(request: Request):
+    if not get_user(request):
+        return Response(status_code=303,headers={'Location':'/mypage?next=/rights-analysis/slides'})
+    lesson_html=(ROOT / 'static' / 'rights-analysis' / 'slides.html').read_text(encoding='utf-8')
+    tools='<script defer src="/static/copyright-guard.js?v=20261122"></script>'
+    return HTMLResponse(lesson_html.replace('</head>',tools+'</head>',1),
+       headers={'Cache-Control':'private, no-store','X-Robots-Tag':'noindex, noarchive'})
 
 @app.get('/books', include_in_schema=False)
 @app.get('/books/', include_in_schema=False)
@@ -452,8 +483,6 @@ def site_sitemap():
     ET.register_namespace('',namespace)
     root=ET.Element('{'+namespace+'}urlset')
     static_pages=['/', '/books', '/rights-analysis', '/map', '/guide', '/news', '/youtube', '/sources', '/columns']
-    static_pages += ['/rights-analysis/slides','/rights-analysis/workbook','/rights-analysis/instructor']
-    static_pages += [f'/rights-analysis/lesson-{n:02d}' for n in range(1,25)]
     dynamic_pages=['/insights/'+slug for slug in SEO_TOPICS]
     dynamic_pages+=['/regions/'+slug for slug in SEO_REGIONS]
     dynamic_pages+=['/regions/incheon-official']
